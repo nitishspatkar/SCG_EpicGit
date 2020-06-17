@@ -71,8 +71,7 @@ ERequirementContainer >> mindMapGenerate [
 		alignCenter.
 	view nodes
 		shape: [ :anArtifact |
-			BlTextElement new
-				text: anArtifact class name asRopedText;
+			BlElement new
 				look: (BrGlamorousWithTooltipLook2
 					content: (requirementContentLabel text: (anArtifact title asRopedText))
 					);

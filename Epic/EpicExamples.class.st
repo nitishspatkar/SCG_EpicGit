@@ -65,6 +65,20 @@ EpicExamples >> initialize [
 	super initialize.
 ]
 
+{ #category : #'examples - requirement container' }
+EpicExamples >> requirementContainerWithThreeEpics [
+	"run this method in order to obtain an ERequirementContainer instance with two epics, with all of their sub-elements, as elements of this container. 
+	Check out the Mind Map view for a visual representation of the project's requirement hierarchy.
+	For now, two of the epics are identical. This is to have a better representation of the Mind Map view."
+	<gtExample>
+	| container |
+	container := ERequirementContainer new project: 'AddressBookApp'.
+	container addArtifact: self epicSearchAddressBook.
+	container addArtifact: self epicManageAddressBook.
+	container addArtifact: self epicSearchAddressBook.
+	^container
+]
+
 { #category : #'examples - scenario' }
 EpicExamples >> scenarioAddDuplicateAddress [
 	<gtExample>
