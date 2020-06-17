@@ -19,7 +19,8 @@ Class {
 		'component',
 		'pillar',
 		'scenarios',
-		'acceptCriteria'
+		'acceptCriteria',
+		'title'
 	],
 	#category : #'Epic-Model'
 }
@@ -150,6 +151,16 @@ EUserStory >> pillar: anObject [
 { #category : #accessing }
 EUserStory >> scenarios [
 	^ scenarios
+]
+
+{ #category : #accessing }
+EUserStory >> title [
+	^title
+]
+
+{ #category : #accessing }
+EUserStory >> title: aString [
+	title := aString.
 ]
 
 { #category : #'as yet unclassified' }

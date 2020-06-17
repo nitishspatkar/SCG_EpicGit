@@ -70,6 +70,7 @@ EpicExamples >> scenarioAddDuplicateAddress [
 	<gtExample>
 	| scenario |
 	scenario := EScenario new.
+	scenario title: 'add duplicate type address to contact'.
 	scenario description: 'add a duplicate type address to a contact'.
 	scenario exampleMethod: (ABContactExamples >> #addSameAddressTypes) gtExample.
 	^ scenario
@@ -80,6 +81,7 @@ EpicExamples >> scenarioAddEmailOnDuplicateType [
 	<gtExample>
 	| scenario |
 	scenario := EScenario new.
+	scenario title: 'add duplicate type email to contact'.
 	scenario description: 'add a duplicate type email to a contact'.
 	scenario exampleMethod: (ABContactExamples >> #addSameMailTypes) gtExample.
 	^ scenario
@@ -90,6 +92,7 @@ EpicExamples >> scenarioEditAddress [
 	<gtExample>
 	| scenario |
 	scenario := EScenario new.
+	scenario title: 'edit addresses in contact'.
 	scenario description: 'edit the addresses in a contact'.
 	scenario exampleMethods: (Array 
 			with: (ABContactExamples >> #editAddress) gtExample
@@ -102,6 +105,7 @@ EpicExamples >> scenarioEditCompany [
 	<gtExample>
 	| scenario |
 	scenario := EScenario new.
+	scenario title: 'edit company in contact'.
 	scenario description: 'edit the company in a contact'.
 	scenario exampleMethods: (Array 
 			with: (ABContactExamples >> #editCompany) gtExample
@@ -114,6 +118,7 @@ EpicExamples >> scenarioEditEmail [
 	<gtExample>
 	| scenario |
 	scenario := EScenario new.
+	scenario title: 'edit emails in contact'.
 	scenario description: 'edit the emails in a contact'.
 	scenario exampleMethods: (Array 
 			with: (ABContactExamples >> #editEmail) gtExample
@@ -126,6 +131,7 @@ EpicExamples >> scenarioEditNote [
 	<gtExample>
 	| scenario |
 	scenario := EScenario new.
+	scenario title: 'edit note in contact'.
 	scenario description: 'Edit the note in a contact'.
 	scenario exampleMethods: (Array 
 			with: (ABContactExamples >> #editNote) gtExample
@@ -138,6 +144,7 @@ EpicExamples >> scenarioEditPhone [
 	<gtExample>
 	| scenario |
 	scenario := EScenario new.
+	scenario title: 'edit phone in contact'.
 	scenario description: 'edit the phone numbers in a contact'.
 		scenario exampleMethods: (Array 
 			with: (ABContactExamples >> #editPhone) gtExample
@@ -150,6 +157,7 @@ EpicExamples >> scenarioMergeContacts [
 	<gtExample>
 	| scenario |
 	scenario := EScenario new.
+	scenario title: 'merge two contacts in address book'.
 	scenario description: 'Fully merge two contacts in an address book'.
 	scenario exampleMethod: (EpicExamples >> #addressBookMergeContacts) gtExample.
 	^ scenario
@@ -160,6 +168,7 @@ EpicExamples >> scenarioNewContact [
 	<gtExample>
 	| scenario |
 	scenario := EScenario new.
+	scenario title: 'add new contact'.
 	scenario description: 'Add a new contact'.
 	scenario descriptionText: '!!Description:
 Adding a contact to an address book
@@ -198,6 +207,7 @@ EpicExamples >> scenarioRemoveContactFromAddressBook [
 	<gtExample>
 	| scenario |
 	scenario := EScenario new.
+	scenario title: 'remove contact'.
 	scenario description: 'Remove a given contact'.
 	scenario exampleMethods: 
 		(Array 
@@ -215,6 +225,7 @@ EpicExamples >> scenarioSearchByAddress [
 	<gtExample>
 	| scenario |
 	scenario := EScenario new.
+	scenario title: 'search contact by address'.
 	scenario description: 'search for a contact by address'.
 	scenario exampleMethods: (Array 
 		with: (ABAddressBookExamples >> #exampleSearchAddressesWithOneContact) gtExample
@@ -231,6 +242,7 @@ EpicExamples >> scenarioSearchByCompany [
 	<gtExample>
 	| scenario |
 	scenario := EScenario new.
+	scenario title: 'search for contact by company'.
 	scenario description: 'search for a contact by a company'.
 	scenario exampleMethods: (Array 
 			with: (ABAddressBookExamples >> #exampleSearchCompanyWithOneContact) gtExample
@@ -248,6 +260,7 @@ EpicExamples >> scenarioSearchByName [
 	<gtExample>
 	| scenario |
 	scenario := EScenario new.
+	scenario title: 'search for contact by first name'.
 	scenario description: 'search for a contact by a first name'.
 	scenario
 		exampleMethods:
@@ -272,6 +285,7 @@ EpicExamples >> scenarioSearchByPhone [
 	<gtExample>
 	| scenario |
 	scenario := EScenario new.
+	scenario title: 'search for contact by phone'.
 	scenario description: 'search for a contact by phone'.
 	scenario exampleMethods: 
 		(Array 
@@ -288,6 +302,7 @@ EpicExamples >> scenarioUseDefinedFilter [
 	<gtExample>
 	| scenario |
 	scenario := EScenario new.
+	scenario title: 'search for contact with defined filter'.
 	scenario description: 'Search for a contact with a defined filter'.
 	scenario exampleMethods: 
 		(Array 
@@ -416,6 +431,7 @@ EpicExamples >> userStoryAddNewContact [
 	<gtExample>
 	| userStory |
 	userStory := EUserStory new.
+	userStory title: 'add contact'.
 	userStory action: 'add a contact'.
 	
 	userStory addScenario: self scenarioNewContact.
@@ -428,6 +444,7 @@ EpicExamples >> userStoryEditContact [
 	<gtExample>
 	| userStory |
 	userStory := EUserStory new.
+	userStory title: 'edit contact'.
 	userStory action: 'edit user contact details'.
 	userStory addScenario: self scenarioEditAddress.
 	userStory addScenario: self scenarioEditCompany.
@@ -444,6 +461,7 @@ EpicExamples >> userStoryRemoveContact [
 	<gtExample>
 	| userStory |
 	userStory := EUserStory new.
+	userStory title: 'remove contact'.
 	userStory action: 'remove an entire contact'.
 	userStory addScenario: self scenarioRemoveContactFromAddressBook.
 	^ userStory
@@ -454,6 +472,7 @@ EpicExamples >> userStorySearchByAddress [
 	<gtExample>
 	| userStory |
 	userStory := EUserStory new.
+	userStory title: 'search for contact by address'.
 	userStory action: 'search for a contact by address'.
 	userStory addScenario: self scenarioSearchByAddress.
 	^ userStory
@@ -464,6 +483,7 @@ EpicExamples >> userStorySearchByCompany [
 	<gtExample>
 	| userStory |
 	userStory := EUserStory new.
+	userStory title: 'search by company'.
 	userStory action: 'search with a custom filter'.
 	userStory addScenario: self scenarioSearchByCompany.
 	^ userStory
@@ -474,6 +494,7 @@ EpicExamples >> userStorySearchByName [
 	<gtExample>
 	| userStory |
 	userStory := EUserStory new.
+	userStory title: 'search by name'.
 	userStory action: 'search user by his last or second name'.
 	userStory addScenario: self scenarioSearchByName.
 	
@@ -485,6 +506,7 @@ EpicExamples >> userStorySearchByPhone [
 	<gtExample>
 	| userStory |
 	userStory := EUserStory new.
+	userStory title: 'search by phone'.
 	userStory action: 'search for a contact by phone number'.
 	userStory addScenario: self scenarioSearchByPhone.
 	^ userStory
@@ -495,6 +517,7 @@ EpicExamples >> userStorySearchWithFilter [
 	<gtExample>
 	| userStory |
 	userStory := EUserStory new.
+	userStory title: 'search with filter'.
 	userStory action: 'search with a custom filter'.
 	userStory addScenario: self scenarioUseDefinedFilter.
 	^ userStory

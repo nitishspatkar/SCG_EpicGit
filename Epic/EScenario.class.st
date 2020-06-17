@@ -12,7 +12,8 @@ Class {
 		'exampleMethods',
 		'parametrizedExamples',
 		'descriptionText',
-		'simpleExampleText'
+		'simpleExampleText',
+		'title'
 	],
 	#category : #'Epic-Model'
 }
@@ -177,6 +178,16 @@ EScenario >> simpleExampleText [
 { #category : #accessing }
 EScenario >> simpleExampleText: anObject [
 	simpleExampleText := anObject
+]
+
+{ #category : #accessing }
+EScenario >> title [
+	^title
+]
+
+{ #category : #accessing }
+EScenario >> title: aString [
+	title := aString
 ]
 
 { #category : #'as yet unclassified' }
