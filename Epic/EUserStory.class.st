@@ -22,7 +22,8 @@ Class {
 		'acceptCriteria',
 		'title',
 		'points',
-		'state'
+		'state',
+		'announcer'
 	],
 	#category : #'Epic-Model'
 }
@@ -52,10 +53,17 @@ EUserStory >> addScenario: aScenario [
 	scenarios add: aScenario.
 ]
 
-{ #category : #helper }
+{ #category : #accessing }
+EUserStory >> announcer [ 
+	"The announcer announces to potential watchers (typically viewers)
+	that a new signal was recorded"
+	^ announcer
+]
+
+{ #category : #'ui helpers' }
 EUserStory >> cardViewGenerate [
-	"Used by the gtCardViewFor: method to create the story card view."
-	|container verticalContainerLeft verticalContainerRight detailsTextContainer criteriaContainer stateColorContainer stateTextContainer pointsContainer details pointsText stateText criteriaText |
+	"Used by the gtCardViewFor method to create the story card view."
+	|container verticalContainerLeft verticalContainerRight detailsTextContainer criteriaContainer stateColorContainer stateTextContainer pointsContainer details pointsText stateText criteriaText changeStateButton |
 			details := (
 			'User story:', String cr, String cr, 
 			'As a ', self user name, ',', String cr, 
@@ -77,7 +85,7 @@ EUserStory >> cardViewGenerate [
 					
 			stateColorContainer := BlElement new
 				size: 100@100;
-				background: self getStateColor;
+				background: self updateStateColor;
 				border: (BlBorder paint: Color gray width: 1);
 				margin: (BlInsets top: 10 right: 10 bottom: 10 left: 0).
 				
@@ -96,6 +104,16 @@ EUserStory >> cardViewGenerate [
 				padding: (BlInsets all: 5);
 				text: pointsText asRopedText.
 				
+			changeStateButton := (BrButton new
+				background: (Color fromHexString: 'eaeaea');
+				look: BrGlamorousButtonWithLabelLook new;
+				label: 'Change Status';
+				action: [ 
+					self inform: 'Clicked change state button.'. 
+					self markStarted. "This changes the object's state"
+					self announcer announce: ERequirementStateChangedAnnouncement new 
+					]).
+			
 			detailsTextContainer := BrEditor new
 				border: (BlBorder paint: Color gray width: 1);
 				look: (BrGlamorousRegularEditorLook new fontSize: 16);
@@ -134,6 +152,7 @@ EUserStory >> cardViewGenerate [
 			verticalContainerRight addChild: pointsContainer.
 			verticalContainerRight addChild: stateColorContainer.
 			verticalContainerRight addChild: stateTextContainer.
+			verticalContainerRight addChild: changeStateButton.
 			container addChild: verticalContainerLeft.
 			container addChild: verticalContainerRight.
 			^container
@@ -154,15 +173,6 @@ EUserStory >> component: anObject [
 	component := anObject
 ]
 
-{ #category : #'work state' }
-EUserStory >> getStateColor [
-	| color |
-	(state = 'Not started') ifTrue: [ color := Color red ].
-	(state = 'In progress') ifTrue: [ color := Color yellow ].
-	(state = 'Complete') ifTrue: [ color := Color green ].
-	^ color
-]
-
 { #category : #accessing }
 EUserStory >> goal [
 	^ goal
@@ -179,6 +189,7 @@ EUserStory >> gtCardViewFor: aView [
 	^ aView explicit
 		title: 'Card' translated;
 		priority: 5;
+		updateWhen: ERequirementStateChangedAnnouncement in: [ self announcer ];
 		stencil: self cardViewGenerate.
 ]
 
@@ -246,6 +257,7 @@ EUserStory >> initialize [
 	acceptCriteria := 'Undefined'.
 	points := 0.
 	state := 'Not started'.
+	announcer := Announcer new.
 ]
 
 { #category : #'work state' }
@@ -311,6 +323,15 @@ EUserStory >> title: aString [
 { #category : #utilities }
 EUserStory >> treeViewShortString [
 	^ 'Use Story: (As a ', user name, ', I want to ', action, ')'
+]
+
+{ #category : #'work state' }
+EUserStory >> updateStateColor [
+	| color |
+	(state = 'Not started') ifTrue: [ color := Color red ].
+	(state = 'In progress') ifTrue: [ color := Color yellow ].
+	(state = 'Complete') ifTrue: [ color := Color green ].
+	^ color
 ]
 
 { #category : #accessing }
