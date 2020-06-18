@@ -447,6 +447,7 @@ EpicExamples >> userStoryAddNewContact [
 	userStory := EUserStory new.
 	userStory title: 'add contact'.
 	userStory action: 'add a contact'.
+	userStory points: 20.
 	
 	userStory addScenario: self scenarioNewContact.
 	userStory addScenario: self scenarioAddDuplicateAddress.
@@ -460,6 +461,8 @@ EpicExamples >> userStoryEditContact [
 	userStory := EUserStory new.
 	userStory title: 'edit contact'.
 	userStory action: 'edit user contact details'.
+	userStory points: 20.
+	
 	userStory addScenario: self scenarioEditAddress.
 	userStory addScenario: self scenarioEditCompany.
 	userStory addScenario: self scenarioEditNote.
@@ -477,6 +480,8 @@ EpicExamples >> userStoryRemoveContact [
 	userStory := EUserStory new.
 	userStory title: 'remove contact'.
 	userStory action: 'remove an entire contact'.
+	userStory points: 10.
+	
 	userStory addScenario: self scenarioRemoveContactFromAddressBook.
 	^ userStory
 ]
@@ -488,6 +493,8 @@ EpicExamples >> userStorySearchByAddress [
 	userStory := EUserStory new.
 	userStory title: 'search for contact by address'.
 	userStory action: 'search for a contact by address'.
+	userStory points: 12.
+	
 	userStory addScenario: self scenarioSearchByAddress.
 	^ userStory
 ]
@@ -499,6 +506,8 @@ EpicExamples >> userStorySearchByCompany [
 	userStory := EUserStory new.
 	userStory title: 'search by company'.
 	userStory action: 'search with a custom filter'.
+	userStory points: 12.
+	
 	userStory addScenario: self scenarioSearchByCompany.
 	^ userStory
 ]
@@ -510,6 +519,8 @@ EpicExamples >> userStorySearchByName [
 	userStory := EUserStory new.
 	userStory title: 'search by name'.
 	userStory action: 'search user by his last or second name'.
+	userStory points: 12.
+	
 	userStory addScenario: self scenarioSearchByName.
 	
 	^ userStory
@@ -522,6 +533,8 @@ EpicExamples >> userStorySearchByPhone [
 	userStory := EUserStory new.
 	userStory title: 'search by phone'.
 	userStory action: 'search for a contact by phone number'.
+	userStory points: 12.
+	
 	userStory addScenario: self scenarioSearchByPhone.
 	^ userStory
 ]
@@ -533,6 +546,8 @@ EpicExamples >> userStorySearchWithFilter [
 	userStory := EUserStory new.
 	userStory title: 'search with filter'.
 	userStory action: 'search with a custom filter'.
+	userStory points: 30.
+	
 	userStory addScenario: self scenarioUseDefinedFilter.
 	^ userStory
 ]

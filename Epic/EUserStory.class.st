@@ -110,7 +110,7 @@ EUserStory >> cardViewGenerate [
 				label: 'Change Status';
 				action: [ 
 					self inform: 'Clicked change state button.'. 
-					self markStarted. "This changes the object's state"
+					self changeWorkState. "This changes the object's state"
 					self announcer announce: ERequirementStateChangedAnnouncement new 
 					]).
 			
@@ -158,6 +158,18 @@ EUserStory >> cardViewGenerate [
 			^container
 ]
 
+{ #category : #'work state' }
+EUserStory >> changeWorkState [
+	"Changes the work state of the user story in cyclical order (started -> in progress -> done -> started etc.)"
+	state = 'Not started' 
+		ifTrue: [ self markStarted. ]
+		ifFalse: [ 
+			state = 'In progress'
+				ifTrue: [ self markComplete ]
+				ifFalse: [ self markNotStarted ]
+				 ]
+]
+
 { #category : #accessing }
 EUserStory >> children [ 
 	^ self scenarios
@@ -190,7 +202,7 @@ EUserStory >> gtCardViewFor: aView [
 		title: 'Card' translated;
 		priority: 5;
 		updateWhen: ERequirementStateChangedAnnouncement in: [ self announcer ];
-		stencil: self cardViewGenerate.
+		stencil: [self cardViewGenerate].
 ]
 
 { #category : #ui }
