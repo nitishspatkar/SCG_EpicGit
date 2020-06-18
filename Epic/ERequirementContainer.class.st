@@ -73,7 +73,11 @@ ERequirementContainer >> mindMapGenerate [
 		shape: [ :anArtifact |
 			BlElement new
 				look: (BrGlamorousWithTooltipLook2
-					content: (requirementContentLabel text: (anArtifact title asRopedText))
+					content: ((BrLabel new
+						look: (BrGlamorousLabelLook new glamorousRegularFontAndSize);
+						padding: (BlInsets all: 20);
+						alignCenter) 
+						text: (anArtifact title asRopedText))
 					);
 				size: 10 @ 10;
 				border: (BlBorder paint: Color gray width: 1);
@@ -84,7 +88,7 @@ ERequirementContainer >> mindMapGenerate [
 		shape: [ :x | 
 			BlLineElement new
 				border: (BlBorder paint: (Color red alpha: 0.5) width: 2) ].
-	view layout explicit: GtGraphClusterLayout new.
+	view layout custom: GtGraphClusterLayout new.
 	^ view
 ]
 
