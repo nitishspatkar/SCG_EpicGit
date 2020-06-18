@@ -63,22 +63,12 @@ ERequirementContainer >> initialize [
 { #category : #ui }
 ERequirementContainer >> mindMapGenerate [
 	"Generate a Mind Map mondrian for the gtMindMap view"
-	| view requirementContentLabel |
+	| view |
 	view := GtMondrian new.
-	requirementContentLabel := BrLabel new
-		look: (BrGlamorousLabelLook new glamorousRegularFontAndSize);
-		padding: (BlInsets all: 20);
-		alignCenter.
 	view nodes
 		shape: [ :anArtifact |
 			BlElement new
-				look: (BrGlamorousWithTooltipLook2
-					content: ((BrLabel new
-						look: (BrGlamorousLabelLook new glamorousRegularFontAndSize);
-						padding: (BlInsets all: 20);
-						alignCenter) 
-						text: (anArtifact title asRopedText))
-					);
+				look: (self setUpTooltipLookFor: anArtifact);
 				size: 10 @ 10;
 				border: (BlBorder paint: Color gray width: 1);
 				geometry: BlCircle new ];
@@ -111,4 +101,17 @@ ERequirementContainer >> requirements [
 { #category : #accessing }
 ERequirementContainer >> requirements: aCollection [ 
 	requirements := aCollection.
+]
+
+{ #category : #helper }
+ERequirementContainer >> setUpTooltipLookFor: anArtifact [
+	"comment stating purpose of instance-side message"
+	"scope: class-variables  &  instance-variables"	
+			
+	| look |
+	look := (BrGlamorousWithTooltipLook2 content: ((BrLabel new 
+		look: (BrGlamorousLabelLook new glamorousRegularFontAndSize); 
+		padding: (BlInsets all: 20); alignCenter) 
+		text: (anArtifact title asRopedText))).
+	^look
 ]
