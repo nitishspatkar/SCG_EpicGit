@@ -20,7 +20,9 @@ Class {
 		'pillar',
 		'scenarios',
 		'acceptCriteria',
-		'title'
+		'title',
+		'points',
+		'state'
 	],
 	#category : #'Epic-Model'
 }
@@ -50,6 +52,93 @@ EUserStory >> addScenario: aScenario [
 	scenarios add: aScenario.
 ]
 
+{ #category : #helper }
+EUserStory >> cardViewGenerate [
+	"Used by the gtCardViewFor: method to create the story card view."
+	|container verticalContainerLeft verticalContainerRight detailsTextContainer criteriaContainer stateColorContainer stateTextContainer pointsContainer details pointsText stateText criteriaText |
+			details := (
+			'User story:', String cr, String cr, 
+			'As a ', self user name, ',', String cr, 
+			'I want to ', self action, ',', String cr, 
+			'So I can ', self goal, '.').
+			pointsText := ('Points: ', self points asString).
+			stateText := ('Status: ', self state).
+			criteriaText := ('Acceptance criteria: ', String cr, self acceptCriteria).
+			
+			container := BlElement new
+				geometry: (BlRectangle cornerRadius: 12);
+				layout: BlLinearLayout horizontal;
+				background: Color white;
+				look: BrShadowLook;
+				margin: (BlInsets all: 20);
+				constraintsDo: [ :c | 
+					c horizontal matchParent.
+					c vertical fitContent].
+					
+			stateColorContainer := BlElement new
+				size: 100@100;
+				background: self getStateColor;
+				border: (BlBorder paint: Color gray width: 1);
+				margin: (BlInsets top: 10 right: 10 bottom: 10 left: 0).
+				
+			stateTextContainer := BlTextElement new
+				constraintsDo: [ :c |
+					c horizontal fitContent.
+					c vertical fitContent ];
+				text: stateText asRopedText.
+				
+			pointsContainer := BlTextElement new
+				layout: (BlLinearLayout horizontal) alignCenter;
+				constraintsDo: [ :c | 
+					c horizontal fitContent.
+					c vertical fitContent. ];
+				border: (BlBorder paint: Color gray width: 1);
+				padding: (BlInsets all: 5);
+				text: pointsText asRopedText.
+				
+			detailsTextContainer := BrEditor new
+				border: (BlBorder paint: Color gray width: 1);
+				look: (BrGlamorousRegularEditorLook new fontSize: 16);
+				text: details asRopedText;
+				constraintsDo: [ :c | 
+					c horizontal fitContent.
+					c vertical fitContent ].
+					
+			criteriaContainer := BrEditor new
+				margin: (BlInsets top: 5);
+				padding: (BlInsets top: 5; left: 5);
+				border: (BlBorder paint: Color gray width: 1);
+				look: (BrGlamorousRegularEditorLook new fontSize: 16);
+				text: criteriaText asRopedText;
+				constraintsDo: [ :c | 
+					c horizontal matchParent.
+					c vertical fitContent ].
+					
+			verticalContainerLeft := BlElement new
+				layout: (BlLinearLayout vertical) alignTopLeft;
+				margin: (BlInsets all: 10);
+				constraintsDo: [ :c |
+					c horizontal matchParent.
+					c vertical fitContent].
+					
+			verticalContainerRight := BlElement new
+				layout: (BlLinearLayout vertical) alignTopRight;
+				margin: (BlInsets all: 10);
+				constraintsDo: [ :c | 
+					c horizontal fitContent.
+					c vertical fitContent.
+					].
+					
+			verticalContainerLeft addChild: detailsTextContainer.
+			verticalContainerLeft addChild: criteriaContainer.
+			verticalContainerRight addChild: pointsContainer.
+			verticalContainerRight addChild: stateColorContainer.
+			verticalContainerRight addChild: stateTextContainer.
+			container addChild: verticalContainerLeft.
+			container addChild: verticalContainerRight.
+			^container
+]
+
 { #category : #accessing }
 EUserStory >> children [ 
 	^ self scenarios
@@ -65,6 +154,15 @@ EUserStory >> component: anObject [
 	component := anObject
 ]
 
+{ #category : #'work state' }
+EUserStory >> getStateColor [
+	| color |
+	(state = 'Not started') ifTrue: [ color := Color red ].
+	(state = 'In progress') ifTrue: [ color := Color yellow ].
+	(state = 'Complete') ifTrue: [ color := Color green ].
+	^ color
+]
+
 { #category : #accessing }
 EUserStory >> goal [
 	^ goal
@@ -75,7 +173,16 @@ EUserStory >> goal: anObject [
 	goal := anObject
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #ui }
+EUserStory >> gtCardViewFor: aView [
+	<gtView>
+	^ aView explicit
+		title: 'Card' translated;
+		priority: 5;
+		stencil: self cardViewGenerate.
+]
+
+{ #category : #ui }
 EUserStory >> gtDocumentFor: aView [
     <gtView>
     | aDocument |
@@ -89,7 +196,7 @@ Under scenarios, you can see a list and view each of the scenarios used to suppo
         priority: 1
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #ui }
 EUserStory >> gtStoryInfoFor: aView [
 	<gtView>
 "	|aDocument|
@@ -105,7 +212,7 @@ EUserStory >> gtStoryInfoFor: aView [
 		text: [ 'As a ', user name, ', I want to ', action, '.', String cr]
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #ui }
 EUserStory >> gtTreeViewOn: aView [
 	<gtView>
 
@@ -117,7 +224,7 @@ EUserStory >> gtTreeViewOn: aView [
 		column: 'Type' format: [ :eachElement | eachElement treeViewShortString ].
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #ui }
 EUserStory >> gtViewScenarios: aView [
 	<gtView>
 	^ aView list
@@ -136,6 +243,24 @@ EUserStory >> initialize [
 	goal := 'Undefined'.
 	action := 'Undefined'.
 	scenarios := OrderedCollection new.
+	acceptCriteria := 'Undefined'.
+	points := 0.
+	state := 'Not started'.
+]
+
+{ #category : #'work state' }
+EUserStory >> markComplete [
+	state := 'Complete'.
+]
+
+{ #category : #'work state' }
+EUserStory >> markNotStarted [
+	state := 'Not started'.
+]
+
+{ #category : #'work state' }
+EUserStory >> markStarted [
+	state := 'In progress'.
 ]
 
 { #category : #accessing }
@@ -149,8 +274,28 @@ EUserStory >> pillar: anObject [
 ]
 
 { #category : #accessing }
+EUserStory >> points [
+	^points
+]
+
+{ #category : #accessing }
+EUserStory >> points: anInteger [
+	points := anInteger
+]
+
+{ #category : #accessing }
 EUserStory >> scenarios [
 	^ scenarios
+]
+
+{ #category : #accessing }
+EUserStory >> state [ 
+	^state
+]
+
+{ #category : #accessing }
+EUserStory >> state: anObject [
+	state := anObject.
 ]
 
 { #category : #accessing }
@@ -163,7 +308,7 @@ EUserStory >> title: aString [
 	title := aString.
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #utilities }
 EUserStory >> treeViewShortString [
 	^ 'Use Story: (As a ', user name, ', I want to ', action, ')'
 ]

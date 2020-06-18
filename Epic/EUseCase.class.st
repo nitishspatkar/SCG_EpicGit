@@ -191,7 +191,7 @@ EUseCase >> markComplete [
 
 { #category : #'as yet unclassified' }
 EUseCase >> markStarted [
-	state := 'Started, uncomplete'.
+	state := 'In progress'.
 ]
 
 { #category : #accessing }
