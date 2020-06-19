@@ -3,7 +3,8 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'project',
-		'requirements'
+		'requirements',
+		'announcer'
 	],
 	#category : #'Epic-Model'
 }
@@ -16,12 +17,45 @@ ERequirementContainer >> addArtifact: anArtifact [
 
 { #category : #adding }
 ERequirementContainer >> addArtifactChildren: anArtifact [
-	"execute this whenever an artifact is added to the container. 
+	"I execute this whenever an artifact is added to my container. 
 	This ensures that all of the artifact's subelements are added as well"
-			
 	| children |
 	children := anArtifact children.
 	children do: [ :each | self addArtifact: each ].
+]
+
+{ #category : #accessing }
+ERequirementContainer >> announcer [
+	^announcer
+]
+
+{ #category : #ui }
+ERequirementContainer >> createArtifactAdditionDropdown [
+	"I create and return a Dropdown menu for adding artifacts in the Mind Map view"
+	^ self toggleButton
+		look:
+			BrGlamorousButtonWithLabelAndIconLook
+				+
+					(BrGlamorousWithDropdownLook
+						handle: [ self toggleButton
+								look:
+									BrGlamorousButtonWithLabelAndIconLook - BrGlamorousButtonExteriorLook;
+								yourself ]
+						content: [ self popupArtifactList ]);
+		label: 'Add Artifact';
+		relocate: 200 @ 100;
+		yourself
+]
+
+{ #category : #helper }
+ERequirementContainer >> getAvailableArtifactTypesForDropdown [
+	"I return a collection of artifact types, which can be selected in the dropdown menu in the Mind Map view"
+	| result |
+	result := OrderedCollection new.
+	requirements do: [ :each | 
+		(result includes: (each class name)) ifFalse: [ result add: (each class name) ]
+		]. 
+	^result
 ]
 
 { #category : #ui }
@@ -51,13 +85,15 @@ ERequirementContainer >> gtMindMapFor: aView [
 	^ aView mondrian
 		title: 'Tree View';
 		priority: 50;
+		updateWhen: ERequirementStateChangedAnnouncement in: [ self announcer ];
 		initialize: self mindMapGenerate.
 ]
 
 { #category : #initialization }
 ERequirementContainer >> initialize [
-	project := 'Empty project'.
+	project := 'New project'.
 	requirements := OrderedCollection new.
+	announcer := Announcer new.
 ]
 
 { #category : #ui }
@@ -82,6 +118,33 @@ ERequirementContainer >> mindMapGenerate [
 	^ view
 ]
 
+{ #category : #ui }
+ERequirementContainer >> popupArtifactList [
+	| artifactList |
+	artifactList := BrSimpleList new.
+	artifactList
+		lookDo: [ :aLook | aLook listElement constraintsDo: [ :c | c maxHeight: 200 ] ];
+		layout: BlLinearLayout vertical;
+		padding: (BlInsets all: 5);
+		vFitContent;
+		hExact: 200;
+		stencil: [ :each :index | 
+			BlTextElement new
+				text: each asRopedText;
+				constraintsDo: [ :c | c horizontal matchParent ];
+				padding: (BlInsets all: 5);
+				when: BlClickEvent
+					do: [ :anEvent | 
+					artifactList selectOne: index.
+					self addArtifact: (EEpic new title:'Yo').
+					self announcer announce: ERequirementStateChangedAnnouncement new 
+					] 
+				];
+		fitContent;
+		items: self getAvailableArtifactTypesForDropdown.	
+	^artifactList
+]
+
 { #category : #accessing }
 ERequirementContainer >> project [
 	^project
@@ -99,19 +162,40 @@ ERequirementContainer >> requirements [
 ]
 
 { #category : #accessing }
-ERequirementContainer >> requirements: aCollection [ 
-	requirements := aCollection.
+ERequirementContainer >> requirements: aCollectionOfRequirements [
+	"I work with a collection of requirement artifacts, in order to display them in my various views. The supported artifacts can be found in the 'View Details' view of my object."
+	requirements := aCollectionOfRequirements.
 ]
 
 { #category : #helper }
 ERequirementContainer >> setUpTooltipLookFor: anArtifact [
-	"comment stating purpose of instance-side message"
-	"scope: class-variables  &  instance-variables"	
-			
+	"set up the tooltip object for the Mind Map view"
 	| look |
-	look := (BrGlamorousWithTooltipLook2 content: ((BrLabel new 
-		look: (BrGlamorousLabelLook new glamorousRegularFontAndSize); 
-		padding: (BlInsets all: 20); alignCenter) 
-		text: (anArtifact title asRopedText))).
+	look := BrGlamorousWithTooltipLook2 
+		content: 
+		(BrLabel new 
+			look: BrGlamorousLabelLook new glamorousRegularFontAndSize; 
+			padding: (BlInsets all: 20); 
+			alignCenter; 
+			text: anArtifact title asRopedText).
 	^look
+]
+
+{ #category : #ui }
+ERequirementContainer >> toggleButton [
+	^ BrButton new
+		label: 'Add Artifact';
+		icon:
+			(BlElement new
+				size: 8 @ 8;
+				geometry:
+					(BlPolygon
+						vertices:
+							{(0 @ 0).
+							(8 @ 0).
+							((8 / 2) rounded @ 8)});
+				background: Color lightGray;
+				margin: (BlInsets left: 6);
+				constraintsDo: [ :c | c linear vertical alignCenter ]);
+		yourself
 ]
