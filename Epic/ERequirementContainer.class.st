@@ -31,29 +31,44 @@ ERequirementContainer >> announcer [
 
 { #category : #ui }
 ERequirementContainer >> createArtifactAdditionDropdown [
-	"I create and return a Dropdown menu for adding artifacts in the Mind Map view"
+	"I create and return a dropdown toggle button for adding artifacts in the Mind Map view"
+	| dropdownLook |
 	^ self toggleButton
 		look:
 			BrGlamorousButtonWithLabelAndIconLook
 				+
-					(BrGlamorousWithDropdownLook
+					(dropdownLook := BrGlamorousWithDropdownLook
 						handle: [ self toggleButton
 								look:
 									BrGlamorousButtonWithLabelAndIconLook - BrGlamorousButtonExteriorLook;
 								yourself ]
-						content: [ self popupArtifactList ]);
-		label: 'Add Artifact';
+						content: [ self popupArtifactList 
+							addShortcut:
+								(BlShortcut new
+								combination: BlKeyCombination builder return build;
+								action: [ dropdownLook hide ]).
+								]);
+		label: 'Add Requirement';
 		relocate: 200 @ 100;
 		yourself
 ]
 
+{ #category : #ui }
+ERequirementContainer >> generateMindMapView [
+	| mond dropdown |
+	mond := self mindMapGenerate.
+	dropdown := self createArtifactAdditionDropdown.
+	mond root addChild: dropdown.
+	^ mond
+]
+
 { #category : #helper }
 ERequirementContainer >> getAvailableArtifactTypesForDropdown [
-	"I return a collection of artifact types, which can be selected in the dropdown menu in the Mind Map view"
+	"I return a dictionary of artifact types, which can be selected in the dropdown menu in the Mind Map view"
 	| result |
-	result := OrderedCollection new.
+	result := SmallDictionary new.
 	requirements do: [ :each | 
-		(result includes: (each class name)) ifFalse: [ result add: (each class name) ]
+		(result includes: (each class name)) ifFalse: [ result at: (each class name) put: each class ]
 		]. 
 	^result
 ]
@@ -87,6 +102,25 @@ ERequirementContainer >> gtMindMapFor: aView [
 		priority: 50;
 		updateWhen: ERequirementStateChangedAnnouncement in: [ self announcer ];
 		initialize: self mindMapGenerate.
+]
+
+{ #category : #ui }
+ERequirementContainer >> gtTestViewFor: aView [
+	"To be changed. Demonstrate dynamic addition of artifacts via dropdown menu."
+	<gtView>
+	^ aView explicit
+		title: 'Test View';
+		priority: 50;
+		updateWhen: ERequirementStateChangedAnnouncement in: [ self announcer ];
+		stencil: [ self generateMindMapView ].
+]
+
+{ #category : #helper }
+ERequirementContainer >> handleDropdownSelection: aKey [
+	"I take the selection from the artifact addition dropdown menu, and add the selected artifact to my artifact collection."
+	| artifactType |
+	artifactType := self getAvailableArtifactTypesForDropdown at: aKey.
+	self addArtifact: (artifactType new title: aKey).
 ]
 
 { #category : #initialization }
@@ -136,12 +170,18 @@ ERequirementContainer >> popupArtifactList [
 				when: BlClickEvent
 					do: [ :anEvent | 
 					artifactList selectOne: index.
-					self addArtifact: (EEpic new title:'Yo').
-					self announcer announce: ERequirementStateChangedAnnouncement new 
-					] 
+					self handleDropdownSelection: (each asString).
+					self announcer announce: ERequirementStateChangedAnnouncement new.
+					]
 				];
+		addShortcut:
+			(BlShortcut new
+				combination: BlKeyCombination builder return build;
+				action: [  
+					self createArtifactAdditionDropdown look hide 
+					]);
 		fitContent;
-		items: self getAvailableArtifactTypesForDropdown.	
+		items: self getAvailableArtifactTypesForDropdown keys.
 	^artifactList
 ]
 
@@ -184,7 +224,7 @@ ERequirementContainer >> setUpTooltipLookFor: anArtifact [
 { #category : #ui }
 ERequirementContainer >> toggleButton [
 	^ BrButton new
-		label: 'Add Artifact';
+		label: 'Add Requirement';
 		icon:
 			(BlElement new
 				size: 8 @ 8;
