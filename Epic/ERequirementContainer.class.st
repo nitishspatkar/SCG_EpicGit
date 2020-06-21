@@ -140,7 +140,7 @@ ERequirementContainer >> mindMapGenerate [
 			BlElement new
 				look: (self setUpTooltipLookFor: anArtifact);
 				size: 10 @ 10;
-				border: (BlBorder paint: Color gray width: 1);
+				border: (BlBorder paint: (self nodeHighlightColorFor: anArtifact) width: 1);
 				geometry: BlCircle new ];
 		with: requirements.
 	view edges connectFrom: [:x | x ] toAll: [:x | x children].
@@ -150,6 +150,18 @@ ERequirementContainer >> mindMapGenerate [
 				border: (BlBorder paint: (Color red alpha: 0.5) width: 2) ].
 	view layout custom: GtGraphClusterLayout new.
 	^ view
+]
+
+{ #category : #helper }
+ERequirementContainer >> nodeHighlightColorFor: anArtifact [
+	"I return a corresponding color for a requirement artifact for the outline of the nodes in the mind map view."
+	| artifactType color |
+	artifactType := anArtifact class name.
+	(artifactType = 'EEpic') ifTrue: [ color := Color red alpha: 0.5 ].
+	(artifactType = 'EUseCase') ifTrue: [ color := Color cyan alpha: 0.5 ].
+	(artifactType = 'EUserStory') ifTrue: [ color := Color blue alpha: 0.5 ].
+	(artifactType = 'EScenario') ifTrue: [ color := Color green alpha: 0.5 ].
+	^ color
 ]
 
 { #category : #ui }
@@ -210,14 +222,15 @@ ERequirementContainer >> requirements: aCollectionOfRequirements [
 { #category : #helper }
 ERequirementContainer >> setUpTooltipLookFor: anArtifact [
 	"set up the tooltip object for the Mind Map view"
-	| look |
+	| look tooltipText |
+	tooltipText := ('An ', anArtifact class name, ': ', anArtifact title) asRopedText.
 	look := BrGlamorousWithTooltipLook2 
 		content: 
 		(BrLabel new 
 			look: BrGlamorousLabelLook new glamorousRegularFontAndSize; 
 			padding: (BlInsets all: 20); 
 			alignCenter; 
-			text: anArtifact title asRopedText).
+			text: tooltipText).
 	^look
 ]
 
