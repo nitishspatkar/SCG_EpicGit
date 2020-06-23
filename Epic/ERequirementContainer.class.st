@@ -4,7 +4,9 @@ Class {
 	#instVars : [
 		'project',
 		'requirements',
-		'announcer'
+		'announcer',
+		'theGraph',
+		'graphPane'
 	],
 	#category : #'Epic-Model'
 }
@@ -27,6 +29,65 @@ ERequirementContainer >> addArtifactChildren: anArtifact [
 { #category : #accessing }
 ERequirementContainer >> announcer [
 	^announcer
+]
+
+{ #category : #ui }
+ERequirementContainer >> buildButtonBar [
+	| buttonBar |
+	buttonBar := BlElement new
+		constraintsDo: [ :c | 
+			c horizontal matchParent.
+			c vertical fitContent ];
+		layout: BlLinearLayout horizontal;
+		yourself.
+	buttonBar
+		addChild:
+			(BlElement new
+				constraintsDo: [ :c | 
+					c horizontal matchParent.
+					c vertical matchParent ];
+				yourself).
+	buttonBar
+		addChild:
+			(BrButton new
+				look: BrGlamorousButtonWithIconLook;
+				icon: BrGlamorousIcons zoomin;
+				label: 'Zoom In';
+				action: [ theGraph root zoomIn ]).
+	buttonBar
+		addChild:
+			(BrButton new
+				look: BrGlamorousButtonWithIconLook;
+				icon: BrGlamorousIcons zoomout;
+				label: 'Zoom Out';
+				action: [ theGraph zoomOut ]).
+	buttonBar
+		addChild:
+			(BrButton new
+				look: BrGlamorousButtonWithIconLook;
+				icon: BrGlamorousIcons zoomtofit;
+				label: 'Fit';
+				action: [ theGraph zoomToFit ]).
+	buttonBar
+		addChild:
+			(BrButton new
+				look: BrGlamorousButtonWithIconLook;
+				icon: BrGlamorousIcons actualsize;
+				label: 'Resize';
+				action: [ theGraph zoomToActualSize ]).
+	buttonBar
+		addChild:
+			(BrButton new
+				look: BrGlamorousButtonWithIconLook;
+				icon: BrGlamorousVectorIcons refresh;
+				label: 'Refresh';
+				action: [ self updateGraph ]).
+	^ buttonBar
+]
+
+{ #category : #ui }
+ERequirementContainer >> createAddEpicMenu [
+	^EEpicAdditionMenu new initializeWithContainer: self.
 ]
 
 { #category : #ui }
@@ -55,11 +116,80 @@ ERequirementContainer >> createArtifactAdditionDropdown [
 
 { #category : #ui }
 ERequirementContainer >> generateMindMapView [
-	| mond dropdown |
-	mond := self mindMapGenerate.
+	| dropdown |
+	
+	graphPane := BlElement new
+		layout: BlLinearLayout vertical;
+		border: (BlBorder paint: (Color red) width: 1);
+		constraintsDo: [ :c | 
+			c horizontal matchParent.
+			c vertical matchParent ].
+		
+	theGraph := self mindMapGenerate.
+	theGraph root border: (BlBorder paint: (Color blue) width: 1).
+	theGraph root
+		constraintsDo: [ :c | 
+			c horizontal matchParent.
+			c vertical matchParent.
+			 ].
 	dropdown := self createArtifactAdditionDropdown.
-	mond root addChild: dropdown.
-	^ mond
+	
+	graphPane addChild: dropdown.
+	graphPane addChild: self buildButtonBar.
+	graphPane addChild: theGraph root asPannableElement.
+	^ graphPane
+
+]
+
+{ #category : #'as yet unclassified' }
+ERequirementContainer >> generateStoryWallView [
+	"comment stating purpose of instance-side message"
+	| view |
+	view := GtMondrian new.
+	view nodes
+		shape: [ :aStory | 
+			BlElement new 
+			layout: BlLinearLayout horizontal;
+			constraintsDo: [ :c | 
+				c horizontal fitContent.
+				c vertical fitContent.
+				 ];
+			addChild: aStory cardViewGenerate
+			];
+		with: self getUserStories.
+	view layout grid.
+	^view
+
+"view := GtMondrian new.
+	view nodes
+		shape: [ :anArtifact |
+			BlElement new
+				look: (self setUpTooltipLookFor: anArtifact);
+				size: 10 @ 10;
+				border: (BlBorder paint: (self nodeHighlightColorFor: anArtifact) width: 1);
+				geometry: BlCircle new ];
+		with: requirements.
+	view edges connectFrom: [:x | x ] toAll: [:x | x children].
+	view edges
+		shape: [ :x | 
+			BlLineElement new
+				border: (BlBorder paint: (Color red alpha: 0.5) width: 2) ].
+	view layout custom: GtGraphClusterLayout new.
+	^ view"
+]
+
+{ #category : #helper }
+ERequirementContainer >> getActors [
+	"Get all the actors from the use cases in the container"
+	| useCases actors |
+	useCases := requirements select: [ :each | each class name = 'EUseCase' ].
+	actors := OrderedCollection new.
+	useCases do: [ :useCase | 
+		useCase actor do: [ :actor | 
+			(actors includes: actor) ifFalse: [ actors add: actor name ]
+			]
+		 ].
+	^actors
 ]
 
 { #category : #helper }
@@ -71,6 +201,14 @@ ERequirementContainer >> getAvailableArtifactTypesForDropdown [
 		(result includes: (each class name)) ifFalse: [ result at: (each class name) put: each class ]
 		]. 
 	^result
+]
+
+{ #category : #helper }
+ERequirementContainer >> getUserStories [
+	"comment stating purpose of instance-side message"
+	| stories |
+	stories := requirements select: [ :each | each class name = 'EUserStory' ].
+	^stories
 ]
 
 { #category : #ui }
@@ -115,12 +253,24 @@ ERequirementContainer >> gtTestViewFor: aView [
 		stencil: [ self generateMindMapView ].
 ]
 
+{ #category : #'as yet unclassified' }
+ERequirementContainer >> gtUserStoryWallViewFor: aView [
+	"To be changed. Demonstrate dynamic addition of artifacts via dropdown menu."
+	<gtView>
+	^ aView mondrian
+		title: 'Story Wall';
+		priority: 50;
+		updateWhen: ERequirementStateChangedAnnouncement in: [ self announcer ];
+		initialize: self generateStoryWallView.
+]
+
 { #category : #helper }
 ERequirementContainer >> handleDropdownSelection: aKey [
 	"I take the selection from the artifact addition dropdown menu, and add the selected artifact to my artifact collection."
 	| artifactType |
 	artifactType := self getAvailableArtifactTypesForDropdown at: aKey.
-	self addArtifact: (artifactType new title: aKey).
+"	self addArtifact: (artifactType new title: aKey)."
+	^self createAddEpicMenu.
 ]
 
 { #category : #initialization }
@@ -251,4 +401,16 @@ ERequirementContainer >> toggleButton [
 				margin: (BlInsets left: 6);
 				constraintsDo: [ :c | c linear vertical alignCenter ]);
 		yourself
+]
+
+{ #category : #ui }
+ERequirementContainer >> updateGraph [
+	| newGraph oldGraph |
+	oldGraph := theGraph.
+	newGraph := self mindMapGenerate.
+	oldGraph ifNotNil: [ newGraph zoomTo: oldGraph zoomLevel ].
+	graphPane removeChildren.
+	graphPane addChild: self createArtifactAdditionDropdown.
+	graphPane addChild: self buildButtonBar.
+	graphPane addChild: newGraph root asPannableElement.
 ]
