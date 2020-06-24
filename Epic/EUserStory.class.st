@@ -60,6 +60,12 @@ EUserStory >> announcer [
 	^ announcer
 ]
 
+{ #category : #accessing }
+EUserStory >> announcer: anAnnouncer [
+	"Change the associated announcer"
+	announcer := anAnnouncer.
+]
+
 { #category : #'ui helpers' }
 EUserStory >> cardViewGenerate [
 	"Used by the gtCardViewFor method to create the story card view."

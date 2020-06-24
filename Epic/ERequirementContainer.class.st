@@ -53,7 +53,7 @@ ERequirementContainer >> buildButtonBar [
 				look: BrGlamorousButtonWithIconLook;
 				icon: BrGlamorousIcons zoomin;
 				label: 'Zoom In';
-				action: [ theGraph root zoomIn ]).
+				action: [ theGraph zoomIn ]).
 	buttonBar
 		addChild:
 			(BrButton new
@@ -117,7 +117,6 @@ ERequirementContainer >> createArtifactAdditionDropdown [
 { #category : #ui }
 ERequirementContainer >> generateMindMapView [
 	| dropdown |
-	
 	graphPane := BlElement new
 		layout: BlLinearLayout vertical;
 		border: (BlBorder paint: (Color red) width: 1);
@@ -125,9 +124,9 @@ ERequirementContainer >> generateMindMapView [
 			c horizontal matchParent.
 			c vertical matchParent ].
 		
-	theGraph := self mindMapGenerate.
-	theGraph root border: (BlBorder paint: (Color blue) width: 1).
-	theGraph root
+	theGraph := ((self mindMapGenerate) root) asPannableElement.
+	theGraph border: (BlBorder paint: (Color blue) width: 1).
+	theGraph 
 		constraintsDo: [ :c | 
 			c horizontal matchParent.
 			c vertical matchParent.
@@ -136,46 +135,53 @@ ERequirementContainer >> generateMindMapView [
 	
 	graphPane addChild: dropdown.
 	graphPane addChild: self buildButtonBar.
-	graphPane addChild: theGraph root asPannableElement.
+	graphPane addChild: theGraph.
 	^ graphPane
 
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #ui }
 ERequirementContainer >> generateStoryWallView [
 	"comment stating purpose of instance-side message"
-	| view |
-	view := GtMondrian new.
-	view nodes
-		shape: [ :aStory | 
-			BlElement new 
-			layout: BlLinearLayout horizontal;
-			constraintsDo: [ :c | 
-				c horizontal fitContent.
-				c vertical fitContent.
-				 ];
-			addChild: aStory cardViewGenerate
-			];
-		with: self getUserStories.
-	view layout grid.
-	^view
+	| wall column columnTitle stories workStates |
+	wall := BlElement new.
+	stories := self getUserStories.
+	stories do: [ :story | story announcer: self announcer ].
+	wall
+		layout: BlLinearLayout horizontal;
+		padding: (BlInsets all: 5);
+		border: (BlBorder paint: (Color red) width: 1);
+		constraintsDo: [ :c | 
+			c horizontal matchParent.
+			c vertical fitContent.
+			 ].
+	
+	workStates := { 'Not started'. 'In progress'. 'Complete' }.
+	
+	workStates do: [ :aState | 
+		column := BlElement new 
+		layout: BlLinearLayout vertical;
+		constraintsDo: [ :c | 
+			c horizontal matchParent.
+			c vertical fitContent.
+			 ].
+		
+		columnTitle := BrLabel new
+		text: aState;
+		margin: (BlInsets top: 15 left: 15 bottom: 0 right: 0);
+		padding: (BlInsets all: 3);
+		geometry: (BlRectangle cornerRadius: 5);
+		look: (BrGlamorousLabelLook new glamorousRegularFontAndSize; fontSize: 20); 
+		constraintsDo: [ :c | 
+			c linear vertical alignCenter.
+			c linear horizontal alignCenter ].
+		
+		column addChild: columnTitle.
+		column addChildren: ((stories select: [ :story | story state = aState ]) collect: [ :story | story cardViewGenerate ]).
+		wall addChild: column.
+		 ].
 
-"view := GtMondrian new.
-	view nodes
-		shape: [ :anArtifact |
-			BlElement new
-				look: (self setUpTooltipLookFor: anArtifact);
-				size: 10 @ 10;
-				border: (BlBorder paint: (self nodeHighlightColorFor: anArtifact) width: 1);
-				geometry: BlCircle new ];
-		with: requirements.
-	view edges connectFrom: [:x | x ] toAll: [:x | x children].
-	view edges
-		shape: [ :x | 
-			BlLineElement new
-				border: (BlBorder paint: (Color red alpha: 0.5) width: 2) ].
-	view layout custom: GtGraphClusterLayout new.
-	^ view"
+	^wall asScrollableElement
 ]
 
 { #category : #helper }
@@ -253,15 +259,15 @@ ERequirementContainer >> gtTestViewFor: aView [
 		stencil: [ self generateMindMapView ].
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #ui }
 ERequirementContainer >> gtUserStoryWallViewFor: aView [
 	"To be changed. Demonstrate dynamic addition of artifacts via dropdown menu."
 	<gtView>
-	^ aView mondrian
+	^ aView explicit
 		title: 'Story Wall';
 		priority: 50;
 		updateWhen: ERequirementStateChangedAnnouncement in: [ self announcer ];
-		initialize: self generateStoryWallView.
+		stencil: [ self generateStoryWallView ].
 ]
 
 { #category : #helper }
@@ -405,12 +411,17 @@ ERequirementContainer >> toggleButton [
 
 { #category : #ui }
 ERequirementContainer >> updateGraph [
-	| newGraph oldGraph |
-	oldGraph := theGraph.
-	newGraph := self mindMapGenerate.
-	oldGraph ifNotNil: [ newGraph zoomTo: oldGraph zoomLevel ].
+	| newGraph |
+	newGraph := ((self mindMapGenerate) root) asPannableElement.
+	newGraph border: (BlBorder paint: (Color blue) width: 1).
+	newGraph 
+		constraintsDo: [ :c | 
+			c horizontal matchParent.
+			c vertical matchParent.
+			 ].
+	theGraph := newGraph.
 	graphPane removeChildren.
 	graphPane addChild: self createArtifactAdditionDropdown.
 	graphPane addChild: self buildButtonBar.
-	graphPane addChild: newGraph root asPannableElement.
+	graphPane addChild: newGraph.
 ]
