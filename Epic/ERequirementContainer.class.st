@@ -40,6 +40,7 @@ ERequirementContainer >> buildButtonBar [
 			c vertical fitContent ];
 		layout: BlLinearLayout horizontal;
 		yourself.
+	
 	buttonBar
 		addChild:
 			(BlElement new
@@ -47,6 +48,15 @@ ERequirementContainer >> buildButtonBar [
 					c horizontal matchParent.
 					c vertical matchParent ];
 				yourself).
+	buttonBar
+		addChild:
+			(BrButton new
+				look: BrGlamorousButtonWithLabelLook;
+				label: 'Add Epic';
+				action: [ 
+					graphPane removeChildren.
+					graphPane addChild: (self createAddEpicMenu).
+					]).
 	buttonBar
 		addChild:
 			(BrButton new
@@ -115,8 +125,18 @@ ERequirementContainer >> createArtifactAdditionDropdown [
 ]
 
 { #category : #ui }
+ERequirementContainer >> generateAdditionMenuFor: anArtifact [
+	"return an addition menu for the supplied artifact"
+	| menu artifactType |
+	artifactType := anArtifact class.
+	(artifactType = EEpic) ifTrue: [ menu := (EUseCaseAdditionMenu new initializeWithContainer: self andParent: anArtifact) ].
+	(artifactType = EUseCase) ifTrue: [ (menu := EUserStoryAdditionMenu new initializeWithContainer: self andParent: anArtifact) ].
+	(artifactType = EUserStory) ifTrue: [ (menu := EScenarioAdditionMenu new initializeWithContainer: self andParent: anArtifact) ].
+	^menu
+]
+
+{ #category : #ui }
 ERequirementContainer >> generateMindMapView [
-	| dropdown |
 	graphPane := BlElement new
 		layout: BlLinearLayout vertical;
 		border: (BlBorder paint: (Color red) width: 1);
@@ -131,9 +151,7 @@ ERequirementContainer >> generateMindMapView [
 			c horizontal matchParent.
 			c vertical matchParent.
 			 ].
-	dropdown := self createArtifactAdditionDropdown.
 	
-	graphPane addChild: dropdown.
 	graphPane addChild: self buildButtonBar.
 	graphPane addChild: theGraph.
 	^ graphPane
@@ -275,8 +293,8 @@ ERequirementContainer >> handleDropdownSelection: aKey [
 	"I take the selection from the artifact addition dropdown menu, and add the selected artifact to my artifact collection."
 	| artifactType |
 	artifactType := self getAvailableArtifactTypesForDropdown at: aKey.
-"	self addArtifact: (artifactType new title: aKey)."
-	^self createAddEpicMenu.
+	graphPane removeChildren.
+	graphPane addChild: self createAddEpicMenu.
 ]
 
 { #category : #initialization }
@@ -312,11 +330,11 @@ ERequirementContainer >> mindMapGenerate [
 ERequirementContainer >> nodeHighlightColorFor: anArtifact [
 	"I return a corresponding color for a requirement artifact for the outline of the nodes in the mind map view."
 	| artifactType color |
-	artifactType := anArtifact class name.
-	(artifactType = 'EEpic') ifTrue: [ color := Color red alpha: 0.5 ].
-	(artifactType = 'EUseCase') ifTrue: [ color := Color cyan alpha: 0.5 ].
-	(artifactType = 'EUserStory') ifTrue: [ color := Color blue alpha: 0.5 ].
-	(artifactType = 'EScenario') ifTrue: [ color := Color green alpha: 0.5 ].
+	artifactType := anArtifact class.
+	(artifactType = EEpic) ifTrue: [ color := Color red alpha: 0.5 ].
+	(artifactType = EUseCase) ifTrue: [ color := Color cyan alpha: 0.5 ].
+	(artifactType = EUserStory) ifTrue: [ color := Color blue alpha: 0.5 ].
+	(artifactType = EScenario) ifTrue: [ color := Color green alpha: 0.5 ].
 	^ color
 ]
 
@@ -339,7 +357,7 @@ ERequirementContainer >> popupArtifactList [
 					do: [ :anEvent | 
 					artifactList selectOne: index.
 					self handleDropdownSelection: (each asString).
-					self announcer announce: ERequirementStateChangedAnnouncement new.
+					"self announcer announce: ERequirementStateChangedAnnouncement new."
 					]
 				];
 		addShortcut:
@@ -378,15 +396,35 @@ ERequirementContainer >> requirements: aCollectionOfRequirements [
 { #category : #helper }
 ERequirementContainer >> setUpTooltipLookFor: anArtifact [
 	"set up the tooltip object for the Mind Map view"
-	| look tooltipText |
+	| look tooltipContainer tooltipText tooltipLabel addSubElementButton |
+	addSubElementButton := (BrButton new
+				look: BrGlamorousButtonWithIconLook;
+				icon: BrGlamorousIcons add;
+				label: 'Add sub-element';
+				action: [ 
+					graphPane removeChildren.
+					graphPane addChild: (self generateAdditionMenuFor: anArtifact).
+					 ]).
+	
 	tooltipText := ('An ', anArtifact class name, ': ', anArtifact title) asRopedText.
+	
+	tooltipLabel := (BrLabel new 
+		look: BrGlamorousLabelLook new glamorousRegularFontAndSize; 
+		padding: (BlInsets all: 20); 
+		alignCenter; 
+		text: tooltipText).
+	
+	tooltipContainer := (BlElement new 
+		layout: BlLinearLayout vertical;
+		constraintsDo: [ :c | 
+			c vertical fitContent.
+			 ]).
+	
+	tooltipContainer addChild: tooltipLabel.
+	(anArtifact class = EScenario) ifFalse: [ tooltipContainer addChild: addSubElementButton. ].
+	
 	look := BrGlamorousWithTooltipLook2 
-		content: 
-		(BrLabel new 
-			look: BrGlamorousLabelLook new glamorousRegularFontAndSize; 
-			padding: (BlInsets all: 20); 
-			alignCenter; 
-			text: tooltipText).
+		content: tooltipContainer.
 	^look
 ]
 
@@ -421,7 +459,6 @@ ERequirementContainer >> updateGraph [
 			 ].
 	theGraph := newGraph.
 	graphPane removeChildren.
-	graphPane addChild: self createArtifactAdditionDropdown.
 	graphPane addChild: self buildButtonBar.
 	graphPane addChild: newGraph.
 ]

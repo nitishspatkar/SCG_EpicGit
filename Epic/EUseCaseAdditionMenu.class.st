@@ -6,14 +6,28 @@ Class {
 		'titleAdditionElement',
 		'taskAdditionElement',
 		'actorDropdown',
-		'selectedActor'
+		'selectedActor',
+		'parentArtifact'
 	],
 	#category : #'Epic-Model'
 }
 
 { #category : #ui }
+EUseCaseAdditionMenu >> blLabelFor: text [
+	^ BrLabel new
+		text: text;
+		margin: (BlInsets top: 15 left: 15 bottom: 0 right: 0);
+		padding: (BlInsets all: 3);
+		geometry: (BlRectangle cornerRadius: 5);
+		look: (BrGlamorousLabelLook new glamorousRegularFontAndSize; fontSize: 20); 
+		constraintsDo: [ :c | 
+			c linear vertical alignCenter.
+			c linear horizontal alignLeft ].
+]
+
+{ #category : #ui }
 EUseCaseAdditionMenu >> createSaveButton [
-	| saveButton title task |
+	| saveButton title task useCase |
 	saveButton := (BrButton new
 		background: (Color fromHexString: 'eaeaea');
 		margin: (BlInsets top: 15 left: 15 bottom: 0 right: 0);
@@ -24,7 +38,10 @@ EUseCaseAdditionMenu >> createSaveButton [
 			self inform: 'Clicked save button.'.
 			title := ((titleAdditionElement children at:2) document text) asString.
 			task := ((taskAdditionElement children at:2) document text) asString.
-			reqContainer addArtifact: (EUseCase new title: title; task: task; addActor: (EActor new name: selectedActor)).
+			useCase := (EUseCase new title: title; task: task; addActor: (EActor new name: selectedActor)).
+			reqContainer addArtifact: useCase.
+			parentArtifact ifNotNil: [ parentArtifact addUseCase: useCase ].
+			reqContainer updateGraph.
 			]).
 	^saveButton
 ]
@@ -159,6 +176,28 @@ EUseCaseAdditionMenu >> initializeWithContainer: anERequirementContainer [
 	self addChild: self createSaveButton.
 ]
 
+{ #category : #initialization }
+EUseCaseAdditionMenu >> initializeWithContainer: anERequirementContainer andParent: aParent [
+	"I initialize my creation menu with a specified parent element, which will be linked to the element that is created from the menu."
+	super initialize.
+	parentArtifact := aParent.
+	reqContainer := anERequirementContainer.
+	
+	self 
+	layout: BlLinearLayout vertical;
+	constraintsDo: [ :c |
+		c horizontal matchParent.
+		c vertical fitContent. ].
+	
+	titleAdditionElement := self initializeTitleAdditionElement.
+	taskAdditionElement := self initializeTaskAdditionElement.
+	actorDropdown := self initializeActorAdditionDropdown.
+	self addChild: titleAdditionElement.
+	self addChild: taskAdditionElement.
+	self addChild: actorDropdown.
+	self addChild: self createSaveButton.
+]
+
 { #category : #ui }
 EUseCaseAdditionMenu >> popupActorList [
 	| actorList |
@@ -189,4 +228,23 @@ EUseCaseAdditionMenu >> popupActorList [
 		fitContent;
 		items: self getActors.
 	^actorList
+]
+
+{ #category : #ui }
+EUseCaseAdditionMenu >> toggleButton [
+	^ BrButton new
+		label: 'Add Requirement';
+		icon:
+			(BlElement new
+				size: 8 @ 8;
+				geometry:
+					(BlPolygon
+						vertices:
+							{(0 @ 0).
+							(8 @ 0).
+							((8 / 2) rounded @ 8)});
+				background: Color lightGray;
+				margin: (BlInsets left: 6);
+				constraintsDo: [ :c | c linear vertical alignCenter ]);
+		yourself
 ]

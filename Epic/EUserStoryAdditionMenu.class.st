@@ -8,7 +8,8 @@ Class {
 		'actionAdditionElement',
 		'goalAdditionElement',
 		'criteriaAdditionElement',
-		'pointsAdditionElement'
+		'pointsAdditionElement',
+		'parentArtifact'
 	],
 	#category : #'Epic-Model'
 }
@@ -28,7 +29,7 @@ EUserStoryAdditionMenu >> blLabelFor: text [
 
 { #category : #ui }
 EUserStoryAdditionMenu >> createSaveButton [
-	| saveButton title user action goal criteria points |
+	| saveButton title user action goal criteria points userStory |
 	saveButton := (BrButton new
 		background: (Color fromHexString: 'eaeaea');
 		margin: (BlInsets top: 15 left: 15 bottom: 0 right: 0);
@@ -43,7 +44,10 @@ EUserStoryAdditionMenu >> createSaveButton [
 			goal := ((goalAdditionElement children at:2) document text) asString.
 			criteria := ((criteriaAdditionElement children at:2) document text) asString.
 			points := (((pointsAdditionElement children at:2) document text) asString) asNumber.
-			reqContainer addArtifact: (EUserStory new title: title; user: user; action: action; goal: goal; acceptCriteria: criteria; points: points).
+			userStory := (EUserStory new title: title; user: user; action: action; goal: goal; acceptCriteria: criteria; points: points).
+			reqContainer addArtifact: userStory.
+			parentArtifact ifNotNil: [ parentArtifact addUserStory: userStory ].
+			reqContainer updateGraph.
 			]).
 	^saveButton
 ]
@@ -257,6 +261,33 @@ EUserStoryAdditionMenu >> initializeUserAdditionElement [
 { #category : #initialization }
 EUserStoryAdditionMenu >> initializeWithContainer: anERequirementContainer [
 	super initialize.
+	reqContainer := anERequirementContainer.
+	self 
+	layout: BlLinearLayout vertical;
+	constraintsDo: [ :c |
+		c horizontal matchParent.
+		c vertical fitContent. ].
+	
+	titleAdditionElement := self initializeTitleAdditionElement.
+	userAdditionElement := self initializeUserAdditionElement.
+	actionAdditionElement := self initializeActionAdditionElement.
+	goalAdditionElement := self initializeGoalAdditionElement.
+	criteriaAdditionElement := self initializeCriteriaAdditionElement.
+	pointsAdditionElement := self initializePointsAdditionElement.
+	
+	self addChild: titleAdditionElement.
+	self addChild: userAdditionElement.
+	self addChild: actionAdditionElement.
+	self addChild: goalAdditionElement.
+	self addChild: criteriaAdditionElement.
+	self addChild: pointsAdditionElement.
+	self addChild: self createSaveButton.
+]
+
+{ #category : #initialization }
+EUserStoryAdditionMenu >> initializeWithContainer: anERequirementContainer andParent: aParent [
+	super initialize.
+	parentArtifact := aParent.
 	reqContainer := anERequirementContainer.
 	self 
 	layout: BlLinearLayout vertical;

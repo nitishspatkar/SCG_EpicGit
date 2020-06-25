@@ -343,7 +343,7 @@ EpicExamples >> useCaseAddNewContact [
 				successGarantie: nil;
 				complexity: 'low';
 				flowOfEvents: 'Main flow of events: 1. User opens the app. 2. User presses the ""PLUS"" button near the search field. 3. User fills out all necessary details and clicks Save. 4. User acknowledges success. 5.End';
-				userStories: (Array 
+				userStories: (OrderedCollection 
 					with: self userStoryAddNewContact
 					).
 	
@@ -366,7 +366,7 @@ EpicExamples >> useCaseEditContact [
 				successGarantie: nil;
 				complexity: 'low';
 				flowOfEvents: 'Main flow of events: 1. User opens the app. 2. User chooses one of the contacts 3. User edits any contact details 4. User confirms changes';
-				userStories: (Array 
+				userStories: (OrderedCollection  
 					with: self userStoryEditContact).
 	self assert: useCase userStories  size equals: 1.
 	^ useCase
@@ -387,7 +387,7 @@ EpicExamples >> useCaseRemoveContact [
 				successGarantie: nil;
 				complexity: 'low';
 				flowOfEvents: 'Main flow of events: 1. User opens the app. 2. User chooses one of the contacts and confirms the removal of contact 3. User confirms changes';
-				userStories: (Array 
+				userStories: (OrderedCollection  
 					with: self userStoryRemoveContact).
 	self assert: useCase userStories  size equals: 1.
 	^ useCase
@@ -408,7 +408,7 @@ EpicExamples >> useCaseSearchContact [
 				successGarantie: nil;
 				complexity: 'low';
 				flowOfEvents: 'Main flow of events: 1. User opens the app. 2. User enters search details in an input element. 3. User acknowledges success. 4.End';
-				userStories: (Array 
+				userStories: (OrderedCollection  
 					with: self userStorySearchByAddress
 					with: self userStorySearchByCompany 
 					with: self userStorySearchByName
@@ -432,7 +432,7 @@ EpicExamples >> useCaseSearchWilhFilter [
 				successGarantie: nil;
 				complexity: 'low';
 				flowOfEvents: 'Main flow of events: 1. User opens the app. 2. Defines the filter for search 3. User acknowledges success.';
-				userStories: (Array 
+				userStories: (OrderedCollection 
 					with: self userStorySearchWithFilter
 					).
 					

@@ -4,7 +4,8 @@ Class {
 	#instVars : [
 		'reqContainer',
 		'titleAdditionElement',
-		'descriptionAdditionElement'
+		'descriptionAdditionElement',
+		'parentArtifact'
 	],
 	#category : #'Epic-Model'
 }
@@ -24,7 +25,7 @@ EScenarioAdditionMenu >> blLabelFor: text [
 
 { #category : #ui }
 EScenarioAdditionMenu >> createSaveButton [
-	| saveButton title description |
+	| saveButton title description scenario |
 	saveButton := (BrButton new
 		background: (Color fromHexString: 'eaeaea');
 		margin: (BlInsets top: 15 left: 15 bottom: 0 right: 0);
@@ -35,7 +36,10 @@ EScenarioAdditionMenu >> createSaveButton [
 			self inform: 'Clicked save button.'.
 			title := ((titleAdditionElement children at:2) document text) asString.
 			description := ((descriptionAdditionElement children at:2) document text) asString.
-			reqContainer addArtifact: (EScenario new title: title; description: description).
+			scenario := (EScenario new title: title; description: description).
+			reqContainer addArtifact: scenario.
+			parentArtifact ifNotNil: [ parentArtifact addScenario: scenario ].
+			reqContainer updateGraph.
 			]).
 	^saveButton
 ]
@@ -121,4 +125,12 @@ EScenarioAdditionMenu >> initializeTitleAdditionElement [
 EScenarioAdditionMenu >> initializeWithContainer: anERequirementContainer [
 	self initialize.
 	reqContainer := anERequirementContainer.
+]
+
+{ #category : #initialization }
+EScenarioAdditionMenu >> initializeWithContainer: anERequirementContainer andParent: aParent [
+	self initialize.
+	reqContainer := anERequirementContainer.
+	parentArtifact := aParent.
+	
 ]
