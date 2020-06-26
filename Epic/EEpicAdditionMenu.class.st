@@ -34,7 +34,8 @@ EEpicAdditionMenu >> createSaveButton [
 			self inform: 'Clicked save button.'.
 			title := ((titleAdditionElement children at:2) document text) asString.
 			reqContainer addArtifact: (EEpic new title: title).
-			reqContainer updateGraph.
+			"reqContainer updateGraph."
+			reqContainer announcer announce: ERequirementStateChangedAnnouncement.
 			]).
 	^saveButton
 ]

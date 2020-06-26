@@ -91,7 +91,7 @@ ERequirementContainer >> buildButtonBar [
 				look: BrGlamorousButtonWithIconLook;
 				icon: BrGlamorousVectorIcons refresh;
 				label: 'Refresh';
-				action: [ self updateGraph ]).
+				action: [ self announcer announce: ERequirementStateChangedAnnouncement ]).
 	^ buttonBar
 ]
 
@@ -144,7 +144,9 @@ ERequirementContainer >> generateMindMapView [
 			c horizontal matchParent.
 			c vertical matchParent ].
 		
-	theGraph := ((self mindMapGenerate) root) asPannableElement.
+	"theGraph := ((self mindMapGenerate) root) asPannableElement."
+	theGraph := (self gtMindMapFor: GtPhlowEmptyView new) asElementDo: [ :e | e ].
+	
 	theGraph border: (BlBorder paint: (Color blue) width: 1).
 	theGraph 
 		constraintsDo: [ :c | 
@@ -263,7 +265,8 @@ ERequirementContainer >> gtMindMapFor: aView [
 		title: 'Tree View';
 		priority: 50;
 		updateWhen: ERequirementStateChangedAnnouncement in: [ self announcer ];
-		initialize: self mindMapGenerate.
+		painting: [ :aMondrian | self mindMapGenerateFor: aMondrian ]
+		
 ]
 
 { #category : #ui }
@@ -307,8 +310,12 @@ ERequirementContainer >> initialize [
 { #category : #ui }
 ERequirementContainer >> mindMapGenerate [
 	"Generate a Mind Map mondrian for the gtMindMap view"
-	| view |
-	view := GtMondrian new.
+	^self mindMapGenerateFor: GtMondrian new.
+]
+
+{ #category : #ui }
+ERequirementContainer >> mindMapGenerateFor: view [
+	"Generate a Mind Map mondrian for the gtMindMap view"
 	view nodes
 		shape: [ :anArtifact |
 			BlElement new
@@ -317,12 +324,13 @@ ERequirementContainer >> mindMapGenerate [
 				border: (BlBorder paint: (self nodeHighlightColorFor: anArtifact) width: 1);
 				geometry: BlCircle new ];
 		with: requirements.
-	view edges connectFrom: [:x | x ] toAll: [:x | x children].
+	view edges connectFrom: [ :x | x ] toAll: [ :x | x children ].
 	view edges
 		shape: [ :x | 
 			BlLineElement new
 				border: (BlBorder paint: (Color red alpha: 0.5) width: 2) ].
-	view layout custom: GtGraphClusterLayout new.
+	"view layout custom: (GtGraphClusterLayout new horizontalGap: 100; verticalGap: 100)."
+	view layout custom: (GtGraphClusterLayout new).
 	^ view
 ]
 
@@ -445,20 +453,4 @@ ERequirementContainer >> toggleButton [
 				margin: (BlInsets left: 6);
 				constraintsDo: [ :c | c linear vertical alignCenter ]);
 		yourself
-]
-
-{ #category : #ui }
-ERequirementContainer >> updateGraph [
-	| newGraph |
-	newGraph := ((self mindMapGenerate) root) asPannableElement.
-	newGraph border: (BlBorder paint: (Color blue) width: 1).
-	newGraph 
-		constraintsDo: [ :c | 
-			c horizontal matchParent.
-			c vertical matchParent.
-			 ].
-	theGraph := newGraph.
-	graphPane removeChildren.
-	graphPane addChild: self buildButtonBar.
-	graphPane addChild: newGraph.
 ]

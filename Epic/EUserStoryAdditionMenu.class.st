@@ -47,7 +47,7 @@ EUserStoryAdditionMenu >> createSaveButton [
 			userStory := (EUserStory new title: title; user: user; action: action; goal: goal; acceptCriteria: criteria; points: points).
 			reqContainer addArtifact: userStory.
 			parentArtifact ifNotNil: [ parentArtifact addUserStory: userStory ].
-			reqContainer updateGraph.
+			reqContainer announcer announce: ERequirementStateChangedAnnouncement.
 			]).
 	^saveButton
 ]

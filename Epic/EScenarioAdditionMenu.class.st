@@ -39,7 +39,7 @@ EScenarioAdditionMenu >> createSaveButton [
 			scenario := (EScenario new title: title; description: description).
 			reqContainer addArtifact: scenario.
 			parentArtifact ifNotNil: [ parentArtifact addScenario: scenario ].
-			reqContainer updateGraph.
+			reqContainer announcer announce: ERequirementStateChangedAnnouncement.
 			]).
 	^saveButton
 ]

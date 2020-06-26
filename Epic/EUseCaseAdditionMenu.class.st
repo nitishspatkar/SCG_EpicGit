@@ -41,7 +41,7 @@ EUseCaseAdditionMenu >> createSaveButton [
 			useCase := (EUseCase new title: title; task: task; addActor: (EActor new name: selectedActor)).
 			reqContainer addArtifact: useCase.
 			parentArtifact ifNotNil: [ parentArtifact addUseCase: useCase ].
-			reqContainer updateGraph.
+			reqContainer announcer announce: ERequirementStateChangedAnnouncement.
 			]).
 	^saveButton
 ]
