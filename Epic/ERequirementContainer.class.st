@@ -135,6 +135,17 @@ ERequirementContainer >> generateAdditionMenuFor: anArtifact [
 	^menu
 ]
 
+{ #category : #'as yet unclassified' }
+ERequirementContainer >> generateEditMenuFor: anArtifact [
+	| menu artifactType |
+	artifactType := anArtifact class.
+	(artifactType = EEpic) ifTrue: [ menu := (EEpicAdditionMenu new initializeWithContainer: self andElement: anArtifact) ].
+	(artifactType = EUseCase) ifTrue: [ menu := (EUseCaseAdditionMenu new initializeWithContainer: self andElement: anArtifact) ].
+	(artifactType = EUserStory) ifTrue: [ menu := (EUserStoryAdditionMenu new initializeWithContainer: self andElement: anArtifact) ].
+	(artifactType = EScenario) ifTrue: [ menu := (EScenarioAdditionMenu new initializeWithContainer: self andElement: anArtifact) ].
+	^menu
+]
+
 { #category : #ui }
 ERequirementContainer >> generateMindMapView [
 	graphPane := BlElement new
@@ -404,7 +415,7 @@ ERequirementContainer >> requirements: aCollectionOfRequirements [
 { #category : #helper }
 ERequirementContainer >> setUpTooltipLookFor: anArtifact [
 	"set up the tooltip object for the Mind Map view"
-	| look tooltipContainer tooltipText tooltipLabel addSubElementButton |
+	| look tooltipContainer tooltipText tooltipLabel addSubElementButton editElementButton |
 	addSubElementButton := (BrButton new
 				look: BrGlamorousButtonWithIconLook;
 				icon: BrGlamorousIcons add;
@@ -412,6 +423,15 @@ ERequirementContainer >> setUpTooltipLookFor: anArtifact [
 				action: [ 
 					graphPane removeChildren.
 					graphPane addChild: (self generateAdditionMenuFor: anArtifact).
+					 ]).
+	
+	editElementButton := (BrButton new
+				look: BrGlamorousButtonWithIconLook;
+				icon: BrGlamorousIcons edit;
+				label: 'Edit';
+				action: [ 
+					graphPane removeChildren.
+					graphPane addChild: (self generateEditMenuFor: anArtifact).
 					 ]).
 	
 	tooltipText := ('An ', anArtifact class name, ': ', anArtifact title) asRopedText.
@@ -430,6 +450,7 @@ ERequirementContainer >> setUpTooltipLookFor: anArtifact [
 	
 	tooltipContainer addChild: tooltipLabel.
 	(anArtifact class = EScenario) ifFalse: [ tooltipContainer addChild: addSubElementButton. ].
+	tooltipContainer addChild: editElementButton.
 	
 	look := BrGlamorousWithTooltipLook2 
 		content: tooltipContainer.

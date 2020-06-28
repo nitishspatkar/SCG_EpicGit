@@ -7,7 +7,8 @@ Class {
 		'taskAdditionElement',
 		'actorDropdown',
 		'selectedActor',
-		'parentArtifact'
+		'parentArtifact',
+		'editedArtifact'
 	],
 	#category : #'Epic-Model'
 }
@@ -38,8 +39,13 @@ EUseCaseAdditionMenu >> createSaveButton [
 			self inform: 'Clicked save button.'.
 			title := ((titleAdditionElement children at:2) document text) asString.
 			task := ((taskAdditionElement children at:2) document text) asString.
-			useCase := (EUseCase new title: title; task: task; addActor: (EActor new name: selectedActor)).
-			reqContainer addArtifact: useCase.
+			editedArtifact ifNotNil: [ 
+				editedArtifact title: title.
+				editedArtifact task: task.
+				 ] ifNil: [ 
+				useCase := (EUseCase new title: title; task: task; addActor: (EActor new name: selectedActor)).
+				reqContainer addArtifact: useCase.
+				 ].
 			parentArtifact ifNotNil: [ parentArtifact addUseCase: useCase ].
 			reqContainer announcer announce: ERequirementStateChangedAnnouncement.
 			]).
@@ -98,7 +104,7 @@ EUseCaseAdditionMenu >> initializeActorAdditionDropdown [
 
 { #category : #initialization }
 EUseCaseAdditionMenu >> initializeTaskAdditionElement [
-	|container taskLabel aDocument textElement |
+	|container taskLabel aDocument textElement taskText |
 	container:= BlElement new 
 		layout: BlLinearLayout vertical;
 		constraintsDo: [ :c |
@@ -107,9 +113,11 @@ EUseCaseAdditionMenu >> initializeTaskAdditionElement [
 
 	taskLabel:= self blLabelFor: 'Task: '.
 	
+	editedArtifact ifNotNil: [ taskText := editedArtifact task ] ifNil: [ taskText := ('What is my task?') ].
+	
 	aDocument := GtDocument new.
 	aDocument editor useSyncStylerStrategy.
-	aDocument text: ('What is my task?').
+	aDocument text: taskText.
 	textElement := aDocument asElementWithoutSaveAction
 			vFitContent;
 			hMatchParent.
@@ -128,7 +136,7 @@ EUseCaseAdditionMenu >> initializeTaskAdditionElement [
 
 { #category : #initialization }
 EUseCaseAdditionMenu >> initializeTitleAdditionElement [
-	|container titleLabel aDocument textElement |
+	|container titleLabel aDocument textElement titleText |
 	container:= BlElement new 
 		layout: BlLinearLayout vertical;
 		constraintsDo: [ :c |
@@ -137,9 +145,11 @@ EUseCaseAdditionMenu >> initializeTitleAdditionElement [
 
 	titleLabel:= self blLabelFor: 'Title: '.
 	
+	editedArtifact ifNotNil: [ titleText := editedArtifact title ] ifNil: [ titleText := ('Give me a title') ].
+	
 	aDocument := GtDocument new.
 	aDocument editor useSyncStylerStrategy.
-	aDocument text: ('Give me a title').
+	aDocument text: titleText.
 	textElement := aDocument asElementWithoutSaveAction
 			vFitContent;
 			hMatchParent.
@@ -174,6 +184,12 @@ EUseCaseAdditionMenu >> initializeWithContainer: anERequirementContainer [
 	self addChild: taskAdditionElement.
 	self addChild: actorDropdown.
 	self addChild: self createSaveButton.
+]
+
+{ #category : #initialization }
+EUseCaseAdditionMenu >> initializeWithContainer: anERequirementContainer andElement: aRequirement [
+	editedArtifact := aRequirement.
+	self initializeWithContainer: anERequirementContainer.
 ]
 
 { #category : #initialization }

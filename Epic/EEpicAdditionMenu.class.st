@@ -3,7 +3,8 @@ Class {
 	#superclass : #BlElement,
 	#instVars : [
 		'reqContainer',
-		'titleAdditionElement'
+		'titleAdditionElement',
+		'editedArtifact'
 	],
 	#category : #'Epic-Model'
 }
@@ -33,7 +34,7 @@ EEpicAdditionMenu >> createSaveButton [
 		action: [ 
 			self inform: 'Clicked save button.'.
 			title := ((titleAdditionElement children at:2) document text) asString.
-			reqContainer addArtifact: (EEpic new title: title).
+			editedArtifact ifNotNil: [ editedArtifact title: title ] ifNil: [ reqContainer addArtifact: (EEpic new title: title) ].
 			"reqContainer updateGraph."
 			reqContainer announcer announce: ERequirementStateChangedAnnouncement.
 			]).
@@ -56,18 +57,20 @@ EEpicAdditionMenu >> initialize [
 
 { #category : #initialization }
 EEpicAdditionMenu >> initializeTitleAdditionElement [
-	|container titleLabel aDocument textElement |
+	|container titleLabel aDocument textElement titleText |
 	container:= BlElement new 
 		layout: BlLinearLayout vertical;
 		constraintsDo: [ :c |
 		c horizontal matchParent.
 		c vertical fitContent ].
 
-	titleLabel:= self blLabelFor: 'Title: '.
+	titleLabel:= self blLabelFor: editedArtifact asString.
+	
+	editedArtifact ifNotNil: [ titleText := editedArtifact title ] ifNil: [ titleText := ('Give me a title') ].
 	
 	aDocument := GtDocument new.
 	aDocument editor useSyncStylerStrategy.
-	aDocument text: ('Give me a title').
+	aDocument text: titleText.
 	textElement := aDocument asElementWithoutSaveAction
 			vFitContent;
 			hMatchParent.
@@ -98,6 +101,12 @@ EEpicAdditionMenu >> initializeWithContainer: anERequirementContainer [
 	titleAdditionElement := self initializeTitleAdditionElement.
 	self addChild: titleAdditionElement.
 	self addChild: self createSaveButton.
+]
+
+{ #category : #initialization }
+EEpicAdditionMenu >> initializeWithContainer: anERequirementContainer andElement: aRequirement [
+	editedArtifact := aRequirement.
+	self initializeWithContainer: anERequirementContainer.
 ]
 
 { #category : #accessing }

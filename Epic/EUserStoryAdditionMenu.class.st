@@ -9,7 +9,8 @@ Class {
 		'goalAdditionElement',
 		'criteriaAdditionElement',
 		'pointsAdditionElement',
-		'parentArtifact'
+		'parentArtifact',
+		'editedArtifact'
 	],
 	#category : #'Epic-Model'
 }
@@ -44,8 +45,12 @@ EUserStoryAdditionMenu >> createSaveButton [
 			goal := ((goalAdditionElement children at:2) document text) asString.
 			criteria := ((criteriaAdditionElement children at:2) document text) asString.
 			points := (((pointsAdditionElement children at:2) document text) asString) asNumber.
-			userStory := (EUserStory new title: title; user: user; action: action; goal: goal; acceptCriteria: criteria; points: points).
-			reqContainer addArtifact: userStory.
+			editedArtifact ifNotNil: [ 
+				editedArtifact title: title; user: user; action: action; goal: goal; acceptCriteria: criteria; points: points.
+				 ] ifNil: [ 
+				userStory := (EUserStory new title: title; user: user; action: action; goal: goal; acceptCriteria: criteria; points: points).
+				reqContainer addArtifact: userStory.
+				 ].
 			parentArtifact ifNotNil: [ parentArtifact addUserStory: userStory ].
 			reqContainer announcer announce: ERequirementStateChangedAnnouncement.
 			]).
@@ -79,7 +84,7 @@ EUserStoryAdditionMenu >> initialize [
 
 { #category : #initialization }
 EUserStoryAdditionMenu >> initializeActionAdditionElement [
-	|container titleLabel aDocument textElement |
+	|container titleLabel aDocument textElement actionText |
 	container:= BlElement new 
 		layout: BlLinearLayout vertical;
 		constraintsDo: [ :c |
@@ -88,9 +93,11 @@ EUserStoryAdditionMenu >> initializeActionAdditionElement [
 
 	titleLabel:= self blLabelFor: 'Action: '.
 	
+	editedArtifact ifNotNil: [ actionText := editedArtifact action ] ifNil: [ actionText := ('What is the action in this story?') ].
+	
 	aDocument := GtDocument new.
 	aDocument editor useSyncStylerStrategy.
-	aDocument text: ('What is the action in this story?').
+	aDocument text: actionText.
 	textElement := aDocument asElementWithoutSaveAction
 			vFitContent;
 			hMatchParent.
@@ -109,7 +116,7 @@ EUserStoryAdditionMenu >> initializeActionAdditionElement [
 
 { #category : #initialization }
 EUserStoryAdditionMenu >> initializeCriteriaAdditionElement [
-	|container titleLabel aDocument textElement |
+	|container titleLabel aDocument textElement criteriaText |
 	container:= BlElement new 
 		layout: BlLinearLayout vertical;
 		constraintsDo: [ :c |
@@ -118,9 +125,11 @@ EUserStoryAdditionMenu >> initializeCriteriaAdditionElement [
 
 	titleLabel:= self blLabelFor: 'Acceptance criteria: '.
 	
+	editedArtifact ifNotNil: [ criteriaText := editedArtifact acceptCriteria ] ifNil: [ criteriaText := ('What are the acceptance criteria of this story?') ].
+	
 	aDocument := GtDocument new.
 	aDocument editor useSyncStylerStrategy.
-	aDocument text: ('What are the acceptance criteria of this story?').
+	aDocument text: criteriaText.
 	textElement := aDocument asElementWithoutSaveAction
 			vFitContent;
 			hMatchParent.
@@ -139,7 +148,7 @@ EUserStoryAdditionMenu >> initializeCriteriaAdditionElement [
 
 { #category : #initialization }
 EUserStoryAdditionMenu >> initializeGoalAdditionElement [
-	|container titleLabel aDocument textElement |
+	|container titleLabel aDocument textElement goalText |
 	container:= BlElement new 
 		layout: BlLinearLayout vertical;
 		constraintsDo: [ :c |
@@ -148,9 +157,11 @@ EUserStoryAdditionMenu >> initializeGoalAdditionElement [
 
 	titleLabel:= self blLabelFor: 'Goal: '.
 	
+	editedArtifact ifNotNil: [ goalText := editedArtifact goal ] ifNil: [ goalText := ('What is the goal in this story?') ].
+	
 	aDocument := GtDocument new.
 	aDocument editor useSyncStylerStrategy.
-	aDocument text: ('What is the goal in this story?').
+	aDocument text: goalText.
 	textElement := aDocument asElementWithoutSaveAction
 			vFitContent;
 			hMatchParent.
@@ -169,7 +180,7 @@ EUserStoryAdditionMenu >> initializeGoalAdditionElement [
 
 { #category : #initialization }
 EUserStoryAdditionMenu >> initializePointsAdditionElement [
-	|container titleLabel aDocument textElement |
+	|container titleLabel aDocument textElement pointsText |
 	container:= BlElement new 
 		layout: BlLinearLayout vertical;
 		constraintsDo: [ :c |
@@ -178,10 +189,12 @@ EUserStoryAdditionMenu >> initializePointsAdditionElement [
 
 	titleLabel:= self blLabelFor: 'Points: '.
 	
+	editedArtifact ifNotNil: [ pointsText := editedArtifact points asString ] ifNil: [ pointsText := ('How many implementation points does this story have?') ].
+	
 	aDocument := GtDocument new.
 	aDocument editor useSyncStylerStrategy.
 	aDocument editor inputFilter: BrTextEditorDigitInputFilter new.
-	aDocument text: ('How many implementation points does this story have?').
+	aDocument text: pointsText.
 	textElement := aDocument asElementWithoutSaveAction
 			vFitContent;
 			hMatchParent.
@@ -200,7 +213,7 @@ EUserStoryAdditionMenu >> initializePointsAdditionElement [
 
 { #category : #intialization }
 EUserStoryAdditionMenu >> initializeTitleAdditionElement [
-	|container titleLabel aDocument textElement |
+	|container titleLabel aDocument textElement titleText |
 	container:= BlElement new 
 		layout: BlLinearLayout vertical;
 		constraintsDo: [ :c |
@@ -209,9 +222,11 @@ EUserStoryAdditionMenu >> initializeTitleAdditionElement [
 
 	titleLabel:= self blLabelFor: 'Title: '.
 	
+	editedArtifact ifNotNil: [ titleText := editedArtifact title ] ifNil: [ titleText := ('Give me a title') ].
+	
 	aDocument := GtDocument new.
 	aDocument editor useSyncStylerStrategy.
-	aDocument text: ('Give me a title').
+	aDocument text: titleText.
 	textElement := aDocument asElementWithoutSaveAction
 			vFitContent;
 			hMatchParent.
@@ -230,7 +245,7 @@ EUserStoryAdditionMenu >> initializeTitleAdditionElement [
 
 { #category : #initialization }
 EUserStoryAdditionMenu >> initializeUserAdditionElement [
-	|container titleLabel aDocument textElement |
+	|container titleLabel aDocument textElement userText |
 	container:= BlElement new 
 		layout: BlLinearLayout vertical;
 		constraintsDo: [ :c |
@@ -239,9 +254,11 @@ EUserStoryAdditionMenu >> initializeUserAdditionElement [
 
 	titleLabel:= self blLabelFor: 'User: '.
 	
+	editedArtifact ifNotNil: [ userText := editedArtifact user ] ifNil: [ userText := ('Who is the user in this story?') ].
+	
 	aDocument := GtDocument new.
 	aDocument editor useSyncStylerStrategy.
-	aDocument text: ('Who is the user in this story?').
+	aDocument text: userText.
 	textElement := aDocument asElementWithoutSaveAction
 			vFitContent;
 			hMatchParent.
@@ -282,6 +299,12 @@ EUserStoryAdditionMenu >> initializeWithContainer: anERequirementContainer [
 	self addChild: criteriaAdditionElement.
 	self addChild: pointsAdditionElement.
 	self addChild: self createSaveButton.
+]
+
+{ #category : #initialization }
+EUserStoryAdditionMenu >> initializeWithContainer: anERequirementContainer andElement: aRequirement [
+	editedArtifact := aRequirement.
+	self initializeWithContainer: anERequirementContainer.
 ]
 
 { #category : #initialization }

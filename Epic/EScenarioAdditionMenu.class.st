@@ -5,7 +5,8 @@ Class {
 		'reqContainer',
 		'titleAdditionElement',
 		'descriptionAdditionElement',
-		'parentArtifact'
+		'parentArtifact',
+		'editedArtifact'
 	],
 	#category : #'Epic-Model'
 }
@@ -36,8 +37,13 @@ EScenarioAdditionMenu >> createSaveButton [
 			self inform: 'Clicked save button.'.
 			title := ((titleAdditionElement children at:2) document text) asString.
 			description := ((descriptionAdditionElement children at:2) document text) asString.
-			scenario := (EScenario new title: title; description: description).
-			reqContainer addArtifact: scenario.
+			editedArtifact ifNotNil: [ 
+				editedArtifact title: title.
+				editedArtifact description: description.
+				 ] ifNil: [ 
+				scenario := (EScenario new title: title; description: description).
+				reqContainer addArtifact: scenario.
+				 ].
 			parentArtifact ifNotNil: [ parentArtifact addScenario: scenario ].
 			reqContainer announcer announce: ERequirementStateChangedAnnouncement.
 			]).
@@ -63,7 +69,7 @@ EScenarioAdditionMenu >> initialize [
 
 { #category : #initialization }
 EScenarioAdditionMenu >> initializeDescriptionAdditionElement [
-	|container titleLabel aDocument textElement |
+	|container titleLabel aDocument textElement descriptionText |
 	container:= BlElement new 
 		layout: BlLinearLayout vertical;
 		constraintsDo: [ :c |
@@ -72,9 +78,11 @@ EScenarioAdditionMenu >> initializeDescriptionAdditionElement [
 
 	titleLabel:= self blLabelFor: 'Description: '.
 	
+	editedArtifact ifNotNil: [ descriptionText := editedArtifact description ] ifNil: [ descriptionText := ('Give me a description') ].
+	
 	aDocument := GtDocument new.
 	aDocument editor useSyncStylerStrategy.
-	aDocument text: ('Give me a description').
+	aDocument text: descriptionText.
 	textElement := aDocument asElementWithoutSaveAction
 			vFitContent;
 			hMatchParent.
@@ -93,7 +101,7 @@ EScenarioAdditionMenu >> initializeDescriptionAdditionElement [
 
 { #category : #initialization }
 EScenarioAdditionMenu >> initializeTitleAdditionElement [
-	|container titleLabel aDocument textElement |
+	|container titleLabel aDocument textElement titleText |
 	container:= BlElement new 
 		layout: BlLinearLayout vertical;
 		constraintsDo: [ :c |
@@ -102,9 +110,11 @@ EScenarioAdditionMenu >> initializeTitleAdditionElement [
 
 	titleLabel:= self blLabelFor: 'Title: '.
 	
+	editedArtifact ifNotNil: [ titleText := editedArtifact title ] ifNil: [ titleText := ('Give me a title') ].
+	
 	aDocument := GtDocument new.
 	aDocument editor useSyncStylerStrategy.
-	aDocument text: ('Give me a title').
+	aDocument text: titleText.
 	textElement := aDocument asElementWithoutSaveAction
 			vFitContent;
 			hMatchParent.
@@ -128,9 +138,15 @@ EScenarioAdditionMenu >> initializeWithContainer: anERequirementContainer [
 ]
 
 { #category : #initialization }
-EScenarioAdditionMenu >> initializeWithContainer: anERequirementContainer andParent: aParent [
+EScenarioAdditionMenu >> initializeWithContainer: anERequirementContainer andElement: aRequirement [
+	editedArtifact := aRequirement.
+	self initializeWithContainer: anERequirementContainer.
+]
+
+{ #category : #initialization }
+EScenarioAdditionMenu >> initializeWithContainer: anERequirementContainer andParent: aRequirement [
 	self initialize.
 	reqContainer := anERequirementContainer.
-	parentArtifact := aParent.
+	parentArtifact := aRequirement.
 	
 ]
