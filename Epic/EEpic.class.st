@@ -17,8 +17,8 @@ Class {
 }
 
 { #category : #adding }
-EEpic >> addUseCase: anUseCase [
-	self use_cases add: anUseCase
+EEpic >> addUseCase: aUseCase [
+	self use_cases add: aUseCase
 ]
 
 { #category : #accessing }
@@ -109,6 +109,11 @@ EEpic >> initialize [
 	title := 'Feature of this epic'.
 	use_cases := OrderedCollection new.
 	
+]
+
+{ #category : #removing }
+EEpic >> removeUseCase: aUseCase [
+	self use_cases remove: aUseCase
 ]
 
 { #category : #accessing }

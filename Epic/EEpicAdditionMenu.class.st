@@ -64,7 +64,7 @@ EEpicAdditionMenu >> initializeTitleAdditionElement [
 		c horizontal matchParent.
 		c vertical fitContent ].
 
-	titleLabel:= self blLabelFor: editedArtifact asString.
+	titleLabel:= self blLabelFor: 'Title: '.
 	
 	editedArtifact ifNotNil: [ titleText := editedArtifact title ] ifNil: [ titleText := ('Give me a title') ].
 	

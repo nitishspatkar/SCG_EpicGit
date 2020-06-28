@@ -240,11 +240,35 @@ ERequirementContainer >> getAvailableArtifactTypesForDropdown [
 	^result
 ]
 
+{ #category : #'as yet unclassified' }
+ERequirementContainer >> getEpics [
+	"I collect and return an OrderedCollection of all the epics from the requirements collection."
+	| epics |
+	epics := self requirements select: [ :each | each class = EEpic ].
+	^epics
+]
+
+{ #category : #'as yet unclassified' }
+ERequirementContainer >> getScenarios [
+	"comment stating purpose of instance-side message"
+	| scenarios |
+	scenarios := self requirements select: [ :each | each class = EScenario ].
+	^scenarios
+]
+
+{ #category : #'as yet unclassified' }
+ERequirementContainer >> getUseCases [
+	"comment stating purpose of instance-side message"
+	| useCases |
+	useCases := self requirements select: [ :each | each class = EUseCase ].
+	^useCases
+]
+
 { #category : #helper }
 ERequirementContainer >> getUserStories [
 	"comment stating purpose of instance-side message"
 	| stories |
-	stories := requirements select: [ :each | each class name = 'EUserStory' ].
+	stories := self requirements select: [ :each | each class = EUserStory ].
 	^stories
 ]
 
@@ -401,6 +425,38 @@ ERequirementContainer >> project: aString [
 	project := aString.
 ]
 
+{ #category : #removing }
+ERequirementContainer >> removeArtifact: anArtifact [
+	self removeFromParent: anArtifact.
+	requirements remove: anArtifact.
+	self removeArtifactChildren: anArtifact.
+]
+
+{ #category : #removing }
+ERequirementContainer >> removeArtifactChildren: anArtifact [
+	"I execute this whenever an artifact is removed from my container. 
+	This ensures that all of the artifact's subelements are removed as well"
+	| children |
+	children := anArtifact children.
+	children do: [ :each | self removeArtifact: each ].
+]
+
+{ #category : #removing }
+ERequirementContainer >> removeFromParent: anArtifact [
+	"I remove the supplied artifact from its parent's children list, in order to properly remove any reference of it."
+	| artifactType |
+	artifactType := anArtifact class.
+	(artifactType = EUseCase) ifTrue: [ 
+		self getEpics do: [ :each | (each children includes: anArtifact) ifTrue: [ each removeUseCase: anArtifact ]  ].
+		 ].
+	(artifactType = EUserStory) ifTrue: [ 
+		self getUseCases do: [ :each | (each children includes: anArtifact) ifTrue: [ each removeUserStory: anArtifact ]  ].
+		 ].
+	(artifactType = EScenario) ifTrue: [ 
+		self getUserStories do: [ :each | (each children includes: anArtifact) ifTrue: [ each removeScenario: anArtifact ]  ].
+		 ].
+]
+
 { #category : #accessing }
 ERequirementContainer >> requirements [
  ^requirements
@@ -415,7 +471,7 @@ ERequirementContainer >> requirements: aCollectionOfRequirements [
 { #category : #helper }
 ERequirementContainer >> setUpTooltipLookFor: anArtifact [
 	"set up the tooltip object for the Mind Map view"
-	| look tooltipContainer tooltipText tooltipLabel addSubElementButton editElementButton |
+	| look tooltipContainer tooltipButtonBar tooltipText tooltipLabel addSubElementButton editElementButton deleteElementButton |
 	addSubElementButton := (BrButton new
 				look: BrGlamorousButtonWithIconLook;
 				icon: BrGlamorousIcons add;
@@ -434,6 +490,15 @@ ERequirementContainer >> setUpTooltipLookFor: anArtifact [
 					graphPane addChild: (self generateEditMenuFor: anArtifact).
 					 ]).
 	
+	deleteElementButton := (BrButton new
+				look: BrGlamorousButtonWithIconLook;
+				icon: BrGlamorousIcons remove;
+				label: 'Delete this artifact (WARNING: This will delete all sub-elements too!)';
+				action: [ 
+					self removeArtifact: anArtifact.
+					self announcer announce: ERequirementStateChangedAnnouncement.
+					 ]).
+	
 	tooltipText := ('An ', anArtifact class name, ': ', anArtifact title) asRopedText.
 	
 	tooltipLabel := (BrLabel new 
@@ -448,9 +513,18 @@ ERequirementContainer >> setUpTooltipLookFor: anArtifact [
 			c vertical fitContent.
 			 ]).
 	
+	tooltipButtonBar := (BlElement new 
+		layout: BlLinearLayout horizontal;
+		constraintsDo: [ :c | 
+			c vertical fitContent.
+			c horizontal matchParent.
+			 ]).
+	
 	tooltipContainer addChild: tooltipLabel.
-	(anArtifact class = EScenario) ifFalse: [ tooltipContainer addChild: addSubElementButton. ].
-	tooltipContainer addChild: editElementButton.
+	(anArtifact class = EScenario) ifFalse: [ tooltipButtonBar addChild: addSubElementButton. ].
+	tooltipButtonBar addChild: editElementButton.
+	tooltipButtonBar addChild: deleteElementButton.
+	tooltipContainer addChild: tooltipButtonBar.
 	
 	look := BrGlamorousWithTooltipLook2 
 		content: tooltipContainer.

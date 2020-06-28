@@ -204,6 +204,11 @@ EUseCase >> precondition: anObject [
 	precondition := anObject
 ]
 
+{ #category : #adding }
+EUseCase >> removeUserStory: aUserStory [
+	self userStories remove: aUserStory
+]
+
 { #category : #accessing }
 EUseCase >> state [
 	^ state

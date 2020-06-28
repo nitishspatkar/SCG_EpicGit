@@ -313,6 +313,11 @@ EUserStory >> points: anInteger [
 	points := anInteger
 ]
 
+{ #category : #adding }
+EUserStory >> removeScenario: aScenario [
+	scenarios remove: aScenario.
+]
+
 { #category : #accessing }
 EUserStory >> scenarios [
 	^ scenarios
