@@ -95,6 +95,48 @@ ERequirementContainer >> buildButtonBar [
 	^ buttonBar
 ]
 
+{ #category : #helper }
+ERequirementContainer >> computeEpicColor: anEpic [
+	"I compute and return a color based on the combined status of the epic's associated use cases"
+	| useCases color r g b numberOfCases |
+	r := 0. g := 0. b := 0.
+	useCases := anEpic children.
+	numberOfCases := useCases size.
+	useCases do: [ :each | 
+		r := r + (self computeUseCaseColor: each) red.
+		g := g + (self computeUseCaseColor: each) green.
+		b := b + (self computeUseCaseColor: each) blue.
+		 ].
+	(numberOfCases = 0) ifFalse: [ 
+		r := r / numberOfCases.
+		g := g / numberOfCases.
+		b := b / numberOfCases.
+		 ].
+	color := Color r: r g: g b: b.
+	^color
+]
+
+{ #category : #helper }
+ERequirementContainer >> computeUseCaseColor: aUseCase [
+	"I compute and return a color based on the combined status of the use case's associated user stories"
+	| stories color r g b numberOfStories |
+	r := 0. g := 0. b := 0.
+	stories := aUseCase children.
+	numberOfStories := stories size.
+	stories do: [ :each | 
+		r := r + each getStateColor red.
+		g := g + each getStateColor green.
+		b := b + each getStateColor blue.
+		 ].
+	(numberOfStories = 0) ifFalse: [ 
+		r := r / numberOfStories.
+		g := g / numberOfStories.
+		b := b / numberOfStories.
+		 ].
+	color := Color r: r g: g b: b.
+	^color
+]
+
 { #category : #ui }
 ERequirementContainer >> createAddEpicMenu [
 	^EEpicAdditionMenu new initializeWithContainer: self.
@@ -135,7 +177,7 @@ ERequirementContainer >> generateAdditionMenuFor: anArtifact [
 	^menu
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #ui }
 ERequirementContainer >> generateEditMenuFor: anArtifact [
 	| menu artifactType |
 	artifactType := anArtifact class.
@@ -150,15 +192,12 @@ ERequirementContainer >> generateEditMenuFor: anArtifact [
 ERequirementContainer >> generateMindMapView [
 	graphPane := BlElement new
 		layout: BlLinearLayout vertical;
-		border: (BlBorder paint: (Color red) width: 1);
 		constraintsDo: [ :c | 
 			c horizontal matchParent.
 			c vertical matchParent ].
 		
-	"theGraph := ((self mindMapGenerate) root) asPannableElement."
 	theGraph := (self gtMindMapFor: GtPhlowEmptyView new) asElementDo: [ :e | e ].
 	
-	theGraph border: (BlBorder paint: (Color blue) width: 1).
 	theGraph 
 		constraintsDo: [ :c | 
 			c horizontal matchParent.
@@ -175,13 +214,13 @@ ERequirementContainer >> generateMindMapView [
 ERequirementContainer >> generateStoryWallView [
 	"comment stating purpose of instance-side message"
 	| wall column columnTitle stories workStates |
-	wall := BlElement new.
+	
 	stories := self getUserStories.
 	stories do: [ :story | story announcer: self announcer ].
-	wall
+	
+	wall := BlElement new
 		layout: BlLinearLayout horizontal;
 		padding: (BlInsets all: 5);
-		border: (BlBorder paint: (Color red) width: 1);
 		constraintsDo: [ :c | 
 			c horizontal matchParent.
 			c vertical fitContent.
@@ -240,7 +279,7 @@ ERequirementContainer >> getAvailableArtifactTypesForDropdown [
 	^result
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 ERequirementContainer >> getEpics [
 	"I collect and return an OrderedCollection of all the epics from the requirements collection."
 	| epics |
@@ -248,7 +287,7 @@ ERequirementContainer >> getEpics [
 	^epics
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 ERequirementContainer >> getScenarios [
 	"comment stating purpose of instance-side message"
 	| scenarios |
@@ -256,7 +295,7 @@ ERequirementContainer >> getScenarios [
 	^scenarios
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 ERequirementContainer >> getUseCases [
 	"comment stating purpose of instance-side message"
 	| useCases |
@@ -306,7 +345,6 @@ ERequirementContainer >> gtMindMapFor: aView [
 
 { #category : #ui }
 ERequirementContainer >> gtTestViewFor: aView [
-	"To be changed. Demonstrate dynamic addition of artifacts via dropdown menu."
 	<gtView>
 	^ aView explicit
 		title: 'Test View';
@@ -317,7 +355,6 @@ ERequirementContainer >> gtTestViewFor: aView [
 
 { #category : #ui }
 ERequirementContainer >> gtUserStoryWallViewFor: aView [
-	"To be changed. Demonstrate dynamic addition of artifacts via dropdown menu."
 	<gtView>
 	^ aView explicit
 		title: 'Story Wall';
@@ -355,21 +392,41 @@ ERequirementContainer >> mindMapGenerateFor: view [
 		shape: [ :anArtifact |
 			BlElement new
 				look: (self setUpTooltipLookFor: anArtifact);
-				size: 10 @ 10;
-				border: (BlBorder paint: (self nodeHighlightColorFor: anArtifact) width: 1);
+				size: (self nodeSizeFor: anArtifact) asPoint;
+				border: (BlBorder paint: (self nodeHighlightColorFor: anArtifact) width: 2);
+				background: (self nodeBackgroundColorFor: anArtifact);
 				geometry: BlCircle new ];
 		with: requirements.
 	view edges connectFrom: [ :x | x ] toAll: [ :x | x children ].
 	view edges
 		shape: [ :x | 
 			BlLineElement new
-				border: (BlBorder paint: (Color red alpha: 0.5) width: 2) ].
-	"view layout custom: (GtGraphClusterLayout new horizontalGap: 100; verticalGap: 100)."
-	view layout custom: (GtGraphClusterLayout new).
+				border: (BlBorder paint: (Color red alpha: 0.5) width: 5) ].
+	view layout custom: (GtGraphClusterLayout new horizontalGap: 80; verticalGap: 80).
 	^ view
 ]
 
-{ #category : #helper }
+{ #category : #ui }
+ERequirementContainer >> nodeBackgroundColorFor: anArtifact [
+	"I Compute and return the color of the artifact node's background for the mind map view"
+	| color artifactType |
+	color := Color blue.
+	artifactType := anArtifact class.
+	(artifactType = EEpic) ifTrue: [ 
+		color := self computeEpicColor: anArtifact
+		 ].
+	(artifactType = EUseCase) ifTrue: [ 
+		color := self computeUseCaseColor: anArtifact
+		 ].
+	(artifactType = EUserStory) ifTrue: [ color := anArtifact getStateColor ].
+	(artifactType = EScenario) ifTrue: [ color := Color white ].
+	
+	^color alpha: 0.5
+	
+
+]
+
+{ #category : #ui }
 ERequirementContainer >> nodeHighlightColorFor: anArtifact [
 	"I return a corresponding color for a requirement artifact for the outline of the nodes in the mind map view."
 	| artifactType color |
@@ -379,6 +436,28 @@ ERequirementContainer >> nodeHighlightColorFor: anArtifact [
 	(artifactType = EUserStory) ifTrue: [ color := Color blue alpha: 0.5 ].
 	(artifactType = EScenario) ifTrue: [ color := Color green alpha: 0.5 ].
 	^ color
+]
+
+{ #category : #ui }
+ERequirementContainer >> nodeSizeFor: anArtifact [
+	"I return the size of the node that represents supplied artifact in the mind map view. 
+	The size depends on the number of implementation points given to the user stories. Scenarios all have the same size."
+	| artifactType size scale |
+	size := 10.
+	scale := GtPlotterLogarithmicScale new.
+	artifactType := anArtifact class.
+	(artifactType = EEpic) ifTrue: [ 
+		anArtifact children do: [ :useCase | 
+			useCase children do: [ :story | size := size + story points ]
+			 ].
+		 ].
+	(artifactType = EUseCase) ifTrue: [ 
+		anArtifact children do: [ :story | size := size + story points ].
+		 ].
+	(artifactType = EUserStory) ifTrue: [ size := anArtifact points ].
+	(artifactType = EScenario) ifTrue: [ size := 10 ].
+	size := (scale map: size) * 20.
+	^ size
 ]
 
 { #category : #ui }

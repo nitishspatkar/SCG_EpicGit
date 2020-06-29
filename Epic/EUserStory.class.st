@@ -91,7 +91,7 @@ EUserStory >> cardViewGenerate [
 					
 			stateColorContainer := BlElement new
 				size: 100@100;
-				background: self updateStateColor;
+				background: self getStateColor;
 				border: (BlBorder paint: Color gray width: 1);
 				margin: (BlInsets top: 10 right: 10 bottom: 10 left: 0).
 				
@@ -117,7 +117,7 @@ EUserStory >> cardViewGenerate [
 				action: [ 
 					self inform: 'Clicked change state button.'. 
 					self changeWorkState. "This changes the object's state"
-					self announcer announce: ERequirementStateChangedAnnouncement new 
+					self announcer announce: ERequirementStateChangedAnnouncement
 					]).
 			
 			detailsTextContainer := BrEditor new
@@ -189,6 +189,15 @@ EUserStory >> component [
 { #category : #accessing }
 EUserStory >> component: anObject [
 	component := anObject
+]
+
+{ #category : #'work state' }
+EUserStory >> getStateColor [
+	| color |
+	(state = 'Not started') ifTrue: [ color := Color red ].
+	(state = 'In progress') ifTrue: [ color := Color yellow ].
+	(state = 'Complete') ifTrue: [ color := Color green ].
+	^ color
 ]
 
 { #category : #accessing }
@@ -346,15 +355,6 @@ EUserStory >> title: aString [
 { #category : #utilities }
 EUserStory >> treeViewShortString [
 	^ 'Use Story: (As a ', user name, ', I want to ', action, ')'
-]
-
-{ #category : #'work state' }
-EUserStory >> updateStateColor [
-	| color |
-	(state = 'Not started') ifTrue: [ color := Color red ].
-	(state = 'In progress') ifTrue: [ color := Color yellow ].
-	(state = 'Complete') ifTrue: [ color := Color green ].
-	^ color
 ]
 
 { #category : #accessing }
