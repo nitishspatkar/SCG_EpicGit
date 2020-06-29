@@ -1,10 +1,6 @@
-# From User Stories to Live Documentation
+# Towards bringing requirements and development closer
 
-This project contains the framework for this project, started in the Software Composition Seminar in Fall 2019.
-The following infrastructure exists:
-- AddressBook: contains an example Address Book. It has basic features implemented.
-  - EpicExamples: holds an example project for improving the Address Book. It contains epics, use cases, user stories, and scenarios for features implemented and not implemented.
-- Epic: contains the code for the agile framework. 
+This project provides a practical solution for IDE-integrated requirements engineering. Work in progress - expect frequent changes.
 
 ## How to Load
 
@@ -12,18 +8,13 @@ Run this code snippet in the playground of Pharo 8.0 and you will have access to
 ```
 Metacello new
   baseline: 'Epic';
-  repository: 'github://vaano94/SCG_EpicGit';
+  repository: 'github://rniem379349/SCG_EpicGit';
   load
 ```
 
 ## Getting Started
-You can see documentation for the Epic package by typing ```Epic.``` into the playground and running.
-You can start up the examples by typing ```EpicExamples.``` into the playground and running. You will see a list of the examples. The first word in the Selector name will be what category that example falls into (i.e. epic, useCase, etc.). The most logical way to step through the project will be to find an epic example (epicManageAddressBook, epicSearchAddressBook, epicMergeContacts) and run that. To see the code itself, click on the Selector name. To see the displays and components of each example, click on the Result.
-
-Another way to access the examples is through the System Browser. If you search for AddressBook and click on EpicExamples, the examples have been sorted into protocols. This is an easy way to see only epic examples, for instance. Simply click the green arrow to begin and select the "\_GT" tab to see the GToolKit views.
-
-
-## Background Knowledge
-
-Each class in the Epic package has individual and specialized views for seeing each component and layer. You can see details about the view under "View Details".
-Class comments will have information about the functions, uses, and relationships of the classes.
+Type in the following code in the Playground and run it:
+```
+EpicExamples new requirementContainerWithThreeEpics.
+```
+Navigate through the different views in the container element to see the representations of the requirements artifacts within.
