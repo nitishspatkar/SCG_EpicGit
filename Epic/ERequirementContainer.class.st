@@ -431,11 +431,11 @@ ERequirementContainer >> nodeHighlightColorFor: anArtifact [
 	"I return a corresponding color for a requirement artifact for the outline of the nodes in the mind map view."
 	| artifactType color |
 	artifactType := anArtifact class.
-	(artifactType = EEpic) ifTrue: [ color := Color red alpha: 0.5 ].
-	(artifactType = EUseCase) ifTrue: [ color := Color cyan alpha: 0.5 ].
-	(artifactType = EUserStory) ifTrue: [ color := Color blue alpha: 0.5 ].
-	(artifactType = EScenario) ifTrue: [ color := Color green alpha: 0.5 ].
-	^ color
+	(artifactType = EEpic) ifTrue: [ color := Color gray ].
+	(artifactType = EUseCase) ifTrue: [ color := Color cyan ].
+	(artifactType = EUserStory) ifTrue: [ color := Color blue ].
+	(artifactType = EScenario) ifTrue: [ color := Color green ].
+	^ color alpha: 0.8
 ]
 
 { #category : #ui }
