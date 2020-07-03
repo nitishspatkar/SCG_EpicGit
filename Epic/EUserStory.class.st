@@ -67,14 +67,14 @@ EUserStory >> announcer: anAnnouncer [
 	announcer := anAnnouncer.
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #helper }
 EUserStory >> buildClassStringFromUser [
 	| camelCase |
 	camelCase := user class name asCamelCase.
 	^camelCase
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #helper }
 EUserStory >> buildMethodStringFromAction [
 	| camelCase |
 	camelCase := action asCamelCase.
@@ -216,7 +216,7 @@ EUserStory >> getReferencesFrom: aDocument [
 			classAnnotations := aChild select: [ :e | e class = GtClassAnnotation ].
 			methodAnnotations := aChild select: [ :e | e class = GtMethodAnnotation ].
 			classAnnotations do: [ :anAnnotation | 
-				(references includes: anAnnotation referencedClass) ifFalse: [ references add: (self class environment at: (anAnnotation referencedClass) name) ]
+				(references includes: (self class environment at: (anAnnotation referencedClass) name)) ifFalse: [ references add: (self class environment at: (anAnnotation referencedClass) name) ]
 				 ].
 			methodAnnotations do: [ :anAnnotation | 
 				(references includes: anAnnotation referencedMethod) ifFalse: [ references add: anAnnotation referencedMethod ]
