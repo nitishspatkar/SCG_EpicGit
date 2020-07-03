@@ -15,6 +15,7 @@ Class {
 ERequirementContainer >> addArtifact: anArtifact [
 	requirements add: anArtifact.
 	self addArtifactChildren: anArtifact.
+	self announcer announce: ERequirementStateChangedAnnouncement.
 ]
 
 { #category : #adding }
@@ -509,6 +510,7 @@ ERequirementContainer >> removeArtifact: anArtifact [
 	self removeFromParent: anArtifact.
 	requirements remove: anArtifact.
 	self removeArtifactChildren: anArtifact.
+	self announcer announce: ERequirementStateChangedAnnouncement.
 ]
 
 { #category : #removing }

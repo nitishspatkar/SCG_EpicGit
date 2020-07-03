@@ -23,7 +23,8 @@ Class {
 		'title',
 		'points',
 		'state',
-		'announcer'
+		'announcer',
+		'references'
 	],
 	#category : #'Epic-Model'
 }
@@ -64,6 +65,21 @@ EUserStory >> announcer [
 EUserStory >> announcer: anAnnouncer [
 	"Change the associated announcer"
 	announcer := anAnnouncer.
+]
+
+{ #category : #'as yet unclassified' }
+EUserStory >> buildClassStringFromUser [
+	| camelCase |
+	camelCase := user class name asCamelCase.
+	^camelCase
+]
+
+{ #category : #'as yet unclassified' }
+EUserStory >> buildMethodStringFromAction [
+	| camelCase |
+	camelCase := action asCamelCase.
+	camelCase at:1 put: ((camelCase at:1) asLowercase).
+	^camelCase
 ]
 
 { #category : #'ui helpers' }
@@ -191,6 +207,25 @@ EUserStory >> component: anObject [
 	component := anObject
 ]
 
+{ #category : #'as yet unclassified' }
+EUserStory >> getReferencesFrom: aDocument [
+	"filter out all references to domain entities from a document"
+	| classAnnotations methodAnnotations |
+	aDocument children do: [ :aChild | 
+		(aChild class = PRParagraph) ifTrue: [ 
+			classAnnotations := aChild select: [ :e | e class = GtClassAnnotation ].
+			methodAnnotations := aChild select: [ :e | e class = GtMethodAnnotation ].
+			classAnnotations do: [ :anAnnotation | 
+				(references includes: anAnnotation referencedClass) ifFalse: [ references add: (self class environment at: (anAnnotation referencedClass) name) ]
+				 ].
+			methodAnnotations do: [ :anAnnotation | 
+				(references includes: anAnnotation referencedMethod) ifFalse: [ references add: anAnnotation referencedMethod ]
+				 ].
+			 ]
+		 ].
+	^references
+]
+
 { #category : #'work state' }
 EUserStory >> getStateColor [
 	| color |
@@ -222,16 +257,31 @@ EUserStory >> gtCardViewFor: aView [
 
 { #category : #ui }
 EUserStory >> gtDocumentFor: aView [
-    <gtView>
-    | aDocument |
-    aDocument := GtDocument new text: 'As a <user>, ${class:name=EActor}$ I want to <complete action> so that I can <goal>
+   <gtView>
+   | aDocument userObject actionObject |
+	userObject := '${class:name=', self buildClassStringFromUser, '}$'.
+	actionObject := '${method:name=', self buildClassStringFromUser, '>>#', self buildMethodStringFromAction, '}$'.
+	aDocument := GtDocument new text: 'As a', userObject, ' I want to ', actionObject, ' so that I can <goal>
 
 Under elements, you can see a list of all actors that are present within this user story.
 
 Under scenarios, you can see a list and view each of the scenarios used to support this story.'. 
-    ^ (aDocument gtTextFor: aView)
-        title: 'View Details';
-        priority: 1
+   ^ (aDocument gtTextFor: aView)
+       title: 'View Details';
+       priority: 1
+]
+
+{ #category : #parsing }
+EUserStory >> gtReferencesFor: aView [
+	<gtView>
+	| aPRDocument userObject actionObject |
+	userObject := '${class:name=', self buildClassStringFromUser, '}$'.
+	actionObject := '${method:name=', user class asString, '>>#', self buildMethodStringFromAction, '}$'.
+	
+	aPRDocument := GtDocumenterParser new parse: ('As a', userObject, ' I want to ', actionObject, ' so that I can, ', goal, '.'). 
+   ^ aView list
+		title: 'Referenced Entities';
+		items: [ self getReferencesFrom: self parseStory ].
 ]
 
 { #category : #ui }
@@ -285,6 +335,7 @@ EUserStory >> initialize [
 	points := 0.
 	state := 'Not started'.
 	announcer := Announcer new.
+	references := OrderedCollection new.
 ]
 
 { #category : #'work state' }
@@ -300,6 +351,17 @@ EUserStory >> markNotStarted [
 { #category : #'work state' }
 EUserStory >> markStarted [
 	state := 'In progress'.
+]
+
+{ #category : #parsing }
+EUserStory >> parseStory [
+	| aPRDocument children userObject actionObject |
+	userObject := '${class:name=', self buildClassStringFromUser, '}$'.
+	actionObject := '${method:name=', user class asString, '>>#', self buildMethodStringFromAction, '}$'.
+	
+	aPRDocument := GtDocumenterParser new parse: ('As a', userObject, ' I want to ', actionObject, ' so that I can, ', goal, '.'). 
+	
+	^ aPRDocument
 ]
 
 { #category : #accessing }

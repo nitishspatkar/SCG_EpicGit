@@ -249,7 +249,7 @@ EUseCaseAdditionMenu >> popupActorList [
 { #category : #ui }
 EUseCaseAdditionMenu >> toggleButton [
 	^ BrButton new
-		label: 'Add Requirement';
+		label: 'Add Actor';
 		icon:
 			(BlElement new
 				size: 8 @ 8;
