@@ -50,6 +50,14 @@ EUserStory >> action: anObject [
 ]
 
 { #category : #adding }
+EUserStory >> addClassPlaceholder: aName [ 
+	Object subclass: aName asSymbol 
+	instanceVariableNames: ''
+	classVariableNames: ''
+	package: ''
+]
+
+{ #category : #adding }
 EUserStory >> addScenario: aScenario [
 	scenarios add: aScenario.
 ]
@@ -70,8 +78,10 @@ EUserStory >> announcer: anAnnouncer [
 { #category : #helper }
 EUserStory >> buildClassStringFromUser [
 	| camelCase |
-	camelCase := user class name asCamelCase.
-	^camelCase
+	camelCase := user class = ByteString
+		ifTrue: [ user asCamelCase ]
+		ifFalse: [ user class name asCamelCase ].
+	^ camelCase
 ]
 
 { #category : #helper }
@@ -88,7 +98,7 @@ EUserStory >> cardViewGenerate [
 	|container verticalContainerLeft verticalContainerRight detailsTextContainer criteriaContainer stateColorContainer stateTextContainer pointsContainer details pointsText stateText criteriaText changeStateButton |
 			details := (
 			'User story:', String cr, String cr, 
-			'As a ', self user name, ',', String cr, 
+			'As ', self user asString, ',', String cr, 
 			'I want to ', self action, ',', String cr, 
 			'So I can ', self goal, '.').
 			pointsText := ('Points: ', self points asString).
@@ -207,17 +217,21 @@ EUserStory >> component: anObject [
 	component := anObject
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #'entity references' }
 EUserStory >> getReferencesFrom: aDocument [
 	"filter out all references to domain entities from a document"
 	| classAnnotations methodAnnotations |
+	
 	aDocument children do: [ :aChild | 
 		(aChild class = PRParagraph) ifTrue: [ 
 			classAnnotations := aChild select: [ :e | e class = GtClassAnnotation ].
 			methodAnnotations := aChild select: [ :e | e class = GtMethodAnnotation ].
+			
 			classAnnotations do: [ :anAnnotation | 
+				[ self class environment at: (anAnnotation referencedClass) name ] on: KeyNotFound do: [ self addClassPlaceholder: (anAnnotation referencedClass) name ].
 				(references includes: (self class environment at: (anAnnotation referencedClass) name)) ifFalse: [ references add: (self class environment at: (anAnnotation referencedClass) name) ]
 				 ].
+			
 			methodAnnotations do: [ :anAnnotation | 
 				(references includes: anAnnotation referencedMethod) ifFalse: [ references add: anAnnotation referencedMethod ]
 				 ].
@@ -261,7 +275,7 @@ EUserStory >> gtDocumentFor: aView [
    | aDocument userObject actionObject |
 	userObject := '${class:name=', self buildClassStringFromUser, '}$'.
 	actionObject := '${method:name=', self buildClassStringFromUser, '>>#', self buildMethodStringFromAction, '}$'.
-	aDocument := GtDocument new text: 'As a', userObject, ' I want to ', actionObject, ' so that I can <goal>
+	aDocument := GtDocument new text: 'As a ', userObject, ' I want to ', actionObject, ' so that I can <goal>
 
 Under elements, you can see a list of all actors that are present within this user story.
 
@@ -276,7 +290,7 @@ EUserStory >> gtReferencesFor: aView [
 	<gtView>
 	| aPRDocument userObject actionObject |
 	userObject := '${class:name=', self buildClassStringFromUser, '}$'.
-	actionObject := '${method:name=', user class asString, '>>#', self buildMethodStringFromAction, '}$'.
+	actionObject := '${method:name=', self buildClassStringFromUser, '>>#', self buildMethodStringFromAction, '}$'.
 	
 	aPRDocument := GtDocumenterParser new parse: ('As a', userObject, ' I want to ', actionObject, ' so that I can, ', goal, '.'). 
    ^ aView list
@@ -297,7 +311,7 @@ EUserStory >> gtStoryInfoFor: aView [
 	^ aView textEditor
 		title: 'Information';
 		priority: 0;
-		text: [ 'As a ', user name, ', I want to ', action, '.', String cr]
+		text: [ 'As a ', user asString, ', I want to ', action, '.', String cr]
 ]
 
 { #category : #ui }
@@ -353,11 +367,11 @@ EUserStory >> markStarted [
 	state := 'In progress'.
 ]
 
-{ #category : #parsing }
+{ #category : #'entity references' }
 EUserStory >> parseStory [
-	| aPRDocument children userObject actionObject |
+	| aPRDocument userObject actionObject |
 	userObject := '${class:name=', self buildClassStringFromUser, '}$'.
-	actionObject := '${method:name=', user class asString, '>>#', self buildMethodStringFromAction, '}$'.
+	actionObject := '${method:name=', self buildClassStringFromUser, '>>#', self buildMethodStringFromAction, '}$'.
 	
 	aPRDocument := GtDocumenterParser new parse: ('As a', userObject, ' I want to ', actionObject, ' so that I can, ', goal, '.'). 
 	
