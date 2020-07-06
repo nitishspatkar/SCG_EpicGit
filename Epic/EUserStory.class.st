@@ -143,7 +143,7 @@ EUserStory >> cardViewGenerate [
 				action: [ 
 					self inform: 'Clicked change state button.'. 
 					self changeWorkState. "This changes the object's state"
-					self announcer announce: ERequirementStateChangedAnnouncement
+					announcer announce: ERequirementStateChangedAnnouncement
 					]).
 			
 			detailsTextContainer := BrEditor new

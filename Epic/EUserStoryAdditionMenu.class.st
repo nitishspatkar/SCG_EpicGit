@@ -28,6 +28,45 @@ EUserStoryAdditionMenu >> blLabelFor: text [
 			c linear horizontal alignLeft ].
 ]
 
+{ #category : #initialization }
+EUserStoryAdditionMenu >> createButtonBar [
+	| bar |
+	
+	bar := BlElement new 
+		layout: BlLinearLayout horizontal;
+		constraintsDo: [ :c | 
+			c horizontal matchParent.
+			c vertical fitContent.
+			 ].
+	
+	bar addChild: self createSaveButton.
+	bar addChild: self createCancelButton.
+	bar addChild: 
+		(BlElement new
+				constraintsDo: [ :c | 
+					c horizontal matchParent.
+					c vertical matchParent ];
+				yourself).
+	
+	^bar
+]
+
+{ #category : #initialization }
+EUserStoryAdditionMenu >> createCancelButton [
+	| cancelButton |
+	cancelButton := (BrButton new
+		background: (Color fromHexString: 'eaeaea');
+		margin: (BlInsets top: 15 left: 15 bottom: 0 right: 0);
+		padding: (BlInsets all: 3);
+		look: BrGlamorousButtonWithIconLook new;
+		icon: BrGlamorousIcons close;
+		action: [ 
+			self inform: 'Clicked cancel button.'.
+			reqContainer announcer announce: ERequirementStateChangedAnnouncement.
+			]).
+	^cancelButton
+]
+
 { #category : #ui }
 EUserStoryAdditionMenu >> createSaveButton [
 	| saveButton title user action goal criteria points userStory |
@@ -73,13 +112,14 @@ EUserStoryAdditionMenu >> initialize [
 	criteriaAdditionElement := self initializeCriteriaAdditionElement.
 	pointsAdditionElement := self initializePointsAdditionElement.
 	
+	self addChild: (self titleFor: 'Add/Edit User Story').
 	self addChild: titleAdditionElement.
 	self addChild: userAdditionElement.
 	self addChild: actionAdditionElement.
 	self addChild: goalAdditionElement.
 	self addChild: criteriaAdditionElement.
 	self addChild: pointsAdditionElement.
-	self addChild: self createSaveButton.
+	self addChild: self createButtonBar.
 ]
 
 { #category : #initialization }
@@ -189,7 +229,7 @@ EUserStoryAdditionMenu >> initializePointsAdditionElement [
 
 	titleLabel:= self blLabelFor: 'Points: '.
 	
-	editedArtifact ifNotNil: [ pointsText := editedArtifact points asString ] ifNil: [ pointsText := ('How many implementation points does this story have?') ].
+	editedArtifact ifNotNil: [ pointsText := editedArtifact points asString ] ifNil: [ pointsText := ('0') ].
 	
 	aDocument := GtDocument new.
 	aDocument editor useSyncStylerStrategy.
@@ -277,28 +317,8 @@ EUserStoryAdditionMenu >> initializeUserAdditionElement [
 
 { #category : #initialization }
 EUserStoryAdditionMenu >> initializeWithContainer: anERequirementContainer [
-	super initialize.
 	reqContainer := anERequirementContainer.
-	self 
-	layout: BlLinearLayout vertical;
-	constraintsDo: [ :c |
-		c horizontal matchParent.
-		c vertical fitContent. ].
-	
-	titleAdditionElement := self initializeTitleAdditionElement.
-	userAdditionElement := self initializeUserAdditionElement.
-	actionAdditionElement := self initializeActionAdditionElement.
-	goalAdditionElement := self initializeGoalAdditionElement.
-	criteriaAdditionElement := self initializeCriteriaAdditionElement.
-	pointsAdditionElement := self initializePointsAdditionElement.
-	
-	self addChild: titleAdditionElement.
-	self addChild: userAdditionElement.
-	self addChild: actionAdditionElement.
-	self addChild: goalAdditionElement.
-	self addChild: criteriaAdditionElement.
-	self addChild: pointsAdditionElement.
-	self addChild: self createSaveButton.
+	self initialize.
 ]
 
 { #category : #initialization }
@@ -312,24 +332,17 @@ EUserStoryAdditionMenu >> initializeWithContainer: anERequirementContainer andPa
 	super initialize.
 	parentArtifact := aParent.
 	reqContainer := anERequirementContainer.
-	self 
-	layout: BlLinearLayout vertical;
-	constraintsDo: [ :c |
-		c horizontal matchParent.
-		c vertical fitContent. ].
-	
-	titleAdditionElement := self initializeTitleAdditionElement.
-	userAdditionElement := self initializeUserAdditionElement.
-	actionAdditionElement := self initializeActionAdditionElement.
-	goalAdditionElement := self initializeGoalAdditionElement.
-	criteriaAdditionElement := self initializeCriteriaAdditionElement.
-	pointsAdditionElement := self initializePointsAdditionElement.
-	
-	self addChild: titleAdditionElement.
-	self addChild: userAdditionElement.
-	self addChild: actionAdditionElement.
-	self addChild: goalAdditionElement.
-	self addChild: criteriaAdditionElement.
-	self addChild: pointsAdditionElement.
-	self addChild: self createSaveButton.
+	self initialize.
+]
+
+{ #category : #rendering }
+EUserStoryAdditionMenu >> titleFor: text [
+	^ BrLabel new
+		text: text;
+		padding: (BlInsets all: 5);
+		geometry: (BlRectangle cornerRadius: 5);
+		look: (BrGlamorousLabelLook new glamorousRegularFontAndSize; fontSize: 22); 
+		constraintsDo: [ :c | 
+			c linear vertical alignCenter.
+			c linear horizontal alignCenter ].
 ]

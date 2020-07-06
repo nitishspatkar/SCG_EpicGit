@@ -26,6 +26,45 @@ EUseCaseAdditionMenu >> blLabelFor: text [
 			c linear horizontal alignLeft ].
 ]
 
+{ #category : #initialization }
+EUseCaseAdditionMenu >> createButtonBar [
+	| bar |
+	
+	bar := BlElement new 
+		layout: BlLinearLayout horizontal;
+		constraintsDo: [ :c | 
+			c horizontal matchParent.
+			c vertical fitContent.
+			 ].
+	
+	bar addChild: self createSaveButton.
+	bar addChild: self createCancelButton.
+	bar addChild: 
+		(BlElement new
+				constraintsDo: [ :c | 
+					c horizontal matchParent.
+					c vertical matchParent ];
+				yourself).
+	
+	^bar
+]
+
+{ #category : #initialization }
+EUseCaseAdditionMenu >> createCancelButton [
+	| cancelButton |
+	cancelButton := (BrButton new
+		background: (Color fromHexString: 'eaeaea');
+		margin: (BlInsets top: 15 left: 15 bottom: 0 right: 0);
+		padding: (BlInsets all: 3);
+		look: BrGlamorousButtonWithIconLook new;
+		icon: BrGlamorousIcons close;
+		action: [ 
+			self inform: 'Clicked cancel button.'.
+			reqContainer announcer announce: ERequirementStateChangedAnnouncement.
+			]).
+	^cancelButton
+]
+
 { #category : #ui }
 EUseCaseAdditionMenu >> createSaveButton [
 	| saveButton title task useCase |
@@ -70,10 +109,11 @@ EUseCaseAdditionMenu >> initialize [
 	taskAdditionElement := self initializeTaskAdditionElement.
 	actorDropdown := self initializeActorAdditionDropdown.
 	
+	self addChild: (self titleFor: 'Add/Edit Use Case').
 	self addChild: titleAdditionElement.
 	self addChild: taskAdditionElement.
 	self addChild: actorDropdown.
-	self addChild: self createSaveButton.
+	self addChild: self createButtonBar.
 ]
 
 { #category : #initialization }
@@ -168,22 +208,8 @@ EUseCaseAdditionMenu >> initializeTitleAdditionElement [
 
 { #category : #initialization }
 EUseCaseAdditionMenu >> initializeWithContainer: anERequirementContainer [
-	super initialize.
 	reqContainer := anERequirementContainer.
-	
-	self 
-	layout: BlLinearLayout vertical;
-	constraintsDo: [ :c |
-		c horizontal matchParent.
-		c vertical fitContent. ].
-	
-	titleAdditionElement := self initializeTitleAdditionElement.
-	taskAdditionElement := self initializeTaskAdditionElement.
-	actorDropdown := self initializeActorAdditionDropdown.
-	self addChild: titleAdditionElement.
-	self addChild: taskAdditionElement.
-	self addChild: actorDropdown.
-	self addChild: self createSaveButton.
+	self initialize.
 ]
 
 { #category : #initialization }
@@ -195,23 +221,9 @@ EUseCaseAdditionMenu >> initializeWithContainer: anERequirementContainer andElem
 { #category : #initialization }
 EUseCaseAdditionMenu >> initializeWithContainer: anERequirementContainer andParent: aParent [
 	"I initialize my creation menu with a specified parent element, which will be linked to the element that is created from the menu."
-	super initialize.
 	parentArtifact := aParent.
 	reqContainer := anERequirementContainer.
-	
-	self 
-	layout: BlLinearLayout vertical;
-	constraintsDo: [ :c |
-		c horizontal matchParent.
-		c vertical fitContent. ].
-	
-	titleAdditionElement := self initializeTitleAdditionElement.
-	taskAdditionElement := self initializeTaskAdditionElement.
-	actorDropdown := self initializeActorAdditionDropdown.
-	self addChild: titleAdditionElement.
-	self addChild: taskAdditionElement.
-	self addChild: actorDropdown.
-	self addChild: self createSaveButton.
+	self initialize.
 ]
 
 { #category : #ui }
@@ -244,6 +256,18 @@ EUseCaseAdditionMenu >> popupActorList [
 		fitContent;
 		items: self getActors.
 	^actorList
+]
+
+{ #category : #rendering }
+EUseCaseAdditionMenu >> titleFor: text [
+	^ BrLabel new
+		text: text;
+		padding: (BlInsets all: 5);
+		geometry: (BlRectangle cornerRadius: 5);
+		look: (BrGlamorousLabelLook new glamorousRegularFontAndSize; fontSize: 22); 
+		constraintsDo: [ :c | 
+			c linear vertical alignCenter.
+			c linear horizontal alignCenter ].
 ]
 
 { #category : #ui }

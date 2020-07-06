@@ -13,6 +13,9 @@ Class {
 
 { #category : #adding }
 ERequirementContainer >> addArtifact: anArtifact [
+	"I add an artifact to my requirement collection.
+	Any children of the artifact are added as well.
+	Finally, an announcement is sent to update the views"
 	requirements add: anArtifact.
 	self addArtifactChildren: anArtifact.
 	self announcer announce: ERequirementStateChangedAnnouncement.
@@ -27,6 +30,17 @@ ERequirementContainer >> addArtifactChildren: anArtifact [
 	children do: [ :each | self addArtifact: each ].
 ]
 
+{ #category : #ui }
+ERequirementContainer >> addSubElementLabelFor: anArtifact [
+	"return a string of the supplied artifact's sub-element. Used for the addition button for new artifacts"
+	| label artifactType |
+	artifactType := anArtifact class.
+	(artifactType = EEpic) ifTrue: [ label := 'Add Use Case' ].
+	(artifactType = EUseCase) ifTrue: [ label := 'Add User Story' ].
+	(artifactType = EUserStory) ifTrue: [ label := 'Add Scenario' ].
+	^ label
+]
+
 { #category : #accessing }
 ERequirementContainer >> announcer [
 	^announcer
@@ -34,6 +48,7 @@ ERequirementContainer >> announcer [
 
 { #category : #ui }
 ERequirementContainer >> buildButtonBar [
+	"I build a button bar for manipulating a view (zooming, resizing, refreshing the view)"
 	| buttonBar |
 	buttonBar := BlElement new
 		constraintsDo: [ :c | 
@@ -144,32 +159,8 @@ ERequirementContainer >> createAddEpicMenu [
 ]
 
 { #category : #ui }
-ERequirementContainer >> createArtifactAdditionDropdown [
-	"I create and return a dropdown toggle button for adding artifacts in the Mind Map view"
-	| dropdownLook |
-	^ self toggleButton
-		look:
-			BrGlamorousButtonWithLabelAndIconLook
-				+
-					(dropdownLook := BrGlamorousWithDropdownLook
-						handle: [ self toggleButton
-								look:
-									BrGlamorousButtonWithLabelAndIconLook - BrGlamorousButtonExteriorLook;
-								yourself ]
-						content: [ self popupArtifactList 
-							addShortcut:
-								(BlShortcut new
-								combination: BlKeyCombination builder return build;
-								action: [ dropdownLook hide ]).
-								]);
-		label: 'Add Requirement';
-		relocate: 200 @ 100;
-		yourself
-]
-
-{ #category : #ui }
 ERequirementContainer >> generateAdditionMenuFor: anArtifact [
-	"return an addition menu for the supplied artifact"
+	"I return an addition menu for the child artifact of the supplied artifact."
 	| menu artifactType |
 	artifactType := anArtifact class.
 	(artifactType = EEpic) ifTrue: [ menu := (EUseCaseAdditionMenu new initializeWithContainer: self andParent: anArtifact) ].
@@ -180,6 +171,7 @@ ERequirementContainer >> generateAdditionMenuFor: anArtifact [
 
 { #category : #ui }
 ERequirementContainer >> generateEditMenuFor: anArtifact [
+	"I return an edit menu for the supplied artifact."
 	| menu artifactType |
 	artifactType := anArtifact class.
 	(artifactType = EEpic) ifTrue: [ menu := (EEpicAdditionMenu new initializeWithContainer: self andElement: anArtifact) ].
@@ -191,6 +183,7 @@ ERequirementContainer >> generateEditMenuFor: anArtifact [
 
 { #category : #ui }
 ERequirementContainer >> generateMindMapView [
+	"I set up the complete Mind Map view in the container. This includes the buttons and the graph itself."
 	graphPane := BlElement new
 		layout: BlLinearLayout vertical;
 		constraintsDo: [ :c | 
@@ -213,11 +206,32 @@ ERequirementContainer >> generateMindMapView [
 
 { #category : #ui }
 ERequirementContainer >> generateStoryWallView [
-	"comment stating purpose of instance-side message"
-	| wall column columnTitle stories workStates |
+	"I set up the Story Wall view of the container."
+	| container wall buttonBar refreshButton column columnTitle stories workStates |
 	
 	stories := self getUserStories.
 	stories do: [ :story | story announcer: self announcer ].
+	
+	container := BlElement new
+		layout: BlLinearLayout vertical;
+		padding: (BlInsets all: 2);
+		constraintsDo: [ :c | 
+			c horizontal matchParent.
+			c vertical fitContent.
+			 ].
+	
+	buttonBar := BlElement new
+		layout: BlLinearLayout horizontal;
+		constraintsDo: [ :c | 
+			c horizontal matchParent.
+			c vertical fitContent.
+			 ].
+	
+	refreshButton := (BrButton new
+		look: BrGlamorousButtonWithIconLook;
+				icon: BrGlamorousVectorIcons refresh;
+				label: 'Refresh';
+				action: [ self announcer announce: ERequirementStateChangedAnnouncement ]).
 	
 	wall := BlElement new
 		layout: BlLinearLayout horizontal;
@@ -251,13 +265,23 @@ ERequirementContainer >> generateStoryWallView [
 		column addChildren: ((stories select: [ :story | story state = aState ]) collect: [ :story | story cardViewGenerate ]).
 		wall addChild: column.
 		 ].
-
-	^wall asScrollableElement
+	
+	buttonBar addChild:
+			(BlElement new
+				constraintsDo: [ :c | 
+					c horizontal matchParent.
+					c vertical matchParent ];
+				yourself).
+				
+	buttonBar addChild: refreshButton.
+	container addChild: buttonBar.
+	container addChild: wall.
+	^container asScrollableElement
 ]
 
-{ #category : #helper }
+{ #category : #accessing }
 ERequirementContainer >> getActors [
-	"Get all the actors from the use cases in the container"
+	"I get all the actors from the use cases in the container"
 	| useCases actors |
 	useCases := requirements select: [ :each | each class name = 'EUseCase' ].
 	actors := OrderedCollection new.
@@ -267,17 +291,6 @@ ERequirementContainer >> getActors [
 			]
 		 ].
 	^actors
-]
-
-{ #category : #helper }
-ERequirementContainer >> getAvailableArtifactTypesForDropdown [
-	"I return a dictionary of artifact types, which can be selected in the dropdown menu in the Mind Map view"
-	| result |
-	result := SmallDictionary new.
-	requirements do: [ :each | 
-		(result includes: (each class name)) ifFalse: [ result at: (each class name) put: each class ]
-		]. 
-	^result
 ]
 
 { #category : #accessing }
@@ -290,7 +303,7 @@ ERequirementContainer >> getEpics [
 
 { #category : #accessing }
 ERequirementContainer >> getScenarios [
-	"comment stating purpose of instance-side message"
+	"I collect and return an OrderedCollection of all the scenarios from the requirements collection."
 	| scenarios |
 	scenarios := self requirements select: [ :each | each class = EScenario ].
 	^scenarios
@@ -298,15 +311,15 @@ ERequirementContainer >> getScenarios [
 
 { #category : #accessing }
 ERequirementContainer >> getUseCases [
-	"comment stating purpose of instance-side message"
+	"I collect and return an OrderedCollection of all the user stories from the requirements collection."
 	| useCases |
 	useCases := self requirements select: [ :each | each class = EUseCase ].
 	^useCases
 ]
 
-{ #category : #helper }
+{ #category : #accessing }
 ERequirementContainer >> getUserStories [
-	"comment stating purpose of instance-side message"
+	"I collect and return an OrderedCollection of all the user stories from the requirements collection."
 	| stories |
 	stories := self requirements select: [ :each | each class = EUserStory ].
 	^stories
@@ -327,6 +340,7 @@ As of now, the supported artifact types are:
 	4. Agile Scenarios: ${class:name=EScenario}$.
 
 The Mind Map view provides an overview of all the artifacts currently contained within the project. The structure of the map is hierarchical, with the finer-grained artifacts being situated farther from the center of the map.
+The Story Wall view features all user stories in the form of cards. With the click of a button their work status can be changed between not started/in progress/finished states.
 '.
 	^ (aDocument gtTextFor: aView)
 		title: 'View Details';
@@ -335,7 +349,6 @@ The Mind Map view provides an overview of all the artifacts currently contained 
 
 { #category : #ui }
 ERequirementContainer >> gtMindMapFor: aView [
-	<gtView>
 	^ aView mondrian
 		title: 'Tree View';
 		priority: 50;
@@ -348,7 +361,7 @@ ERequirementContainer >> gtMindMapFor: aView [
 ERequirementContainer >> gtTestViewFor: aView [
 	<gtView>
 	^ aView explicit
-		title: 'Test View';
+		title: 'Mind Map';
 		priority: 50;
 		updateWhen: ERequirementStateChangedAnnouncement in: [ self announcer ];
 		stencil: [ self generateMindMapView ].
@@ -362,15 +375,6 @@ ERequirementContainer >> gtUserStoryWallViewFor: aView [
 		priority: 50;
 		updateWhen: ERequirementStateChangedAnnouncement in: [ self announcer ];
 		stencil: [ self generateStoryWallView ].
-]
-
-{ #category : #helper }
-ERequirementContainer >> handleDropdownSelection: aKey [
-	"I take the selection from the artifact addition dropdown menu, and add the selected artifact to my artifact collection."
-	| artifactType |
-	artifactType := self getAvailableArtifactTypesForDropdown at: aKey.
-	graphPane removeChildren.
-	graphPane addChild: self createAddEpicMenu.
 ]
 
 { #category : #initialization }
@@ -455,43 +459,10 @@ ERequirementContainer >> nodeSizeFor: anArtifact [
 	(artifactType = EUseCase) ifTrue: [ 
 		anArtifact children do: [ :story | size := size + story points ].
 		 ].
-	(artifactType = EUserStory) ifTrue: [ size := anArtifact points ].
+	(artifactType = EUserStory) ifTrue: [ size := 10 + anArtifact points ].
 	(artifactType = EScenario) ifTrue: [ size := 10 ].
 	size := (scale map: size) * 20.
 	^ size
-]
-
-{ #category : #ui }
-ERequirementContainer >> popupArtifactList [
-	| artifactList |
-	artifactList := BrSimpleList new.
-	artifactList
-		lookDo: [ :aLook | aLook listElement constraintsDo: [ :c | c maxHeight: 200 ] ];
-		layout: BlLinearLayout vertical;
-		padding: (BlInsets all: 5);
-		vFitContent;
-		hExact: 200;
-		stencil: [ :each :index | 
-			BlTextElement new
-				text: each asRopedText;
-				constraintsDo: [ :c | c horizontal matchParent ];
-				padding: (BlInsets all: 5);
-				when: BlClickEvent
-					do: [ :anEvent | 
-					artifactList selectOne: index.
-					self handleDropdownSelection: (each asString).
-					"self announcer announce: ERequirementStateChangedAnnouncement new."
-					]
-				];
-		addShortcut:
-			(BlShortcut new
-				combination: BlKeyCombination builder return build;
-				action: [  
-					self createArtifactAdditionDropdown look hide 
-					]);
-		fitContent;
-		items: self getAvailableArtifactTypesForDropdown keys.
-	^artifactList
 ]
 
 { #category : #accessing }
@@ -507,6 +478,10 @@ ERequirementContainer >> project: aString [
 
 { #category : #removing }
 ERequirementContainer >> removeArtifact: anArtifact [
+	"I remove the specified artifact from my requirement collection.
+	I ensure that any reference of the artifact is removed from any parent element.
+	Also, I make sure the children of the artifact are removed.
+	Finally, I announce a change in the state of the requirements, so that the requirement views may be updated"
 	self removeFromParent: anArtifact.
 	requirements remove: anArtifact.
 	self removeArtifactChildren: anArtifact.
@@ -515,7 +490,7 @@ ERequirementContainer >> removeArtifact: anArtifact [
 
 { #category : #removing }
 ERequirementContainer >> removeArtifactChildren: anArtifact [
-	"I execute this whenever an artifact is removed from my container. 
+	"I am executed whenever an artifact is removed from my container. 
 	This ensures that all of the artifact's subelements are removed as well"
 	| children |
 	children := anArtifact children.
@@ -545,18 +520,18 @@ ERequirementContainer >> requirements [
 
 { #category : #accessing }
 ERequirementContainer >> requirements: aCollectionOfRequirements [
-	"I work with a collection of requirement artifacts, in order to display them in my various views. The supported artifacts can be found in the 'View Details' view of my object."
+	"I work with a collection of requirement artifacts, in order to display them in my various views. The supported artifact types can be found in the 'View Details' view of my object."
 	requirements := aCollectionOfRequirements.
 ]
 
-{ #category : #helper }
+{ #category : #ui }
 ERequirementContainer >> setUpTooltipLookFor: anArtifact [
-	"set up the tooltip object for the Mind Map view"
+	"I set up the custom tooltip object for the Mind Map view, depending on the supplied artifact"
 	| look tooltipContainer tooltipButtonBar tooltipText tooltipLabel addSubElementButton editElementButton deleteElementButton |
 	addSubElementButton := (BrButton new
 				look: BrGlamorousButtonWithIconLook;
 				icon: BrGlamorousIcons add;
-				label: 'Add sub-element';
+				label: (self addSubElementLabelFor: anArtifact);
 				action: [ 
 					graphPane removeChildren.
 					graphPane addChild: (self generateAdditionMenuFor: anArtifact).
@@ -610,23 +585,4 @@ ERequirementContainer >> setUpTooltipLookFor: anArtifact [
 	look := BrGlamorousWithTooltipLook2 
 		content: tooltipContainer.
 	^look
-]
-
-{ #category : #ui }
-ERequirementContainer >> toggleButton [
-	^ BrButton new
-		label: 'Add Requirement';
-		icon:
-			(BlElement new
-				size: 8 @ 8;
-				geometry:
-					(BlPolygon
-						vertices:
-							{(0 @ 0).
-							(8 @ 0).
-							((8 / 2) rounded @ 8)});
-				background: Color lightGray;
-				margin: (BlInsets left: 6);
-				constraintsDo: [ :c | c linear vertical alignCenter ]);
-		yourself
 ]
