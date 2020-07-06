@@ -21,7 +21,8 @@ Class {
 		'flowOfEvents',
 		'state',
 		'task',
-		'userStories'
+		'userStories',
+		'references'
 	],
 	#category : #'Epic-Model'
 }
@@ -83,6 +84,18 @@ EUseCase >> flowOfEvents [
 { #category : #accessing }
 EUseCase >> flowOfEvents: anObject [
 	flowOfEvents := anObject
+]
+
+{ #category : #'entity references' }
+EUseCase >> getReferencesFrom: aCollectionOfUserStories [
+	| storyReferences uniqueReferences |
+	uniqueReferences := Set new.
+	aCollectionOfUserStories do: [ :aStory | 
+		storyReferences := aStory getReferencesFrom: aStory parseStory.
+		uniqueReferences addAll: storyReferences.
+		 ].
+	references := uniqueReferences asOrderedCollection.
+	^references
 ]
 
 { #category : #ui }
@@ -147,6 +160,14 @@ Under Diagram, you will be able to see a use case diagram. This is still under c
 		priority: 1
 ]
 
+{ #category : #'entity references' }
+EUseCase >> gtReferencesFor: aView [
+	<gtView>
+   ^ aView list
+		title: 'Referenced Entities';
+		items: [ self getReferencesFrom: self children ].
+]
+
 { #category : #'as yet unclassified' }
 EUseCase >> gtTreeViewOn: aView [
 	<gtView>
@@ -176,6 +197,7 @@ EUseCase >> initialize [
 	super initialize.
 	userStories := OrderedCollection new.
 	actor := OrderedCollection new.
+	references := OrderedCollection new.
 	actor add: EActor new.
 	title :=  'Use Case Title'.
 	state :=  'Not started'.

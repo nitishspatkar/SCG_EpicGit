@@ -11,7 +11,8 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'title',
-		'use_cases'
+		'use_cases',
+		'references'
 	],
 	#category : #'Epic-Model'
 }
@@ -24,6 +25,18 @@ EEpic >> addUseCase: aUseCase [
 { #category : #accessing }
 EEpic >> children [
 	^ self use_cases 
+]
+
+{ #category : #'entity references' }
+EEpic >> getReferencesFrom: aCollectionOfUseCases [
+	| useCaseReferences uniqueReferences |
+	uniqueReferences := Set new.
+	aCollectionOfUseCases do: [ :aUseCase | 
+		useCaseReferences := aUseCase getReferencesFrom: aUseCase children.
+		uniqueReferences addAll: useCaseReferences.
+		 ].
+	references := uniqueReferences asOrderedCollection.
+	^references
 ]
 
 { #category : #ui }
@@ -57,7 +70,15 @@ EEpic >> gtEpicInformationFor: aView [
 	text: [ 'Epic: ', title ]
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #'entity references' }
+EEpic >> gtReferencesFor: aView [
+	<gtView>
+   ^ aView list
+		title: 'Referenced Entities';
+		items: [ self getReferencesFrom: self children ].
+]
+
+{ #category : #ui }
 EEpic >> gtTreeViewOn: aView [
 	<gtView>
 	(self use_cases isEmpty) ifTrue: [^ aView empty].
@@ -108,6 +129,7 @@ EEpic >> initialize [
 	super initialize.
 	title := 'Feature of this epic'.
 	use_cases := OrderedCollection new.
+	references := OrderedCollection new.
 	
 ]
 
@@ -126,7 +148,7 @@ EEpic >> title: aString [
 	title := aString
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #helper }
 EEpic >> treeViewShortString [
 	^ 'Epic: ', self title 
 ]
