@@ -24,7 +24,8 @@ Class {
 		'points',
 		'state',
 		'announcer',
-		'references'
+		'references',
+		'description'
 	],
 	#category : #'Epic-Model'
 }
@@ -217,19 +218,34 @@ EUserStory >> component: anObject [
 	component := anObject
 ]
 
+{ #category : #accessing }
+EUserStory >> description [
+	^description
+]
+
+{ #category : #accessing }
+EUserStory >> description: aString [
+	description := aString
+]
+
 { #category : #'entity references' }
 EUserStory >> getReferencesFrom: aDocument [
 	"filter out all references to domain entities from a document"
-	| classAnnotations methodAnnotations |
+	| classAnnotations methodAnnotations missingEntityString |
 	
+	references := OrderedCollection new.
 	aDocument children do: [ :aChild | 
 		(aChild class = PRParagraph) ifTrue: [ 
 			classAnnotations := aChild select: [ :e | e class = GtClassAnnotation ].
 			methodAnnotations := aChild select: [ :e | e class = GtMethodAnnotation ].
 			
 			classAnnotations do: [ :anAnnotation | 
-				[ self class environment at: (anAnnotation referencedClass) name ] on: KeyNotFound do: [ self addClassPlaceholder: (anAnnotation referencedClass) name ].
-				(references includes: (self class environment at: (anAnnotation referencedClass) name)) ifFalse: [ references add: (self class environment at: (anAnnotation referencedClass) name) ]
+				[ (references includes: (self class environment at: (anAnnotation referencedClass) name)) 
+					ifFalse: [ references add: (self class environment at: (anAnnotation referencedClass) name) ] 
+					] on: KeyNotFound do: [ 
+					missingEntityString := String streamContents: [ :out | out nextPutAll: ((anAnnotation referencedClass) name); nextPutAll: ' - missing' ].
+					references add: missingEntityString.
+					].
 				 ].
 			
 			methodAnnotations do: [ :anAnnotation | 
@@ -237,7 +253,7 @@ EUserStory >> getReferencesFrom: aDocument [
 				 ].
 			 ]
 		 ].
-	^references
+	^references asSet asOrderedCollection.
 ]
 
 { #category : #'work state' }
@@ -270,6 +286,17 @@ EUserStory >> gtCardViewFor: aView [
 ]
 
 { #category : #ui }
+EUserStory >> gtDescriptionFor: aView [
+	<gtView>
+	| document |
+	document := GtDocument new text: self description.
+	
+	^(document gtTextFor: aView)
+       title: 'Description';
+       priority: 1.
+]
+
+{ #category : #ui }
 EUserStory >> gtDocumentFor: aView [
    <gtView>
    | aDocument userObject actionObject |
@@ -288,11 +315,6 @@ Under scenarios, you can see a list and view each of the scenarios used to suppo
 { #category : #parsing }
 EUserStory >> gtReferencesFor: aView [
 	<gtView>
-	| aPRDocument userObject actionObject |
-	userObject := '${class:name=', self buildClassStringFromUser, '}$'.
-	actionObject := '${method:name=', self buildClassStringFromUser, '>>#', self buildMethodStringFromAction, '}$'.
-	
-	aPRDocument := GtDocumenterParser new parse: ('As a', userObject, ' I want to ', actionObject, ' so that I can, ', goal, '.'). 
    ^ aView list
 		title: 'Referenced Entities';
 		items: [ self getReferencesFrom: self parseStory ].
@@ -344,6 +366,7 @@ EUserStory >> initialize [
 	component add: user.
 	goal := 'Undefined'.
 	action := 'Undefined'.
+	description := ''.
 	scenarios := OrderedCollection new.
 	acceptCriteria := 'Undefined'.
 	points := 0.
@@ -369,11 +392,8 @@ EUserStory >> markStarted [
 
 { #category : #'entity references' }
 EUserStory >> parseStory [
-	| aPRDocument userObject actionObject |
-	userObject := '${class:name=', self buildClassStringFromUser, '}$'.
-	actionObject := '${method:name=', self buildClassStringFromUser, '>>#', self buildMethodStringFromAction, '}$'.
-	
-	aPRDocument := GtDocumenterParser new parse: ('As a', userObject, ' I want to ', actionObject, ' so that I can, ', goal, '.'). 
+	| aPRDocument |
+	aPRDocument := GtDocumenterParser new parse: self description. 
 	
 	^ aPRDocument
 ]

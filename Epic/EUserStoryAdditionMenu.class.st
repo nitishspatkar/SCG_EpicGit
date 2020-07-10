@@ -7,6 +7,7 @@ Class {
 		'userAdditionElement',
 		'actionAdditionElement',
 		'goalAdditionElement',
+		'descriptionAdditionElement',
 		'criteriaAdditionElement',
 		'pointsAdditionElement',
 		'parentArtifact',
@@ -69,7 +70,7 @@ EUserStoryAdditionMenu >> createCancelButton [
 
 { #category : #ui }
 EUserStoryAdditionMenu >> createSaveButton [
-	| saveButton title user action goal criteria points userStory |
+	| saveButton title user action goal description criteria points userStory |
 	saveButton := (BrButton new
 		background: (Color fromHexString: 'eaeaea');
 		margin: (BlInsets top: 15 left: 15 bottom: 0 right: 0);
@@ -82,12 +83,13 @@ EUserStoryAdditionMenu >> createSaveButton [
 			user := EActor new name: (((userAdditionElement children at:2) document text) asString).
 			action := ((actionAdditionElement children at:2) document text) asString.
 			goal := ((goalAdditionElement children at:2) document text) asString.
+			description := ((descriptionAdditionElement children at:2) document text) asString.
 			criteria := ((criteriaAdditionElement children at:2) document text) asString.
 			points := (((pointsAdditionElement children at:2) document text) asString) asNumber.
 			editedArtifact ifNotNil: [ 
 				editedArtifact title: title; user: user; action: action; goal: goal; acceptCriteria: criteria; points: points.
 				 ] ifNil: [ 
-				userStory := (EUserStory new title: title; user: user; action: action; goal: goal; acceptCriteria: criteria; points: points).
+				userStory := (EUserStory new title: title; user: user; action: action; goal: goal; description: description; acceptCriteria: criteria; points: points).
 				reqContainer addArtifact: userStory.
 				 ].
 			parentArtifact ifNotNil: [ parentArtifact addUserStory: userStory ].
@@ -109,6 +111,7 @@ EUserStoryAdditionMenu >> initialize [
 	userAdditionElement := self initializeUserAdditionElement.
 	actionAdditionElement := self initializeActionAdditionElement.
 	goalAdditionElement := self initializeGoalAdditionElement.
+	descriptionAdditionElement := self initializeDescriptionAdditionElement.
 	criteriaAdditionElement := self initializeCriteriaAdditionElement.
 	pointsAdditionElement := self initializePointsAdditionElement.
 	
@@ -117,6 +120,7 @@ EUserStoryAdditionMenu >> initialize [
 	self addChild: userAdditionElement.
 	self addChild: actionAdditionElement.
 	self addChild: goalAdditionElement.
+	self addChild: descriptionAdditionElement.
 	self addChild: criteriaAdditionElement.
 	self addChild: pointsAdditionElement.
 	self addChild: self createButtonBar.
@@ -170,6 +174,38 @@ EUserStoryAdditionMenu >> initializeCriteriaAdditionElement [
 	aDocument := GtDocument new.
 	aDocument editor useSyncStylerStrategy.
 	aDocument text: criteriaText.
+	textElement := aDocument asElementWithoutSaveAction
+			vFitContent;
+			hMatchParent.
+	textElement	
+		border: (BlBorder paint: (Color fromHexString: 'eaeaea') width: 2);
+		margin: (BlInsets top: 15 left: 15 bottom: 0 right: 0);
+		padding: (BlInsets all: 3);
+		geometry: (BlRectangle cornerRadius: 5).
+	
+		
+	container addChild: titleLabel.		
+	container addChild: textElement.		
+	
+	^ container.	
+]
+
+{ #category : #initialization }
+EUserStoryAdditionMenu >> initializeDescriptionAdditionElement [
+	|container titleLabel aDocument textElement descrText |
+	container:= BlElement new 
+		layout: BlLinearLayout vertical;
+		constraintsDo: [ :c |
+		c horizontal matchParent.
+		c vertical fitContent ].
+
+	titleLabel:= self blLabelFor: 'Description '.
+	
+	editedArtifact ifNotNil: [ descrText := editedArtifact description ] ifNil: [ descrText := ('Describe the user story') ].
+	
+	aDocument := GtDocument new.
+	aDocument editor useSyncStylerStrategy.
+	aDocument text: descrText.
 	textElement := aDocument asElementWithoutSaveAction
 			vFitContent;
 			hMatchParent.

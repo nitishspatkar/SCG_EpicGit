@@ -1,0 +1,69 @@
+Class {
+	#name : #RequirementRefFinder,
+	#superclass : #Object,
+	#classInstVars : [
+		'containers'
+	],
+	#category : #'Epic-Model'
+}
+
+{ #category : #accessing }
+RequirementRefFinder class >> addContainer: aRequirementContainer [
+	self
+		assert: aRequirementContainer class
+		equals: ERequirementContainer.
+	(containers includes: aRequirementContainer) ifFalse: [ containers add: aRequirementContainer ].
+]
+
+{ #category : #accessing }
+RequirementRefFinder class >> containers [
+	^containers
+]
+
+{ #category : #'reference finding' }
+RequirementRefFinder class >> findReferencesTo: aClass [
+	| references |
+	references := OrderedCollection new.
+	containers do: [ :aContainer | 
+		aContainer getEpics do: [ :anEpic | 
+			(anEpic getReferencesFrom: anEpic children) 
+					do: [ :aRef | 
+						(aRef class = RGMethodDefinition) ifFalse: [ (aRef = aClass) ifTrue: [ references add: anEpic ] ]
+						].
+			anEpic children do: [ :aUseCase | 
+				(aUseCase getReferencesFrom: aUseCase children)
+					do: [ :aRef | 
+						(aRef class = RGMethodDefinition) ifFalse: [ (aRef = aClass) ifTrue: [ references add: aUseCase ] ]
+						 ].
+				aUseCase children do: [ :aUserStory | 
+					(aUserStory getReferencesFrom: aUserStory parseStory)
+						do: [ :aRef | 
+							(aRef class = RGMethodDefinition) ifFalse: [ (aRef = aClass) ifTrue: [ references add: aUserStory ] ]
+							 ]
+					 ]
+				 ].
+			]
+		 ].
+	^references
+]
+
+{ #category : #'class initialization' }
+RequirementRefFinder class >> initialize [
+	containers := OrderedCollection new.
+]
+
+{ #category : #views }
+RequirementRefFinder class >> viewWithItemsFor: aClass [
+	| view element references |
+	references := self findReferencesTo: aClass.
+	view := GtPhlowView empty list.
+	view itemStencil: [ :x | 
+		element := BrLabel new.
+		element look: BrGlamorousLabelLook new.
+		element text: (x asString, ': ', x title) asRopedText.
+		].
+	view items: references.
+	view title: 'Requirement References' translated.
+	view priority: 2.
+	^ view
+]

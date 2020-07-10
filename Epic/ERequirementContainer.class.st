@@ -57,6 +57,8 @@ ERequirementContainer >> buildButtonBar [
 		layout: BlLinearLayout horizontal;
 		yourself.
 	
+	buttonBar addChild: self createInfoButtonForMindMap.
+	
 	buttonBar
 		addChild:
 			(BlElement new
@@ -156,6 +158,50 @@ ERequirementContainer >> computeUseCaseColor: aUseCase [
 { #category : #ui }
 ERequirementContainer >> createAddEpicMenu [
 	^EEpicAdditionMenu new initializeWithContainer: self.
+]
+
+{ #category : #ui }
+ERequirementContainer >> createInfoButtonForMindMap [
+	| button buttonContent nodeSizeInfoElement nodeColorInfoElement nodeOutlineColorInfoElement |
+	buttonContent := BlElement new 
+		background: Color white;
+		layout: BlLinearLayout vertical;
+		padding: (BlInsets left: 5 right: 5);
+		constraintsDo: [ :c | 
+			c horizontal fitContent.
+			c vertical fitContent.
+				];
+		yourself.
+								
+	nodeSizeInfoElement := BlTextElement new 
+		padding: (BlInsets top: 5 bottom: 5);
+		text: ('Node size: implementation points associated with the element') asRopedText.
+	
+	nodeColorInfoElement := BlTextElement new 
+		padding: (BlInsets top: 5 bottom: 5);
+		text: ('Node color: work progress state (red -> yellow -> green)') asRopedText.
+	
+	nodeOutlineColorInfoElement := BlTextElement new 
+		padding: (BlInsets top: 5 bottom: 5);
+		text: ('Node outline color: artifact type') asRopedText.
+	
+	buttonContent addChild: nodeSizeInfoElement.
+	buttonContent addChild: nodeColorInfoElement.
+	buttonContent addChild: nodeOutlineColorInfoElement.
+	
+	button := BrButton new
+		look:
+			BrGlamorousButtonWithIconLook
+				+
+					(BrGlamorousWithDropdownLook
+						handle: [ BrButton new
+								look: BrGlamorousButtonRectangularLook + BrGlamorousButtonIconLook;
+								icon: BrGlamorousIcons help;
+								yourself ]
+						content: [ buttonContent ]);
+		icon: BrGlamorousIcons help;
+		yourself.
+	^ button
 ]
 
 { #category : #ui }
@@ -382,6 +428,7 @@ ERequirementContainer >> initialize [
 	project := 'New project'.
 	requirements := OrderedCollection new.
 	announcer := Announcer new.
+	RequirementRefFinder addContainer: self.
 ]
 
 { #category : #ui }
@@ -582,7 +629,7 @@ ERequirementContainer >> setUpTooltipLookFor: anArtifact [
 	tooltipButtonBar addChild: deleteElementButton.
 	tooltipContainer addChild: tooltipButtonBar.
 	
-	look := BrGlamorousWithTooltipLook2 
+	look := BrGlamorousWithTooltipLook2
 		content: tooltipContainer.
 	^look
 ]

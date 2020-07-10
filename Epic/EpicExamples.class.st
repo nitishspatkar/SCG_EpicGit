@@ -26,7 +26,7 @@ EpicExamples >> addressBookAddAddressSuccess [
 	^addressBook.
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #'examples - board' }
 EpicExamples >> board [
 	|board|
 	board:= EAgileEpicBoard new
@@ -447,6 +447,7 @@ EpicExamples >> userStoryAddNewContact [
 	userStory := EUserStory new.
 	userStory title: 'add contact'.
 	userStory action: 'add a contact'.
+	userStory description: 'The ${class:name=User}$ should be able to add a new ${class:name=Contact}$ to the ${class:name=AddressBook}$.'.
 	userStory points: 20.
 	
 	userStory addScenario: self scenarioNewContact.
@@ -461,6 +462,7 @@ EpicExamples >> userStoryEditContact [
 	userStory := EUserStory new.
 	userStory title: 'edit contact'.
 	userStory action: 'edit user contact details'.
+	userStory description: 'The ${class:name=User}$ should be able to edit an existing ${class:name=Contact}$ in the ${class:name=AddressBook}$.'.
 	userStory points: 20.
 	
 	userStory addScenario: self scenarioEditAddress.
@@ -480,6 +482,7 @@ EpicExamples >> userStoryRemoveContact [
 	userStory := EUserStory new.
 	userStory title: 'remove contact'.
 	userStory action: 'remove an entire contact'.
+	userStory description: 'The ${class:name=User}$ should be able to remove a ${class:name=Contact}$ from the ${class:name=AddressBook}$.'.
 	userStory points: 10.
 	
 	userStory addScenario: self scenarioRemoveContactFromAddressBook.
@@ -493,6 +496,7 @@ EpicExamples >> userStorySearchByAddress [
 	userStory := EUserStory new.
 	userStory title: 'search for contact by address'.
 	userStory action: 'search for a contact by address'.
+	userStory description: 'The ${class:name=User}$ should be able to search for a ${class:name=Contact}$ in the ${class:name=AddressBook}$. The search is done based on the address of the contact.'.
 	userStory points: 12.
 	
 	userStory addScenario: self scenarioSearchByAddress.
@@ -505,7 +509,8 @@ EpicExamples >> userStorySearchByCompany [
 	| userStory |
 	userStory := EUserStory new.
 	userStory title: 'search by company'.
-	userStory action: 'search with a custom filter'.
+	userStory action: 'search by company'.
+	userStory description: 'The ${class:name=User}$ should be able to search for a ${class:name=Contact}$ in the ${class:name=AddressBook}$. The search is done based on the company of the ${class:name=Contact}$.'.
 	userStory points: 12.
 	
 	userStory addScenario: self scenarioSearchByCompany.
@@ -519,6 +524,7 @@ EpicExamples >> userStorySearchByName [
 	userStory := EUserStory new.
 	userStory title: 'search by name'.
 	userStory action: 'search user by his last or second name'.
+	userStory description: 'The ${class:name=User}$ should be able to search for a ${class:name=Contact}$ in the ${class:name=AddressBook}$. The search is done based on the name of the ${class:name=Contact}$.'.
 	userStory points: 12.
 	
 	userStory addScenario: self scenarioSearchByName.
@@ -533,6 +539,7 @@ EpicExamples >> userStorySearchByPhone [
 	userStory := EUserStory new.
 	userStory title: 'search by phone'.
 	userStory action: 'search for a contact by phone number'.
+	userStory description: 'The ${class:name=User}$ should be able to search for a ${class:name=Contact}$ in the ${class:name=AddressBook}$. The search is done based on the phone number of the ${class:name=Contact}$.'.
 	userStory points: 12.
 	
 	userStory addScenario: self scenarioSearchByPhone.
@@ -546,6 +553,7 @@ EpicExamples >> userStorySearchWithFilter [
 	userStory := EUserStory new.
 	userStory title: 'search with filter'.
 	userStory action: 'search with a custom filter'.
+	userStory description: 'The ${class:name=User}$ should be able to search for a ${class:name=Contact}$ in the ${class:name=AddressBook}$, using a custom ${class:name=Filter}$.'.
 	userStory points: 30.
 	
 	userStory addScenario: self scenarioUseDefinedFilter.
