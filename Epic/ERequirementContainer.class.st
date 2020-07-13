@@ -574,7 +574,7 @@ ERequirementContainer >> requirements: aCollectionOfRequirements [
 { #category : #ui }
 ERequirementContainer >> setUpTooltipLookFor: anArtifact [
 	"I set up the custom tooltip object for the Mind Map view, depending on the supplied artifact"
-	| look tooltipContainer tooltipButtonBar tooltipText tooltipLabel addSubElementButton editElementButton deleteElementButton |
+	| look tooltipContainer tooltipButtonBar tooltipText tooltipLabel addSubElementButton editElementButton deleteElementButton tooltipHandle |
 	addSubElementButton := (BrButton new
 				look: BrGlamorousButtonWithIconLook;
 				icon: BrGlamorousIcons add;
@@ -623,6 +623,12 @@ ERequirementContainer >> setUpTooltipLookFor: anArtifact [
 			c horizontal matchParent.
 			 ]).
 	
+	tooltipHandle := BlElement new
+		constraintsDo: [ :c | 
+			c vertical exact: 20.
+			c horizontal exact: 40.
+			 ].
+	
 	tooltipContainer addChild: tooltipLabel.
 	(anArtifact class = EScenario) ifFalse: [ tooltipButtonBar addChild: addSubElementButton. ].
 	tooltipButtonBar addChild: editElementButton.
@@ -630,6 +636,7 @@ ERequirementContainer >> setUpTooltipLookFor: anArtifact [
 	tooltipContainer addChild: tooltipButtonBar.
 	
 	look := BrGlamorousWithTooltipLook2
-		content: tooltipContainer.
+		handle: tooltipHandle content: tooltipContainer.
+	look hideDelay: 1; showDelay: 0.
 	^look
 ]
