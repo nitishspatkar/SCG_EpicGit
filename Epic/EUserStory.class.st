@@ -218,6 +218,38 @@ EUserStory >> component: anObject [
 	component := anObject
 ]
 
+{ #category : #ui }
+EUserStory >> customEntityElementFor: aReference [
+	"generate a UI element for a missing reference, used in the Referenced Entities view"
+	| container label button separator referencedEntity |
+	
+	referencedEntity :=  aReference copyReplaceAll: ' - missing' with: ''.
+	
+	container := BlElement new
+		layout: BlLinearLayout horizontal;
+		constraintsDo: [ :c | 
+			c horizontal matchParent.
+			c vertical exact: 30.
+			 ].
+	
+	separator := BlElement new
+		constraintsDo: [ :c | 
+			c horizontal matchParent.
+			c vertical fitContent.
+			 ].
+	
+	label := BrLabel new
+		look: BrGlamorousListLabelLook;
+		text: aReference asRopedText.
+	
+	button := RequirementClassAdditionInterface new initializeWithFutureClassName: referencedEntity andElement: self.
+	
+	container addChild: label.
+	container addChild: separator.
+	container addChild: button.
+	^container
+]
+
 { #category : #accessing }
 EUserStory >> description [
 	^description
@@ -315,9 +347,17 @@ Under scenarios, you can see a list and view each of the scenarios used to suppo
 { #category : #parsing }
 EUserStory >> gtReferencesFor: aView [
 	<gtView>
-   ^ aView list
+	| listView |
+   listView := aView list
 		title: 'Referenced Entities';
 		items: [ self getReferencesFrom: self parseStory ].
+	listView itemStencil: [ :x | 
+			(x class = ByteString) 
+			ifTrue: [ self customEntityElementFor: x ]
+			ifFalse: [ listView buildTextElementFor: x ]
+			 ].
+	listView updateWhen: ERequirementStateChangedAnnouncement in: [ self announcer ].
+	^listView
 ]
 
 { #category : #ui }

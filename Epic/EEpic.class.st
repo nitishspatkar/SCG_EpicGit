@@ -12,7 +12,8 @@ Class {
 	#instVars : [
 		'title',
 		'use_cases',
-		'references'
+		'references',
+		'announcer'
 	],
 	#category : #'Epic-Model'
 }
@@ -23,8 +24,50 @@ EEpic >> addUseCase: aUseCase [
 ]
 
 { #category : #accessing }
+EEpic >> announcer [ 
+	^announcer
+]
+
+{ #category : #accessing }
+EEpic >> announcer: anAnnouncer [
+	announcer := anAnnouncer 
+]
+
+{ #category : #accessing }
 EEpic >> children [
 	^ self use_cases 
+]
+
+{ #category : #ui }
+EEpic >> customEntityElementFor: aReference [
+	"generate a UI element for a missing reference, used in the Referenced Entities view"
+	| container label button separator referencedEntity |
+	
+	referencedEntity :=  aReference copyReplaceAll: ' - missing' with: ''.
+	
+	container := BlElement new
+		layout: BlLinearLayout horizontal;
+		constraintsDo: [ :c | 
+			c horizontal matchParent.
+			c vertical exact: 30.
+			 ].
+	
+	separator := BlElement new
+		constraintsDo: [ :c | 
+			c horizontal matchParent.
+			c vertical fitContent.
+			 ].
+	
+	label := BrLabel new
+		look: BrGlamorousListLabelLook;
+		text: aReference asRopedText.
+	
+	button := RequirementClassAdditionInterface new initializeWithFutureClassName: referencedEntity andElement: self.
+	
+	container addChild: label.
+	container addChild: separator.
+	container addChild: button.
+	^container
 ]
 
 { #category : #'entity references' }
@@ -73,9 +116,17 @@ EEpic >> gtEpicInformationFor: aView [
 { #category : #'entity references' }
 EEpic >> gtReferencesFor: aView [
 	<gtView>
-   ^ aView list
+	| listView |
+   listView := aView list
 		title: 'Referenced Entities';
 		items: [ self getReferencesFrom: self children ].
+	listView itemStencil: [ :x | 
+			(x class = ByteString) 
+			ifTrue: [ self customEntityElementFor: x ]
+			ifFalse: [ listView buildTextElementFor: x ]
+			 ].
+	listView updateWhen: ERequirementStateChangedAnnouncement in: [ self announcer ].
+	^listView
 ]
 
 { #category : #ui }
@@ -127,6 +178,7 @@ EEpic >> gtUseCaseProgressColumnsFor: aView [
 { #category : #initialization }
 EEpic >> initialize [
 	super initialize.
+	announcer := Announcer new.
 	title := 'Feature of this epic'.
 	use_cases := OrderedCollection new.
 	references := OrderedCollection new.

@@ -23,7 +23,7 @@ RequirementRefFinder class >> containers [
 { #category : #'reference finding' }
 RequirementRefFinder class >> findReferencesTo: aClass [
 	| references |
-	references := OrderedCollection new.
+	references := SortedCollection sortUsing: [ :elem1 :elem2 | elem1 class name < elem2 class name ].
 	containers do: [ :aContainer | 
 		aContainer getEpics do: [ :anEpic | 
 			(anEpic getReferencesFrom: anEpic children) 
@@ -44,7 +44,8 @@ RequirementRefFinder class >> findReferencesTo: aClass [
 				 ].
 			]
 		 ].
-	^references
+	
+	^references 
 ]
 
 { #category : #'class initialization' }

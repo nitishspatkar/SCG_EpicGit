@@ -22,7 +22,8 @@ Class {
 		'state',
 		'task',
 		'userStories',
-		'references'
+		'references',
+		'announcer'
 	],
 	#category : #'Epic-Model'
 }
@@ -55,6 +56,16 @@ EUseCase >> addUserStory: aUserStory [
 ]
 
 { #category : #accessing }
+EUseCase >> announcer [
+	^announcer
+]
+
+{ #category : #accessing }
+EUseCase >> announcer: anAnnouncer [
+	announcer := anAnnouncer
+]
+
+{ #category : #accessing }
 EUseCase >> children [
 	^ self userStories
 ]
@@ -74,6 +85,38 @@ EUseCase >> createUserStory [
 	| us |
 	us := EUserStory new.
 	userStories add: us.
+]
+
+{ #category : #ui }
+EUseCase >> customEntityElementFor: aReference [
+	"generate a UI element for a missing reference, used in the Referenced Entities view"
+	| container label button separator referencedEntity |
+	
+	referencedEntity :=  aReference copyReplaceAll: ' - missing' with: ''.
+	
+	container := BlElement new
+		layout: BlLinearLayout horizontal;
+		constraintsDo: [ :c | 
+			c horizontal matchParent.
+			c vertical exact: 30.
+			 ].
+	
+	separator := BlElement new
+		constraintsDo: [ :c | 
+			c horizontal matchParent.
+			c vertical fitContent.
+			 ].
+	
+	label := BrLabel new
+		look: BrGlamorousListLabelLook;
+		text: aReference asRopedText.
+	
+	button := RequirementClassAdditionInterface new initializeWithFutureClassName: referencedEntity andElement: self.
+	
+	container addChild: label.
+	container addChild: separator.
+	container addChild: button.
+	^container
 ]
 
 { #category : #accessing }
@@ -163,9 +206,17 @@ Under Diagram, you will be able to see a use case diagram. This is still under c
 { #category : #'entity references' }
 EUseCase >> gtReferencesFor: aView [
 	<gtView>
-   ^ aView list
+	| listView |
+   listView := aView list
 		title: 'Referenced Entities';
 		items: [ self getReferencesFrom: self children ].
+	listView itemStencil: [ :x | 
+			(x class = ByteString) 
+			ifTrue: [ self customEntityElementFor: x ]
+			ifFalse: [ listView buildTextElementFor: x ]
+			 ].
+	listView updateWhen: ERequirementStateChangedAnnouncement in: [ self announcer ].
+	^listView
 ]
 
 { #category : #'as yet unclassified' }
@@ -195,6 +246,7 @@ EUseCase >> gtUserStoryColumnsFor: aView [
 { #category : #initialization }
 EUseCase >> initialize [
 	super initialize.
+	announcer := Announcer new.
 	userStories := OrderedCollection new.
 	actor := OrderedCollection new.
 	references := OrderedCollection new.
