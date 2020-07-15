@@ -637,6 +637,6 @@ ERequirementContainer >> setUpTooltipLookFor: anArtifact [
 	
 	look := BrGlamorousWithTooltipLook2
 		handle: tooltipHandle content: tooltipContainer.
-	look hideDelay: 1; showDelay: 0.
+	look hideDelay: 400 milliSeconds; showDelay: 0.
 	^look
 ]

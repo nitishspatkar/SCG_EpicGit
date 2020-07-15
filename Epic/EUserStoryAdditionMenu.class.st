@@ -1,112 +1,21 @@
 Class {
 	#name : #EUserStoryAdditionMenu,
-	#superclass : #BlElement,
+	#superclass : #EReqArtifactAdditionMenu,
 	#instVars : [
-		'reqContainer',
 		'titleAdditionElement',
 		'userAdditionElement',
 		'actionAdditionElement',
 		'goalAdditionElement',
 		'descriptionAdditionElement',
 		'criteriaAdditionElement',
-		'pointsAdditionElement',
-		'parentArtifact',
-		'editedArtifact'
+		'pointsAdditionElement'
 	],
 	#category : #'Epic-Model'
 }
 
-{ #category : #ui }
-EUserStoryAdditionMenu >> blLabelFor: text [
-	^ BrLabel new
-		text: text;
-		margin: (BlInsets top: 15 left: 15 bottom: 0 right: 0);
-		padding: (BlInsets all: 3);
-		geometry: (BlRectangle cornerRadius: 5);
-		look: (BrGlamorousLabelLook new glamorousRegularFontAndSize; fontSize: 20); 
-		constraintsDo: [ :c | 
-			c linear vertical alignCenter.
-			c linear horizontal alignLeft ].
-]
-
-{ #category : #initialization }
-EUserStoryAdditionMenu >> createButtonBar [
-	| bar |
-	
-	bar := BlElement new 
-		layout: BlLinearLayout horizontal;
-		constraintsDo: [ :c | 
-			c horizontal matchParent.
-			c vertical fitContent.
-			 ].
-	
-	bar addChild: self createSaveButton.
-	bar addChild: self createCancelButton.
-	bar addChild: 
-		(BlElement new
-				constraintsDo: [ :c | 
-					c horizontal matchParent.
-					c vertical matchParent ];
-				yourself).
-	
-	^bar
-]
-
-{ #category : #initialization }
-EUserStoryAdditionMenu >> createCancelButton [
-	| cancelButton |
-	cancelButton := (BrButton new
-		background: (Color fromHexString: 'eaeaea');
-		margin: (BlInsets top: 15 left: 15 bottom: 0 right: 0);
-		padding: (BlInsets all: 3);
-		look: BrGlamorousButtonWithIconLook new;
-		icon: BrGlamorousIcons close;
-		action: [ 
-			self inform: 'Clicked cancel button.'.
-			reqContainer announcer announce: ERequirementStateChangedAnnouncement.
-			]).
-	^cancelButton
-]
-
-{ #category : #ui }
-EUserStoryAdditionMenu >> createSaveButton [
-	| saveButton title user action goal description criteria points userStory |
-	saveButton := (BrButton new
-		background: (Color fromHexString: 'eaeaea');
-		margin: (BlInsets top: 15 left: 15 bottom: 0 right: 0);
-		padding: (BlInsets all: 3);
-		look: BrGlamorousButtonWithLabelLook new;
-		label: 'Save';
-		action: [ 
-			self inform: 'Clicked save button.'.
-			title := ((titleAdditionElement children at:2) document text) asString.
-			user := EActor new name: (((userAdditionElement children at:2) document text) asString).
-			action := ((actionAdditionElement children at:2) document text) asString.
-			goal := ((goalAdditionElement children at:2) document text) asString.
-			description := ((descriptionAdditionElement children at:2) document text) asString.
-			criteria := ((criteriaAdditionElement children at:2) document text) asString.
-			points := (((pointsAdditionElement children at:2) document text) asString) asNumber.
-			editedArtifact ifNotNil: [ 
-				editedArtifact title: title; user: user; action: action; goal: goal; acceptCriteria: criteria; points: points.
-				 ] ifNil: [ 
-				userStory := (EUserStory new title: title; user: user; action: action; goal: goal; description: description; acceptCriteria: criteria; points: points).
-				reqContainer addArtifact: userStory.
-				 ].
-			parentArtifact ifNotNil: [ parentArtifact addUserStory: userStory ].
-			reqContainer announcer announce: ERequirementStateChangedAnnouncement.
-			]).
-	^saveButton
-]
-
 { #category : #initialization }
 EUserStoryAdditionMenu >> initialize [
 	super initialize.
-	self 
-	layout: BlLinearLayout vertical;
-	constraintsDo: [ :c |
-		c horizontal matchParent.
-		c vertical fitContent. ].
-	
 	titleAdditionElement := self initializeTitleAdditionElement.
 	userAdditionElement := self initializeUserAdditionElement.
 	actionAdditionElement := self initializeActionAdditionElement.
@@ -287,7 +196,7 @@ EUserStoryAdditionMenu >> initializePointsAdditionElement [
 	^ container.	
 ]
 
-{ #category : #intialization }
+{ #category : #initialization }
 EUserStoryAdditionMenu >> initializeTitleAdditionElement [
 	|container titleLabel aDocument textElement titleText |
 	container:= BlElement new 
@@ -351,34 +260,23 @@ EUserStoryAdditionMenu >> initializeUserAdditionElement [
 	^ container.	
 ]
 
-{ #category : #initialization }
-EUserStoryAdditionMenu >> initializeWithContainer: anERequirementContainer [
-	reqContainer := anERequirementContainer.
-	self initialize.
-]
-
-{ #category : #initialization }
-EUserStoryAdditionMenu >> initializeWithContainer: anERequirementContainer andElement: aRequirement [
-	editedArtifact := aRequirement.
-	self initializeWithContainer: anERequirementContainer.
-]
-
-{ #category : #initialization }
-EUserStoryAdditionMenu >> initializeWithContainer: anERequirementContainer andParent: aParent [
-	super initialize.
-	parentArtifact := aParent.
-	reqContainer := anERequirementContainer.
-	self initialize.
-]
-
-{ #category : #rendering }
-EUserStoryAdditionMenu >> titleFor: text [
-	^ BrLabel new
-		text: text;
-		padding: (BlInsets all: 5);
-		geometry: (BlRectangle cornerRadius: 5);
-		look: (BrGlamorousLabelLook new glamorousRegularFontAndSize; fontSize: 22); 
-		constraintsDo: [ :c | 
-			c linear vertical alignCenter.
-			c linear horizontal alignCenter ].
+{ #category : #'morphic ui' }
+EUserStoryAdditionMenu >> saveChanges [
+	| title user action goal description criteria points userStory |
+	self inform: 'Clicked save button.'.
+	title := ((titleAdditionElement children at:2) document text) asString.
+	user := EActor new name: (((userAdditionElement children at:2) document text) asString).
+	action := ((actionAdditionElement children at:2) document text) asString.
+	goal := ((goalAdditionElement children at:2) document text) asString.
+	description := ((descriptionAdditionElement children at:2) document text) asString.
+	criteria := ((criteriaAdditionElement children at:2) document text) asString.
+	points := (((pointsAdditionElement children at:2) document text) asString) asNumber.
+	editedArtifact ifNotNil: [ 
+		editedArtifact title: title; user: user; action: action; goal: goal; acceptCriteria: criteria; points: points.
+		 ] ifNil: [ 
+		userStory := (EUserStory new title: title; user: user; action: action; goal: goal; description: description; acceptCriteria: criteria; points: points).
+		reqContainer addArtifact: userStory.
+		 ].
+	parentArtifact ifNotNil: [ parentArtifact addUserStory: userStory ].
+	reqContainer announcer announce: ERequirementStateChangedAnnouncement.
 ]

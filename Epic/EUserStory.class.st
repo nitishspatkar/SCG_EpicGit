@@ -117,7 +117,8 @@ EUserStory >> cardViewGenerate [
 					c vertical fitContent].
 					
 			stateColorContainer := BlElement new
-				size: 100@100;
+				geometry: BlCircle new;
+				size: 50@50;
 				background: self getStateColor;
 				border: (BlBorder paint: Color gray width: 1);
 				margin: (BlInsets top: 10 right: 10 bottom: 10 left: 0).
@@ -138,6 +139,8 @@ EUserStory >> cardViewGenerate [
 				text: pointsText asRopedText.
 				
 			changeStateButton := (BrButton new
+				layout: (BlLinearLayout horizontal) alignBottomCenter;
+				margin: (BlInsets top: 5);
 				background: (Color fromHexString: 'eaeaea');
 				look: BrGlamorousButtonWithLabelLook new;
 				label: 'Change Status';
@@ -173,11 +176,11 @@ EUserStory >> cardViewGenerate [
 					c vertical fitContent].
 					
 			verticalContainerRight := BlElement new
-				layout: (BlLinearLayout vertical) alignTopRight;
+				layout: (BlLinearLayout vertical) alignCenter;
 				margin: (BlInsets all: 10);
 				constraintsDo: [ :c | 
 					c horizontal fitContent.
-					c vertical fitContent.
+					c vertical matchParent.
 					].
 					
 			verticalContainerLeft addChild: detailsTextContainer.
