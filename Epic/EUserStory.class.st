@@ -325,10 +325,15 @@ EUserStory >> gtDescriptionFor: aView [
 	<gtView>
 	| document |
 	document := GtDocument new text: self description.
+
 	
 	^(document gtTextFor: aView)
-       title: 'Description';
-       priority: 1.
+      title: 'Description';
+		actionButtonIcon: BrGlamorousVectorIcons accept 
+			action: [ self description: document text asString.
+						self announcer announce: ERequirementStateChangedAnnouncement new ];
+		updateWhen: ERequirementStateChangedAnnouncement in: self announcer;
+      priority: 1.
 ]
 
 { #category : #ui }
@@ -359,6 +364,8 @@ EUserStory >> gtReferencesFor: aView [
 			ifTrue: [ self customEntityElementFor: x ]
 			ifFalse: [ listView buildTextElementFor: x ]
 			 ].
+	listView actionButtonIcon: BrGlamorousVectorIcons refresh 
+			action: [ self announcer announce: ERequirementStateChangedAnnouncement new ].
 	listView updateWhen: ERequirementStateChangedAnnouncement in: [ self announcer ].
 	^listView
 ]
