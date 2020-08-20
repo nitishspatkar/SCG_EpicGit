@@ -200,6 +200,7 @@ ERequirementContainer >> createInfoButtonForMindMap [
 								yourself ]
 						content: [ buttonContent ]);
 		icon: BrGlamorousIcons help;
+		label: 'Help';
 		yourself.
 	^ button
 ]
@@ -434,6 +435,7 @@ ERequirementContainer >> initialize [
 { #category : #ui }
 ERequirementContainer >> mindMapGenerate [
 	"Generate a Mind Map mondrian for the gtMindMap view"
+	"Relays to a different method to avoid lots of refactoring"
 	^self mindMapGenerateFor: GtMondrian new.
 ]
 

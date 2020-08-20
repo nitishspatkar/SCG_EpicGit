@@ -130,11 +130,12 @@ EUserStory >> cardViewGenerate [
 				text: stateText asRopedText.
 				
 			pointsContainer := BlTextElement new
+				geometry: (BlRectangle cornerRadius: 6);
 				layout: (BlLinearLayout horizontal) alignCenter;
 				constraintsDo: [ :c | 
 					c horizontal fitContent.
 					c vertical fitContent. ];
-				border: (BlBorder paint: Color gray width: 1);
+				border: (BlBorder paint: (Color fromHexString: 'd9d9d9') width: 1);
 				padding: (BlInsets all: 5);
 				text: pointsText asRopedText.
 				
@@ -151,7 +152,8 @@ EUserStory >> cardViewGenerate [
 					]).
 			
 			detailsTextContainer := BrEditor new
-				border: (BlBorder paint: Color gray width: 1);
+				geometry: (BlRectangle cornerRadius: 6);
+				border: (BlBorder paint: (Color fromHexString: 'd9d9d9') width: 1);
 				look: (BrGlamorousRegularEditorLook new fontSize: 16);
 				text: details asRopedText;
 				constraintsDo: [ :c | 
@@ -159,9 +161,10 @@ EUserStory >> cardViewGenerate [
 					c vertical fitContent ].
 					
 			criteriaContainer := BrEditor new
+				geometry: (BlRectangle cornerRadius: 6);
 				margin: (BlInsets top: 5);
 				padding: (BlInsets top: 5; left: 5);
-				border: (BlBorder paint: Color gray width: 1);
+				border: (BlBorder paint: (Color fromHexString: 'd9d9d9') width: 1);
 				look: (BrGlamorousRegularEditorLook new fontSize: 16);
 				text: criteriaText asRopedText;
 				constraintsDo: [ :c | 
@@ -223,7 +226,7 @@ EUserStory >> component: anObject [
 
 { #category : #ui }
 EUserStory >> customEntityElementFor: aReference [
-	"generate a UI element for a missing reference, used in the Referenced Entities view"
+	"generate a UI element for a missing reference to a class, used in the Referenced Entities view"
 	| container label button separator referencedEntity |
 	
 	referencedEntity :=  aReference copyReplaceAll: ' - missing' with: ''.
@@ -330,6 +333,7 @@ EUserStory >> gtDescriptionFor: aView [
 	^(document gtTextFor: aView)
       title: 'Description';
 		actionButtonIcon: BrGlamorousVectorIcons accept 
+			label: 'Save' 
 			action: [ self description: document text asString.
 						self announcer announce: ERequirementStateChangedAnnouncement new ];
 		updateWhen: ERequirementStateChangedAnnouncement in: self announcer;
@@ -365,6 +369,7 @@ EUserStory >> gtReferencesFor: aView [
 			ifFalse: [ listView buildTextElementFor: x ]
 			 ].
 	listView actionButtonIcon: BrGlamorousVectorIcons refresh 
+			label: 'Refresh'
 			action: [ self announcer announce: ERequirementStateChangedAnnouncement new ].
 	listView updateWhen: ERequirementStateChangedAnnouncement in: [ self announcer ].
 	^listView

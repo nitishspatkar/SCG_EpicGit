@@ -215,6 +215,9 @@ EUseCase >> gtReferencesFor: aView [
 			ifTrue: [ self customEntityElementFor: x ]
 			ifFalse: [ listView buildTextElementFor: x ]
 			 ].
+	listView actionButtonIcon: BrGlamorousVectorIcons refresh 
+			label: 'Refresh'
+			action: [ self announcer announce: ERequirementStateChangedAnnouncement new ].
 	listView updateWhen: ERequirementStateChangedAnnouncement in: [ self announcer ].
 	^listView
 ]
