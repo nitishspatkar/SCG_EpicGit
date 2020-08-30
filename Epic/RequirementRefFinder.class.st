@@ -1,3 +1,8 @@
+"
+I represent a finder for requirement references to classes.
+
+I store requirement containers and search them for requirements that reference any given class.
+"
 Class {
 	#name : #RequirementRefFinder,
 	#superclass : #Object,
@@ -9,6 +14,7 @@ Class {
 
 { #category : #accessing }
 RequirementRefFinder class >> addContainer: aRequirementContainer [
+	"I add a container to my base of containers that I will search through to find references."
 	self
 		assert: aRequirementContainer class
 		equals: ERequirementContainer.
@@ -55,6 +61,7 @@ RequirementRefFinder class >> initialize [
 
 { #category : #views }
 RequirementRefFinder class >> viewWithItemsFor: aClass [
+	"I set up and return a view of the requirements that reference a given class. This is used in the 'Requirement References' gtView for any class in GToolkit."
 	| view element references |
 	references := self findReferencesTo: aClass.
 	view := GtPhlowView empty list.

@@ -1,3 +1,19 @@
+"
+I represent a container for the requirements of a given project. I am the starting point for managing the requirements.
+
+I store a variety of requirements artifacts, as stated in my ""View Details"" view.
+My instances implement views for visualizing and managing requirements. These are ""Mind Map"" and ""Story Wall"".
+In the ""Mind Map"" one can add, remove and edit requirements, and display them in a cluster view.
+the ""Story Wall"" view displays the user stories of the container in a status board. One can change the work states of the stories to indicate what progress is being made.
+
+I interact with the artifacts from the container, as well as the creation menus for them.
+
+Example instance:
+
+ERequirementContainer new 
+	project: 'My New App'.
+
+"
 Class {
 	#name : #ERequirementContainer,
 	#superclass : #Object,
@@ -48,7 +64,7 @@ ERequirementContainer >> announcer [
 
 { #category : #ui }
 ERequirementContainer >> buildButtonBar [
-	"I build a button bar for manipulating a view (zooming, resizing, refreshing the view)"
+	"I build a button bar for manipulating the Mind Map view (zooming, resizing, refreshing the view)"
 	| buttonBar |
 	buttonBar := BlElement new
 		constraintsDo: [ :c | 
@@ -162,6 +178,7 @@ ERequirementContainer >> createAddEpicMenu [
 
 { #category : #ui }
 ERequirementContainer >> createInfoButtonForMindMap [
+	"I set up the Help button in the Mind Map view, that gives some info on the visualization dimensions."
 	| button buttonContent nodeSizeInfoElement nodeColorInfoElement nodeOutlineColorInfoElement |
 	buttonContent := BlElement new 
 		background: Color white;
@@ -426,6 +443,8 @@ ERequirementContainer >> gtUserStoryWallViewFor: aView [
 
 { #category : #initialization }
 ERequirementContainer >> initialize [
+	"I set up a collection to store the requirements artifacts, and an announces for updating the views automatically.
+	Also, I add myself to the requirement reference finder."
 	project := 'New project'.
 	requirements := OrderedCollection new.
 	announcer := Announcer new.
@@ -434,22 +453,23 @@ ERequirementContainer >> initialize [
 
 { #category : #ui }
 ERequirementContainer >> mindMapGenerate [
-	"Generate a Mind Map mondrian for the gtMindMap view"
+	"Generate a Mind Map graph for the gtMindMap view"
 	"Relays to a different method to avoid lots of refactoring"
 	^self mindMapGenerateFor: GtMondrian new.
 ]
 
 { #category : #ui }
 ERequirementContainer >> mindMapGenerateFor: view [
-	"Generate a Mind Map mondrian for the gtMindMap view"
+	"Generate a Mind Map graph for the gtMindMap view"
 	view nodes
 		shape: [ :anArtifact |
 			BlElement new
 				look: (self setUpTooltipLookFor: anArtifact);
 				size: (self nodeSizeFor: anArtifact) asPoint;
-				border: (BlBorder paint: (self nodeHighlightColorFor: anArtifact) width: 2);
+				border: (BlBorder paint: (self nodeHighlightColorFor: anArtifact)  width: 2);
 				background: (self nodeBackgroundColorFor: anArtifact);
-				geometry: BlCircle new ];
+				geometry: BlCircle new.
+				 ];
 		with: requirements.
 	view edges connectFrom: [ :x | x ] toAll: [ :x | x children ].
 	view edges
