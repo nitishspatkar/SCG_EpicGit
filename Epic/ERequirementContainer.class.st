@@ -22,7 +22,8 @@ Class {
 		'requirements',
 		'announcer',
 		'theGraph',
-		'graphPane'
+		'graphPane',
+		'theGraphContainer'
 	],
 	#category : #'Epic-Model'
 }
@@ -253,17 +254,18 @@ ERequirementContainer >> generateMindMapView [
 		constraintsDo: [ :c | 
 			c horizontal matchParent.
 			c vertical matchParent ].
-		
-	theGraph := (self gtMindMapFor: GtPhlowEmptyView new) asElementDo: [ :e | e ].
 	
-	theGraph 
+	theGraphContainer := (self gtMindMapFor: GtPhlowEmptyView new) asElementDo: [ :e | e ].
+	theGraph := theGraphContainer children first.
+	
+	theGraphContainer 
 		constraintsDo: [ :c | 
 			c horizontal matchParent.
 			c vertical matchParent.
 			 ].
 	
 	graphPane addChild: self buildButtonBar.
-	graphPane addChild: theGraph.
+	graphPane addChild: theGraphContainer.
 	^ graphPane
 
 ]
@@ -476,7 +478,12 @@ ERequirementContainer >> mindMapGenerateFor: view [
 		shape: [ :x | 
 			BlLineElement new
 				border: (BlBorder paint: (Color red alpha: 0.5) width: 5) ].
-	view layout custom: (GtGraphClusterLayout new horizontalGap: 80; verticalGap: 80).
+	view layout force 
+		strength: 0.15;
+		charge: -250;
+		length: 70.
+	
+	"custom: (GtGraphClusterLayout new horizontalGap: 80; verticalGap: 80)".
 	^ view
 ]
 
@@ -596,8 +603,16 @@ ERequirementContainer >> requirements: aCollectionOfRequirements [
 { #category : #ui }
 ERequirementContainer >> setUpTooltipLookFor: anArtifact [
 	"I set up the custom tooltip object for the Mind Map view, depending on the supplied artifact"
-	| look tooltipContainer tooltipButtonBar tooltipText tooltipLabel addSubElementButton editElementButton deleteElementButton tooltipHandle |
-	addSubElementButton := (BrButton new
+	^  BrGlamorousWithTooltipLook
+		handle: [ BlElement new
+			constraintsDo: [ :c | 
+				c vertical exact: 20.
+				c horizontal exact: 20. ] ] 
+		content: [
+			| addSubElementButton editElementButton deleteElementButton tooltipText tooltipLabel tooltipButtonBar tooltipContainer  |
+			
+			
+			addSubElementButton := (BrButton new
 				look: BrGlamorousButtonWithIconLook;
 				icon: BrGlamorousIcons add;
 				label: (self addSubElementLabelFor: anArtifact);
@@ -623,42 +638,37 @@ ERequirementContainer >> setUpTooltipLookFor: anArtifact [
 					self removeArtifact: anArtifact.
 					self announcer announce: ERequirementStateChangedAnnouncement.
 					 ]).
+			
+			
+			tooltipText := ('An ', anArtifact class name, ': ', anArtifact title) asRopedText.
+			
+			tooltipLabel := (BrLabel new 
+				look: BrGlamorousLabelLook new glamorousRegularFontAndSize; 
+				padding: (BlInsets all: 20); 
+				alignCenter; 
+				fitContent;
+				text: tooltipText).
+				
+			tooltipButtonBar := BlElement new 
+				layout: BlLinearLayout horizontal;
+				constraintsDo: [ :c | 
+					c vertical fitContent.
+					c horizontal fitContent ].
+			(anArtifact class = EScenario) ifFalse: [ 
+				tooltipButtonBar addChild: addSubElementButton. ].
+			tooltipButtonBar addChild: editElementButton.
+			tooltipButtonBar addChild: deleteElementButton.
+			
+			tooltipContainer := BlElement new 
+				layout: BlLinearLayout vertical;
+				constraintsDo: [ :c | 
+					c vertical fitContent.
+					c horizontal fitContent ].
+			tooltipContainer addChild: tooltipLabel.
 	
-	tooltipText := ('An ', anArtifact class name, ': ', anArtifact title) asRopedText.
+			tooltipContainer addChild: tooltipButtonBar.
+			tooltipContainer
 	
-	tooltipLabel := (BrLabel new 
-		look: BrGlamorousLabelLook new glamorousRegularFontAndSize; 
-		padding: (BlInsets all: 20); 
-		alignCenter; 
-		text: tooltipText).
-	
-	tooltipContainer := (BlElement new 
-		layout: BlLinearLayout vertical;
-		constraintsDo: [ :c | 
-			c vertical fitContent.
-			 ]).
-	
-	tooltipButtonBar := (BlElement new 
-		layout: BlLinearLayout horizontal;
-		constraintsDo: [ :c | 
-			c vertical fitContent.
-			c horizontal matchParent.
-			 ]).
-	
-	tooltipHandle := BlElement new
-		constraintsDo: [ :c | 
-			c vertical exact: 20.
-			c horizontal exact: 40.
-			 ].
-	
-	tooltipContainer addChild: tooltipLabel.
-	(anArtifact class = EScenario) ifFalse: [ tooltipButtonBar addChild: addSubElementButton. ].
-	tooltipButtonBar addChild: editElementButton.
-	tooltipButtonBar addChild: deleteElementButton.
-	tooltipContainer addChild: tooltipButtonBar.
-	
-	look := BrGlamorousWithTooltipLook2
-		handle: tooltipHandle content: tooltipContainer.
-	look hideDelay: 400 milliSeconds; showDelay: 0.
-	^look
+		].
+		
 ]

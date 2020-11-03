@@ -144,12 +144,12 @@ EScenario >> gtOverviewFor: aView [
 { #category : #'as yet unclassified' }
 EScenario >> gtTreeViewOn: aView [
 	<gtView>
-
-	(self exampleMethods isEmpty) ifTrue: [^ aView empty].
+	self exampleMethods isEmpty
+		ifTrue: [ ^ aView empty ].
 	^ aView columnedTree
 		title: 'Tree' translated;
-		items: [{self exampleMethods}];
-		column: 'Examples' format: [ :eachElement | ^ eachElement ].
+		items: [ {self exampleMethods} ];
+		column: 'Examples' text: [ :eachElement | ^ eachElement ]
 ]
 
 { #category : #'as yet unclassified' }

@@ -394,13 +394,14 @@ EUserStory >> gtStoryInfoFor: aView [
 { #category : #ui }
 EUserStory >> gtTreeViewOn: aView [
 	<gtView>
-
-	(self scenarios isEmpty) ifTrue: [^ aView empty].
+	self scenarios isEmpty
+		ifTrue: [ ^ aView empty ].
 	^ aView columnedTree
 		title: 'Tree' translated;
-		items: [self children];
+		items: [ self children ];
 		children: [ :each | each children ];
-		column: 'Type' format: [ :eachElement | eachElement treeViewShortString ].
+		column: 'Type'
+			text: [ :eachElement | eachElement treeViewShortString ]
 ]
 
 { #category : #ui }
@@ -410,7 +411,7 @@ EUserStory >> gtViewScenarios: aView [
 		title: 'Scenarios';
 		priority: 4;
 		items: [ scenarios ];
-		itemFormat: [ :aScenario | aScenario description ]
+		itemText: [ :aScenario | aScenario description ]
 ]
 
 { #category : #initialization }

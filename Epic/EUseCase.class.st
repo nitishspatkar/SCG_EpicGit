@@ -225,13 +225,14 @@ EUseCase >> gtReferencesFor: aView [
 { #category : #'as yet unclassified' }
 EUseCase >> gtTreeViewOn: aView [
 	<gtView>
-
-	(self userStories isEmpty) ifTrue: [^ aView empty].
+	self userStories isEmpty
+		ifTrue: [ ^ aView empty ].
 	^ aView columnedTree
 		title: 'Tree' translated;
-		items: [self children];
+		items: [ self children ];
 		children: [ :each | each children ];
-		column: 'Type' format: [ :eachElement | eachElement treeViewShortString].
+		column: 'Type'
+			text: [ :eachElement | eachElement treeViewShortString ]
 ]
 
 { #category : #ui }
