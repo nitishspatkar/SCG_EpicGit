@@ -13,7 +13,8 @@ Class {
 		'description',
 		'notes',
 		'company',
-		'lastUpdated'
+		'lastUpdated',
+		'avatar'
 	],
 	#category : #'AddressBook-Model'
 }
@@ -65,6 +66,12 @@ ABContact >> address [
 { #category : #accessing }
 ABContact >> address: anObject [
 	address := anObject
+]
+
+{ #category : #accessing }
+ABContact >> avatar [
+	^ avatar ifNil: 
+		[ avatar := GtABContact unknowsJoeAvatar ]
 ]
 
 { #category : #accessing }
@@ -121,6 +128,58 @@ ABContact >> gtViewAddresses: aView [
 		items: [ address ];
 		column: 'Type' item: #typeName width: 200;
 		column: 'Address' item: #fullAddress
+]
+
+{ #category : #accessing }
+ABContact >> gtViewContactDetailsOn: aView [
+	<gtView>
+	^ aView explicit 
+		title: 'Card' translated;
+		priority: 5;
+		stencil: [
+			|container verticalContainer detailsTextContainer avatarContainer nameTextContainer details|
+			details := ''.
+			self phoneNumber ifNotEmpty: [
+				details := details, self phoneNumber first toString  ].
+			self address ifNotEmpty: [
+				details := details,  String cr, self address first toString  ].
+			
+			container := BlElement new
+				layout: BlLinearLayout horizontal;
+				background: Color white;
+				look: BrShadowLook;
+				margin: (BlInsets all: 20);
+				constraintsDo: [ :c | 
+					c horizontal fitContent.
+					c vertical fitContent].
+			avatarContainer := BlElement new
+				size: 124@124;
+				background: (self avatar scaledToSize: 124@124);
+				margin: (BlInsets all: 10).
+			nameTextContainer := BlTextElement new
+				constraintsDo: [ :c | 
+					c horizontal matchParent ];
+				margin: (BlInsets top: 5 right: 0 bottom: 20 left: 5);
+				text: (self fullName asRopedText glamorousRegularFont
+					fontSize: 30;
+					foreground: Color black).
+			detailsTextContainer := BrEditor new
+				look: (BrGlamorousRegularEditorLook new fontSize: 16);
+				text: details;
+				constraintsDo: [ :c | 
+					c horizontal matchParent.
+					c vertical matchParent ].
+			verticalContainer := BlElement new
+				layout: BlLinearLayout vertical;
+				margin: (BlInsets all: 10);
+				constraintsDo: [ :c | 
+					c horizontal matchParent.
+					c vertical matchParent].
+			verticalContainer addChild: nameTextContainer.
+			verticalContainer addChild: detailsTextContainer.
+			container addChild: avatarContainer.
+			container addChild: verticalContainer.
+			container ].
 ]
 
 { #category : #'gt-extension' }

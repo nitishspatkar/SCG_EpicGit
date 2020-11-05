@@ -113,11 +113,25 @@ ABAddressBook >> emptyAddressBook [
 	^addressBook.
 ]
 
+{ #category : #accessing }
+ABAddressBook >> gtViewContactsCardsFor: aView [
+	<gtView>
+	^ aView explicit 
+		title: 'Cards';
+		stencil: [ 
+			| container |
+			container := BrVerticalPane new
+				fitContent.
+			self contacts do: [:aContact | 
+				container addChild: (aContact gtViewContactDetailsOn: GtPhlowEmptyView)   ]
+		]
+]
+
 { #category : #'gt-extensions' }
 ABAddressBook >> gtViewContactsList: aView [
 	<gtView>
 	^ aView columnedList
-		title: 'Contacts';
+		title: 'Contacts list';
 		priority: 0;
 		items: [ contacts ];
 		column: 'Name' item: [ :aContact | aContact fullName asRopedText foreground: Color gray ] width: 400
