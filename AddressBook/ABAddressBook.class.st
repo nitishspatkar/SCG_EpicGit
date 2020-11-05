@@ -123,7 +123,8 @@ ABAddressBook >> gtViewContactsCardsFor: aView [
 			container := BrVerticalPane new
 				fitContent.
 			self contacts do: [:aContact | 
-				container addChild: (aContact gtViewContactDetailsOn: GtPhlowEmptyView)   ]
+				container addChild: ((aContact gtViewContactDetailsOn: GtPhlowEmptyView new) asElementDo: [:e | e]) ].
+			container
 		]
 ]
 
