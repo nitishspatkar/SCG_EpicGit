@@ -409,7 +409,7 @@ EUserStory >> gtViewScenarios: aView [
 	<gtView>
 	^ aView list
 		title: 'Scenarios';
-		priority: 4;
+		priority: 3;
 		items: [ scenarios ];
 		itemText: [ :aScenario | aScenario description ]
 ]

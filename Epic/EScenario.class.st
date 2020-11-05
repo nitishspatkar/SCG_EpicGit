@@ -26,7 +26,7 @@ EScenario >> addParametrizedExample: anExample [
 
 { #category : #accessing }
 EScenario >> children [
-	^ {  }
+	^ self parametrizedExamples
 ]
 
 { #category : #'as yet unclassified' }

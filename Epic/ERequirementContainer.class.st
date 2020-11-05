@@ -433,6 +433,17 @@ ERequirementContainer >> gtTestViewFor: aView [
 		stencil: [ self generateMindMapView ].
 ]
 
+{ #category : #accessing }
+ERequirementContainer >> gtTreeFor: aView [
+	<gtView>
+	^ aView tree
+		title: 'Requirements Tree' translated;
+		priority: 2;
+		items: [ self getEpics ];
+		children: [ :each | each children ];
+		itemText: [ :each | each treeViewShortString ]
+]
+
 { #category : #ui }
 ERequirementContainer >> gtUserStoryWallViewFor: aView [
 	<gtView>
@@ -512,10 +523,12 @@ ERequirementContainer >> nodeHighlightColorFor: anArtifact [
 	"I return a corresponding color for a requirement artifact for the outline of the nodes in the mind map view."
 	| artifactType color |
 	artifactType := anArtifact class.
+	color := 
 	(artifactType = EEpic) ifTrue: [ color := Color gray ].
 	(artifactType = EUseCase) ifTrue: [ color := Color cyan ].
 	(artifactType = EUserStory) ifTrue: [ color := Color blue ].
 	(artifactType = EScenario) ifTrue: [ color := Color green ].
+	(artifactType = EParametrizedExample) ifTrue: [ color := Color gray ].
 	^ color alpha: 0.8
 ]
 
@@ -539,6 +552,15 @@ ERequirementContainer >> nodeSizeFor: anArtifact [
 	(artifactType = EScenario) ifTrue: [ size := 10 ].
 	size := (scale map: size) * 20.
 	^ size
+]
+
+{ #category : #accessing }
+ERequirementContainer >> printOn: aStream [
+ 	super printOn: aStream.
+ 	aStream  
+ 		nextPutAll: '(';
+ 		nextPutAll:  self project;
+ 		nextPutAll: ')'
 ]
 
 { #category : #accessing }

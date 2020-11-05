@@ -8,7 +8,8 @@ Class {
 		'boundScenario',
 		'documentView',
 		'description',
-		'editView'
+		'editView',
+		'example'
 	],
 	#category : #'Epic-Model'
 }
@@ -51,6 +52,11 @@ EParametrizedExample >> boundScenario [
 { #category : #accessing }
 EParametrizedExample >> boundScenario: anExample [
 	boundScenario := anExample.
+]
+
+{ #category : #accessing }
+EParametrizedExample >> children [ 
+	^ #()
 ]
 
 { #category : #'as yet unclassified' }
@@ -98,8 +104,9 @@ EParametrizedExample >> exampleMethod [
 ]
 
 { #category : #accessing }
-EParametrizedExample >> exampleMethod: anObject [
-	exampleMethod := anObject
+EParametrizedExample >> exampleMethod: aCompiledMethod [
+	exampleMethod := aCompiledMethod.
+	example := aCompiledMethod gtParametrizedExample
 ]
 
 { #category : #accessing }
@@ -237,6 +244,11 @@ EParametrizedExample >> initialize [
 	propertyTests:= OrderedCollection new.
 ]
 
+{ #category : #accessing }
+EParametrizedExample >> label [
+	^ example label
+]
+
 { #category : #'as yet unclassified' }
 EParametrizedExample >> prepareReturnValuesArrayFor: aCollectionOfExamples [
 	"I accept methods declared with <gtExample> , execute them and return an array with returned values"
@@ -257,6 +269,15 @@ EParametrizedExample >> prepareReturnValuesArrayFor: aCollectionOfExamples [
 						return
 						].
 			]
+]
+
+{ #category : #accessing }
+EParametrizedExample >> printOn: aStream [
+ 	super printOn: aStream.
+ 	aStream 
+ 		nextPutAll: '(';
+ 		nextPutAll: self label;
+ 		nextPutAll: ')'
 ]
 
 { #category : #accessing }
@@ -344,4 +365,9 @@ EParametrizedExample >> selectorElement [
 { #category : #accessing }
 EParametrizedExample >> selectorElement: anObject [
 	selectorElement := anObject
+]
+
+{ #category : #accessing }
+EParametrizedExample >> treeViewShortString [
+	^ 'Example: ', self label
 ]

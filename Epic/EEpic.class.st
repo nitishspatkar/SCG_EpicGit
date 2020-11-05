@@ -113,6 +113,17 @@ EEpic >> gtEpicInformationFor: aView [
 	text: [ 'Epic: ', title ]
 ]
 
+{ #category : #accessing }
+EEpic >> gtMindMapFor: aView [
+	<gtView>
+	^ aView mondrian
+		title: 'Mind Map';
+		priority: 50;
+		updateWhen: ERequirementStateChangedAnnouncement in: [ self announcer ];
+		painting: [ :aMondrian | self mindMapGenerateFor: aMondrian ]
+		
+]
+
 { #category : #'entity references' }
 EEpic >> gtReferencesFor: aView [
 	<gtView>
@@ -135,12 +146,13 @@ EEpic >> gtReferencesFor: aView [
 { #category : #ui }
 EEpic >> gtTreeViewOn: aView [
 	<gtView>
-	(self use_cases isEmpty) ifTrue: [^ aView empty].
-	^ aView columnedTree
+	self use_cases isEmpty
+		ifTrue: [ ^ aView empty ].
+	^ aView tree
 		title: 'Tree' translated;
-		items: [self children];
+		items: [ self children ];
 		children: [ :each | each children ];
-		column: 'Type' format: [ :eachElement | eachElement treeViewShortString ].
+		itemText: [ :eachElement | eachElement treeViewShortString ]
 ]
 
 { #category : #ui }
@@ -186,6 +198,42 @@ EEpic >> initialize [
 	use_cases := OrderedCollection new.
 	references := OrderedCollection new.
 	
+]
+
+{ #category : #accessing }
+EEpic >> mindMapGenerateFor: view [ 
+
+	"Generate a Mind Map graph for the gtMindMap view"
+	view nodes
+		shape: [ :anArtifact |
+			BlElement new
+				size: 20 @10"(self nodeSizeFor: anArtifact) asPoint";
+				"border: (BlBorder paint: (self nodeHighlightColorFor: anArtifact)  width: 2);"
+				background: Color red ;"(self nodeBackgroundColorFor: anArtifact)"
+				geometry: BlCircle new.
+				 ];
+		with: (self withDeepCollect: #children).
+	view edges connectFrom: [ :x | x ] toAll: [ :x | x children ].
+	view edges
+		shape: [ :x | 
+			BlLineElement new
+				border: (BlBorder paint: (Color red alpha: 0.5) width: 5) ].
+	"view layout force 
+		strength: 0.15;
+		charge: -250;
+		length: 70."
+	
+	view layout horizontalTree.
+	^ view
+]
+
+{ #category : #accessing }
+EEpic >> printOn: aStream [
+ 	super printOn: aStream.
+ 	aStream  
+ 		nextPutAll: '(';
+ 		nextPutAll: self title;
+ 		nextPutAll: ')'
 ]
 
 { #category : #removing }
