@@ -249,6 +249,11 @@ EParametrizedExample >> label [
 	^ example label
 ]
 
+{ #category : #accessing }
+EParametrizedExample >> nodeHighlightColor [
+	^ Color gray
+]
+
 { #category : #'as yet unclassified' }
 EParametrizedExample >> prepareReturnValuesArrayFor: aCollectionOfExamples [
 	"I accept methods declared with <gtExample> , execute them and return an array with returned values"

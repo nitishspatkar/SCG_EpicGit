@@ -166,6 +166,11 @@ EScenario >> initialize [
 ]
 
 { #category : #accessing }
+EScenario >> nodeHighlightColor [
+	^ Color green
+]
+
+{ #category : #accessing }
 EScenario >> parametrizedExamples [
 	^ parametrizedExamples
 ]

@@ -38,6 +38,48 @@ EEpic >> children [
 	^ self use_cases 
 ]
 
+{ #category : #accessing }
+EEpic >> computeEpicColor: anEpic [
+	"I compute and return a color based on the combined status of the epic's associated use cases"
+	| useCases color r g b numberOfCases |
+	r := 0. g := 0. b := 0.
+	useCases := anEpic children.
+	numberOfCases := useCases size.
+	useCases do: [ :each | 
+		r := r + (self computeUseCaseColor: each) red.
+		g := g + (self computeUseCaseColor: each) green.
+		b := b + (self computeUseCaseColor: each) blue.
+		 ].
+	(numberOfCases = 0) ifFalse: [ 
+		r := r / numberOfCases.
+		g := g / numberOfCases.
+		b := b / numberOfCases.
+		 ].
+	color := Color r: r g: g b: b.
+	^color
+]
+
+{ #category : #accessing }
+EEpic >> computeUseCaseColor: aUseCase [
+	"I compute and return a color based on the combined status of the use case's associated user stories"
+	| stories color r g b numberOfStories |
+	r := 0. g := 0. b := 0.
+	stories := aUseCase children.
+	numberOfStories := stories size.
+	stories do: [ :each | 
+		r := r + each getStateColor red.
+		g := g + each getStateColor green.
+		b := b + each getStateColor blue.
+		 ].
+	(numberOfStories = 0) ifFalse: [ 
+		r := r / numberOfStories.
+		g := g / numberOfStories.
+		b := b / numberOfStories.
+		 ].
+	color := Color r: r g: g b: b.
+	^color
+]
+
 { #category : #ui }
 EEpic >> customEntityElementFor: aReference [
 	"generate a UI element for a missing reference, used in the Referenced Entities view"
@@ -207,9 +249,11 @@ EEpic >> mindMapGenerateFor: view [
 	view nodes
 		shape: [ :anArtifact |
 			BlElement new
-				size: 20 @10"(self nodeSizeFor: anArtifact) asPoint";
-				"border: (BlBorder paint: (self nodeHighlightColorFor: anArtifact)  width: 2);"
-				background: Color red ;"(self nodeBackgroundColorFor: anArtifact)"
+				background: (self nodeBackgroundColorFor: anArtifact);
+				size: (self nodeSizeFor: anArtifact) asPoint;
+				border: (BlBorder 
+					paint: (anArtifact nodeHighlightColor alpha: 0.8)  
+					width: 2);
 				geometry: BlCircle new.
 				 ];
 		with: (self withDeepCollect: #children).
@@ -225,6 +269,53 @@ EEpic >> mindMapGenerateFor: view [
 	
 	view layout horizontalTree.
 	^ view
+]
+
+{ #category : #accessing }
+EEpic >> nodeBackgroundColorFor: anArtifact [
+	"I Compute and return the color of the artifact node's background for the mind map view"
+	| color artifactType |
+	color := Color blue.
+	artifactType := anArtifact class.
+	(artifactType = EEpic) ifTrue: [ 
+		color := self computeEpicColor: anArtifact
+		 ].
+	(artifactType = EUseCase) ifTrue: [ 
+		color := self computeUseCaseColor: anArtifact
+		 ].
+	(artifactType = EUserStory) ifTrue: [ color := anArtifact getStateColor ].
+	(artifactType = EScenario) ifTrue: [ color := Color white ].
+	
+	^color alpha: 0.5
+	
+
+]
+
+{ #category : #accessing }
+EEpic >> nodeHighlightColor [
+	^ Color gray
+]
+
+{ #category : #ui }
+EEpic >> nodeSizeFor: anArtifact [
+	"I return the size of the node that represents supplied artifact in the mind map view. 
+	The size depends on the number of implementation points given to the user stories. Scenarios all have the same size."
+	| artifactType size scale |
+	size := 10.
+	scale := GtPlotterLogarithmicScale new.
+	artifactType := anArtifact class.
+	(artifactType = EEpic) ifTrue: [ 
+		anArtifact children do: [ :useCase | 
+			useCase children do: [ :story | size := size + story points ]
+			 ].
+		 ].
+	(artifactType = EUseCase) ifTrue: [ 
+		anArtifact children do: [ :story | size := size + story points ].
+		 ].
+	(artifactType = EUserStory) ifTrue: [ size := 10 + anArtifact points ].
+	(artifactType = EScenario) ifTrue: [ size := 10 ].
+	size := (scale map: size) * 20.
+	^ size
 ]
 
 { #category : #accessing }

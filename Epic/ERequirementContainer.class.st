@@ -479,7 +479,9 @@ ERequirementContainer >> mindMapGenerateFor: view [
 			BlElement new
 				look: (self setUpTooltipLookFor: anArtifact);
 				size: (self nodeSizeFor: anArtifact) asPoint;
-				border: (BlBorder paint: (self nodeHighlightColorFor: anArtifact)  width: 2);
+				border: (BlBorder 
+					paint: (anArtifact nodeHighlightColor alpha: 0.8)  
+					width: 2);
 				background: (self nodeBackgroundColorFor: anArtifact);
 				geometry: BlCircle new.
 				 ];

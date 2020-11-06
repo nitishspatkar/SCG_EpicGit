@@ -446,6 +446,11 @@ EUserStory >> markStarted [
 	state := 'In progress'.
 ]
 
+{ #category : #accessing }
+EUserStory >> nodeHighlightColor [
+	^ Color blue
+]
+
 { #category : #'entity references' }
 EUserStory >> parseStory [
 	| aPRDocument |

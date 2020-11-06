@@ -273,6 +273,11 @@ EUseCase >> markStarted [
 ]
 
 { #category : #accessing }
+EUseCase >> nodeHighlightColor [
+	^ Color cyan
+]
+
+{ #category : #accessing }
 EUseCase >> precondition [
 	^ precondition
 ]
