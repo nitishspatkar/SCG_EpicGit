@@ -35,8 +35,18 @@ EScenarioSelectionWidget >> examples: aListOfExamples [
 EScenarioSelectionWidget >> initialize [
 	super initialize.
 	exampleList := BrSimpleList new.
+	"exampleList addEventHandler: (GtPhlowListToSelectHandler new)."
 	exampleList
-		stencil: [ :anExample :index | 
+		itemStencil: [
+			BrLabel new
+				look: BrGlamorousLabelLook new + (BrStyleCommonLook new
+					selected: [ :aStyle | aStyle background: Color veryVeryLightGray ]);
+				constraintsDo: [ :c | c horizontal matchParent ];
+				hMatchParent;
+				padding: (BlInsets all: 6) ];
+		itemDataBinder: [ :eachElement :anExample :eachIndex | eachElement text: anExample label asRopedText ];
+	
+		"stencil: [ :anExample :index | 
 			BrLabel new
 				text: anExample label asRopedText;
 				look: BrLabelLook;
@@ -44,8 +54,9 @@ EScenarioSelectionWidget >> initialize [
 				padding: (BlInsets all: 6);
 				when: BlClickEvent
 					do: [ :anEvent | 
-					anEvent consumed: true.
-					exampleList selectOne: index ] ];
+						self halt.
+						anEvent consumed: true.
+						exampleList selectOne: index ] ];"
 		fitContent;
 		margin:
 			(BlInsets

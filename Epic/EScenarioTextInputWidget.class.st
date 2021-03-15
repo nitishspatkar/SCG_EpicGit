@@ -25,6 +25,7 @@ EScenarioTextInputWidget class >> widgetType [
 EScenarioTextInputWidget >> initialize [
 	| editorLook interactiveLook |
 	super initialize.
+
 	editorLook := BrGlamorousRegularEditorLook new fontSize: 15.
 	editor := BrEditor new
 		text: '';
@@ -40,7 +41,7 @@ EScenarioTextInputWidget >> initialize [
 			c minWidth: 100.
 			c padding: (BlInsets all: 10).
 			c linear horizontal alignLeft.
-			c vertical matchParent.
+			"c vertical matchParent."
 			c linear weight: 0.3 ].
 	editor
 		in: [ :e | 

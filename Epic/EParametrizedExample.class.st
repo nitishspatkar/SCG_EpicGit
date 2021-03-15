@@ -33,8 +33,8 @@ EParametrizedExample >> addGenerateButton [
 				"s:= (exampleMethod methodClass name), '>>#' , coder selector."
 				self propertyTests add: coder compiledMethod.
 				].
-			saveAction:= (coder addOns mainActions detect: [:act | act asString = 'a GtCoderAction(Save)']).
-			saveAction action: block.
+			"saveAction:= (coder addOns mainActions detect: [:act | act asString = 'a GtCoderAction(Save)']).
+			saveAction action: block."
 
 			button phlow spawnObject: coder ];
 		margin: (BlInsets top: 10 left: 10 bottom: 10 right: 0);
