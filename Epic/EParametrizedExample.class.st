@@ -24,7 +24,7 @@ EParametrizedExample >> addGenerateButton [
 			coder := GtMethodCoder 
 				forClass: exampleMethod methodClass 
 				source: self generateMethodString.
-			coder expanded: true.
+			"coder expanded: true."
 			block:= [
 				|s|
 				coder save.
