@@ -44,6 +44,24 @@ EParametrizedExample >> addGenerateButton [
 		
 ]
 
+{ #category : #adding }
+EParametrizedExample >> addRunButtonFor: selectionElement [
+	^ BrButton new
+		look: BrGlamorousButtonWithLabelLook new;
+		label: 'Run';
+		action: [ :aButton |
+			aButton phlow
+				spawnObject:
+					(self
+						executeExample: self exampleMethod
+						withParams: selectionElement selectedParameterValues) ];
+		margin: (BlInsets top: 10 left: 10 bottom: 10 right: 0);
+		constraintsDo: [ :c | 
+			c linear horizontal alignLeft.
+		]
+		
+]
+
 { #category : #accessing }
 EParametrizedExample >> boundScenario [
 	^ boundScenario
@@ -201,6 +219,12 @@ EParametrizedExample >> generateMethodString [
 	^ methodDescription
 ]
 
+{ #category : #ui }
+EParametrizedExample >> gtSourceFor: aView [
+	<gtView>
+	^ exampleMethod gtSourceFor:  aView
+]
+
 { #category : #accessing }
 EParametrizedExample >> gtViewEditFor: aView [
 	<gtView>
@@ -220,10 +244,15 @@ EParametrizedExample >> gtViewEditFor: aView [
 { #category : #accessing }
 EParametrizedExample >> gtViewParameters2For: aView [
 	<gtView>
-	| selElement |
+	| selElement buttons |
 	selElement := EScenarioParametersSelectionElement new
 		initializeForParametrizedExample: self.
-	selElement addChild: self addGenerateButton.
+		
+	buttons := BrHorizontalPane new fitContent.
+	buttons addChild: self addGenerateButton.
+	buttons addChild: (self addRunButtonFor: selElement).
+	selElement addChild: buttons.
+	
 	self selectorElement: selElement.
 	^ aView explicit
 		title: 'Pick Examples';
