@@ -8,7 +8,7 @@ Run this code snippet in the playground of Pharo 8.0 and you will have access to
 ```
 Metacello new
   baseline: 'Epic';
-  repository: 'github://rniem379349/SCG_EpicGit';
+  repository: 'github://nitishspatkar/SCG_EpicGit';
   load
 ```
 
