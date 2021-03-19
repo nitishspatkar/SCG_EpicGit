@@ -269,29 +269,10 @@ EUserStory >> description: aString [
 { #category : #'entity references' }
 EUserStory >> getReferencesFrom: aDocument [
 	"filter out all references to domain entities from a document"
-	| classAnnotations methodAnnotations missingEntityString |
-	
-	references := OrderedCollection new.
-	aDocument children do: [ :aChild | 
-		(aChild class = PRParagraph) ifTrue: [ 
-			classAnnotations := aChild select: [ :e | e class = GtClassAnnotation ].
-			methodAnnotations := aChild select: [ :e | e class = GtMethodAnnotation ].
-			
-			classAnnotations do: [ :anAnnotation | 
-				[ (references includes: (self class environment at: (anAnnotation referencedClass) name)) 
-					ifFalse: [ references add: (self class environment at: (anAnnotation referencedClass) name) ] 
-					] on: KeyNotFound do: [ 
-					missingEntityString := String streamContents: [ :out | out nextPutAll: ((anAnnotation referencedClass) name); nextPutAll: ' - missing' ].
-					references add: missingEntityString.
-					].
-				 ].
-			
-			methodAnnotations do: [ :anAnnotation | 
-				(references includes: anAnnotation referencedMethod) ifFalse: [ references add: anAnnotation referencedMethod ]
-				 ].
-			 ]
-		 ].
-	^references asSet asOrderedCollection.
+
+	^ aDocument
+		select:
+			[ :e | e class = GtClassAnnotation or: [ e class = GtMethodAnnotation ] ]
 ]
 
 { #category : #'work state' }
@@ -359,20 +340,39 @@ Under scenarios, you can see a list and view each of the scenarios used to suppo
 { #category : #parsing }
 EUserStory >> gtReferencesFor: aView [
 	<gtView>
-	| listView |
-   listView := aView list
+	^ aView list
 		title: 'Referenced Entities';
-		items: [ self getReferencesFrom: self parseStory ].
-	listView itemStencil: [ :x | 
-			(x class = ByteString) 
-			ifTrue: [ self customEntityElementFor: x ]
-			ifFalse: [ listView buildTextElementFor: x ]
-			 ].
-	listView actionButtonIcon: BrGlamorousVectorIcons refresh 
+		items: [ self getReferencesFrom: self parseStory ];
+		itemStencil: [ :x | 
+			| container label button separator |
+			container := BlElement new
+				layout: BlLinearLayout horizontal;
+				constraintsDo: [ :c | 
+					c horizontal matchParent.
+					c vertical exact: 30 ].
+			separator := BlElement new
+				constraintsDo: [ :c | 
+					c horizontal matchParent.
+					c vertical fitContent ].
+			label := BrLabel new look: BrGlamorousListLabelLook.
+			button := RequirementClassAdditionInterface new.
+			container addChild: label.
+			container addChild: separator.
+			container addChild: button ];
+		itemDataBinder: [ :anItemElement :anItem | 
+			anItemElement children first text: anItem referencedClass name.
+			anItemElement children third
+				initializeWithFutureClassName: anItem referencedClass name
+					andElement: anItemElement;
+				visibility:
+					(anItem isClassDefined
+						ifTrue: [ BlVisibility hidden ]
+						ifFalse: [ BlVisibility visible ]) ];
+		actionButtonIcon: BrGlamorousVectorIcons refresh
 			label: 'Refresh'
-			action: [ self announcer announce: ERequirementStateChangedAnnouncement new ].
-	listView updateWhen: ERequirementStateChangedAnnouncement in: [ self announcer ].
-	^listView
+			action: [ self announcer announce: ERequirementStateChangedAnnouncement new ];
+		updateWhen: ERequirementStateChangedAnnouncement
+			in: [ self announcer ]
 ]
 
 { #category : #ui }
