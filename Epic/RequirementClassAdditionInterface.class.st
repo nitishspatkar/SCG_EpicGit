@@ -41,16 +41,16 @@ RequirementClassAdditionInterface >> buildAddButton [
 RequirementClassAdditionInterface >> buildAddInterface: look [
 	| contentTabs tab |
 	contentTabs := BrTabGroup new.
-	contentTabs look: BrGlamorousTabGroupLook new.
+	contentTabs aptitude: BrGlamorousTabGroupAptitude new.
 	contentTabs
 		constraintsDo: [ :c | 
 			c horizontal matchParent.
 			c vertical matchParent ].
 	tab := BrTab new
-		look: BrGlamorousTabLook new;
+		aptitude: BrGlamorousTabAptitude new;
 		label: 'Class';
 		stencil: [ | el |
-			el := GtCreateBehaviorElement new.
+			el := GtPharoCreateBehaviorElement new.
 			el
 				behaviorBlock: [ :cls | 
 					look hide.
