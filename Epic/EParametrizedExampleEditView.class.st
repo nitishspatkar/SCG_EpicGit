@@ -55,7 +55,7 @@ EParametrizedExampleEditView >> createAddParameterButton: aParametrizedExample [
 			c horizontal matchParent. ].
 		
 		button:= BrButton new
-					look: BrGlamorousButtonWithIconLook - BrGlamorousButtonExteriorLook;
+					aptitude: BrGlamorousButtonWithIconAptitude - BrGlamorousButtonExteriorAptitude;
 					icon: BrGlamorousIcons add asElement;
 					action: [ "self inform: 'Clicked add parameter.'."
 								self methodParametersElement addChild: self spawnEmptyParameterChoiceContainer ];
@@ -76,7 +76,7 @@ EParametrizedExampleEditView >> createApplyChangesElement [
 			c horizontal matchParent. ].
 		
 		button:= BrButton new
-					look: BrGlamorousButtonWithLabelLook new;
+					aptitude: BrGlamorousButtonWithLabelAptitude new;
 					label: 'Apply';
 					action: [ "self inform: 'Clicked'."
 								self refactorExistingMethod.
@@ -114,7 +114,7 @@ EParametrizedExampleEditView >> createDescriptionForParametrizedExample: aParame
 		padding: (BlInsets top: 0 left: 10 bottom: 0 right: 6);
 		margin: (BlInsets top: 10 left: 10); 
 		text: 'Description: ';
-		look: (BrGlamorousLabelLook new bold glamorousRegularFont fontSize: 18);
+		aptitude: (BrGlamorousLabelAptitude new bold glamorousRegularFont fontSize: 18);
 		constraintsDo: [ :c | 
 			c minWidth: 80.
 			c linear horizontal alignLeft.
@@ -149,7 +149,7 @@ EParametrizedExampleEditView >> createLabelForParametrizedExample: aParametrized
 		padding: (BlInsets top: 0 left: 10 bottom: 10 right: 6);
 		margin: (BlInsets top: 10 left: 10); 
 		text: 'Label: ';
-		look: (BrGlamorousLabelLook new bold glamorousRegularFont fontSize: 18);
+		aptitude: (BrGlamorousLabelAptitude new bold glamorousRegularFont fontSize: 18);
 		constraintsDo: [ :c | 
 			c minWidth: 50.
 			c linear horizontal alignLeft.
@@ -226,7 +226,7 @@ EParametrizedExampleEditView >> createReturnElementForParametrizedExample: aPara
 		padding: (BlInsets top: 10 left: 10 bottom: 20 right: 6);
 		margin: (BlInsets top: 10 left: 10); 
 		text: 'Returns: ';
-		look: (BrGlamorousLabelLook new bold glamorousRegularFont fontSize: 18);
+		aptitude: (BrGlamorousLabelAptitude new bold glamorousRegularFont fontSize: 18);
 		constraintsDo: [ :c | 
 			c minWidth: 100.
 			c linear horizontal alignLeft.
@@ -262,7 +262,7 @@ EParametrizedExampleEditView >> getRemoveExampleButton [
 			c ignored vertical alignTop ];
 		action: [ self inform: 'clicked' ].
 "	^ BrButton new
-		look: BrGlamorousButtonWithIconLook - BrGlamorousButtonExteriorLook;
+		aptitude: BrGlamorousButtonWithIconAptitude - BrGlamorousButtonExteriorAptitude;
 		icon: BrGlamorousIcons close asElement;
 		beTiny;
 		label: 'Remove example';
@@ -327,7 +327,7 @@ EParametrizedExampleEditView >> labelWith: aText [
 ^ BrLabel new
 		padding: (BlInsets right: 0);
 		text: aText;
-		look: (BrGlamorousLabelLook new glamorousRegularFont fontSize: 14);
+		aptitude: (BrGlamorousLabelAptitude new glamorousRegularFont fontSize: 14);
 		constraintsDo: [ :c | 
 			c linear horizontal alignLeft.
 			c linear vertical alignCenter. ].

@@ -23,14 +23,14 @@ EScenarioTextInputWidget class >> widgetType [
 
 { #category : #'as yet unclassified' }
 EScenarioTextInputWidget >> initialize [
-	| editorLook interactiveLook |
+	| editorAptitude interactiveAptitude |
 	super initialize.
 
-	editorLook := BrGlamorousRegularEditorLook new fontSize: 15.
+	editorAptitude := BrGlamorousRegularEditorAptitude new fontSize: 15.
 	editor := BrEditor new
 		text: '';
-		look:
-			editorLook;
+		aptitude:
+			editorAptitude;
 		border: (BlBorder paint: BrGlamorousColors editorBorderColor width: 1);
 		geometry: (BlRectangle cornerRadius: 10);
 		"hFitContent;"

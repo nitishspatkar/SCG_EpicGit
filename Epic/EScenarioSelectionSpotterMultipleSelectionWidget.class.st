@@ -5,7 +5,7 @@ Class {
 	#classTraits : 'BuilderStringForGtExampleArray classTrait + TypeFieldDependentChoice classTrait',
 	#instVars : [
 		'exampleContainer',
-		'spotterDropDownLook',
+		'spotterDropDownAptitude',
 		'examplesGroup',
 		'selectedExamples'
 	],
@@ -44,7 +44,7 @@ EScenarioSelectionSpotterMultipleSelectionWidget >> actOnExampleSelected: anExam
 	labelElement:= self createLabelForExample: anExample.
 	selectedExamples at: labelElement put: anExample.
 	exampleContainer addChild: labelElement.
-	spotterDropDownLook hide
+	spotterDropDownAptitude hide
 ]
 
 { #category : #examples }
@@ -63,7 +63,7 @@ EScenarioSelectionSpotterMultipleSelectionWidget >> createLabelForExample: anExa
 		padding: (BlInsets all: 3);
 		
 		background: (Color fromHexString: 'eaeaea');
-		look: BrGlamorousLabelLook new glamorousRegularFontAndSize;
+		aptitude: BrGlamorousLabelAptitude new glamorousRegularFontAndSize;
 		constraintsDo: [ :c | c linear vertical alignCenter ].
 	crossBox:= self getRemoveExampleButton
 		constraintsDo: [ :c | c linear vertical alignCenter ].
@@ -90,19 +90,19 @@ EScenarioSelectionSpotterMultipleSelectionWidget >> createSearchIcon [
 ]
 
 { #category : #examples }
-EScenarioSelectionSpotterMultipleSelectionWidget >> createSearchIconButtonWithNoExteriorLook [
+EScenarioSelectionSpotterMultipleSelectionWidget >> createSearchIconButtonWithNoExteriorAptitude [
 	^ BrButton new
-		look: BrGlamorousButtonWithIconLook - BrGlamorousButtonExteriorLook;
+		aptitude: BrGlamorousButtonWithIconAptitude - BrGlamorousButtonExteriorAptitude;
 		icon: BrGlamorousIcons search asElement
 ]
 
 { #category : #examples }
 EScenarioSelectionSpotterMultipleSelectionWidget >> createSpotterDropdown [
 	^ self createSearchIcon
-		look:
-			BrGlamorousButtonWithIconLook
+		aptitude:
+			BrGlamorousButtonWithIconAptitude
 				+
-					(spotterDropDownLook := BrGlamorousWithDropdownLook
+					(spotterDropDownAptitude := BrGlamorousWithDropdownAptitude
 						stencil: [ | model spotterElement |
 							model := GtSpotter new initializeWith: self spotterStartModel.
 							model announcer
@@ -112,14 +112,14 @@ EScenarioSelectionSpotterMultipleSelectionWidget >> createSpotterDropdown [
 									anEvent actedUpon: true ].
 							model announcer
 								when: GtSpotterExitAnnouncement
-								do: [ :e | spotterDropDownLook hide ].
+								do: [ :e | spotterDropDownAptitude hide ].
 							spotterElement := GtSpotterElement new
 								spotterModel: model;
 								size: 700 @ 500.
 							BlElement new
-								look:
-									(BrGlamorousDropdownLook new
-										handle: self createSearchIconButtonWithNoExteriorLook;
+								aptitude:
+									(BrGlamorousDropdownAptitude new
+										handle: self createSearchIconButtonWithNoExteriorAptitude;
 										content: spotterElement);
 								background: BrGlamorousColors secondaryHeaderBackgroundColor ])
 ]
@@ -170,7 +170,7 @@ EScenarioSelectionSpotterMultipleSelectionWidget >> getCrossedBox [
 { #category : #'as yet unclassified' }
 EScenarioSelectionSpotterMultipleSelectionWidget >> getRemoveExampleButton [
 	^ BrButton new
-		look: BrGlamorousButtonWithIconLook - BrGlamorousButtonExteriorLook;
+		aptitude: BrGlamorousButtonWithIconAptitude - BrGlamorousButtonExteriorAptitude;
 		icon: BrGlamorousIcons close asElement;
 		beTiny;
 		label: 'Remove example';

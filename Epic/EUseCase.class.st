@@ -108,7 +108,7 @@ EUseCase >> customEntityElementFor: aReference [
 			 ].
 	
 	label := BrLabel new
-		look: BrGlamorousListLabelLook;
+		aptitude: BrGlamorousListLabelAptitude;
 		text: aReference asRopedText.
 	
 	button := RequirementClassAdditionInterface new initializeWithFutureClassName: referencedEntity andElement: self.

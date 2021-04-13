@@ -67,7 +67,7 @@ RequirementRefFinder class >> viewWithItemsFor: aClass [
 	view := GtPhlowView empty list.
 	view itemStencil: [ :x | 
 		element := BrLabel new.
-		element look: BrGlamorousLabelLook new.
+		element aptitude: BrGlamorousLabelAptitude new.
 		element text: (x asString, ': ', x title) asRopedText.
 		].
 	view items: references.

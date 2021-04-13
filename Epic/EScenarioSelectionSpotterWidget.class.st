@@ -5,7 +5,7 @@ Class {
 	#classTraits : 'BuilderStringForGtExample classTrait + TypeFieldDependentChoice classTrait',
 	#instVars : [
 		'exampleContainer',
-		'spotterDropDownLook',
+		'spotterDropDownAptitude',
 		'examplesGroup',
 		'selectedExample'
 	],
@@ -36,7 +36,7 @@ EScenarioSelectionSpotterWidget >> actOnExampleSelected:  anExample [
 									exampleContainer
 										addChild: (self createLabelForExample: anExample).
 									
-									spotterDropDownLook hide.
+									spotterDropDownAptitude hide.
 ]
 
 { #category : #examples }
@@ -47,7 +47,7 @@ EScenarioSelectionSpotterWidget >> createLabelForExample: anExample [
 		padding: (BlInsets all: 3);
 		geometry: (BlRectangle cornerRadius: 5);
 		background: (Color fromHexString: 'eaeaea');
-		look: BrGlamorousLabelLook new glamorousRegularFontAndSize;
+		aptitude: BrGlamorousLabelAptitude new glamorousRegularFontAndSize;
 		constraintsDo: [ :c | c linear vertical alignCenter ]
 ]
 
@@ -60,19 +60,19 @@ EScenarioSelectionSpotterWidget >> createSearchIcon [
 ]
 
 { #category : #examples }
-EScenarioSelectionSpotterWidget >> createSearchIconButtonWithNoExteriorLook [
+EScenarioSelectionSpotterWidget >> createSearchIconButtonWithNoExteriorAptitude [
 	^ BrButton new
-												look: BrGlamorousButtonWithIconLook - BrGlamorousButtonExteriorLook;
+												aptitude: BrGlamorousButtonWithIconAptitude - BrGlamorousButtonExteriorAptitude;
 												icon: BrGlamorousIcons search asElement
 ]
 
 { #category : #examples }
 EScenarioSelectionSpotterWidget >> createSpotterDropdown [
 	^ self createSearchIcon
-		look:
-			BrGlamorousButtonWithIconLook
+		aptitude:
+			BrGlamorousButtonWithIconAptitude
 				+
-					(spotterDropDownLook := BrGlamorousWithDropdownLook
+					(spotterDropDownAptitude := BrGlamorousWithDropdownAptitude
 						stencil: [ | model spotterElement |
 							model := GtSpotter new initializeWith: self spotterStartModel.
 							model announcer
@@ -82,14 +82,14 @@ EScenarioSelectionSpotterWidget >> createSpotterDropdown [
 									anEvent actedUpon: true ].
 							model announcer
 								when: GtSpotterExitAnnouncement
-								do: [ :e | spotterDropDownLook hide ].
+								do: [ :e | spotterDropDownAptitude hide ].
 							spotterElement := GtSpotterElement new
 								spotterModel: model;
 								size: 700 @ 500.
 							BlElement new
-								look:
-									(BrGlamorousDropdownLook new
-										handle: self createSearchIconButtonWithNoExteriorLook;
+								aptitude:
+									(BrGlamorousDropdownAptitude new
+										handle: self createSearchIconButtonWithNoExteriorAptitude;
 										content: spotterElement);
 								background: BrGlamorousColors secondaryHeaderBackgroundColor ])
 ]

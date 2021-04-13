@@ -86,7 +86,7 @@ ERequirementContainer >> buildButtonBar [
 	buttonBar
 		addChild:
 			(BrButton new
-				look: BrGlamorousButtonWithLabelLook;
+				aptitude: BrGlamorousButtonWithLabelAptitude;
 				label: 'Add Epic';
 				action: [ 
 					graphPane removeChildren.
@@ -95,35 +95,35 @@ ERequirementContainer >> buildButtonBar [
 	buttonBar
 		addChild:
 			(BrButton new
-				look: BrGlamorousButtonWithIconLook;
+				aptitude: BrGlamorousButtonWithIconAptitude;
 				icon: BrGlamorousIcons zoomin;
 				label: 'Zoom In';
 				action: [ theGraph zoomIn ]).
 	buttonBar
 		addChild:
 			(BrButton new
-				look: BrGlamorousButtonWithIconLook;
+				aptitude: BrGlamorousButtonWithIconAptitude;
 				icon: BrGlamorousIcons zoomout;
 				label: 'Zoom Out';
 				action: [ theGraph zoomOut ]).
 	buttonBar
 		addChild:
 			(BrButton new
-				look: BrGlamorousButtonWithIconLook;
+				aptitude: BrGlamorousButtonWithIconAptitude;
 				icon: BrGlamorousIcons zoomtofit;
 				label: 'Fit';
 				action: [ theGraph zoomToFit ]).
 	buttonBar
 		addChild:
 			(BrButton new
-				look: BrGlamorousButtonWithIconLook;
+				aptitude: BrGlamorousButtonWithIconAptitude;
 				icon: BrGlamorousIcons actualsize;
 				label: 'Resize';
 				action: [ theGraph zoomToActualSize ]).
 	buttonBar
 		addChild:
 			(BrButton new
-				look: BrGlamorousButtonWithIconLook;
+				aptitude: BrGlamorousButtonWithIconAptitude;
 				icon: BrGlamorousVectorIcons refresh;
 				label: 'Refresh';
 				action: [ self announcer announce: ERequirementStateChangedAnnouncement ]).
@@ -208,12 +208,12 @@ ERequirementContainer >> createInfoButtonForMindMap [
 	buttonContent addChild: nodeOutlineColorInfoElement.
 	
 	button := BrButton new
-		look:
-			BrGlamorousButtonWithIconLook
+		aptitude:
+			BrGlamorousButtonWithIconAptitude
 				+
-					(BrGlamorousWithDropdownLook
+					(BrGlamorousWithDropdownAptitude
 						handle: [ BrButton new
-								look: BrGlamorousButtonRectangularLook + BrGlamorousButtonIconLook;
+								aptitude: BrGlamorousButtonRectangularAptitude + BrGlamorousButtonIconAptitude;
 								icon: BrGlamorousIcons help;
 								yourself ]
 						content: [ buttonContent ]);
@@ -294,7 +294,7 @@ ERequirementContainer >> generateStoryWallView [
 			 ].
 	
 	refreshButton := (BrButton new
-		look: BrGlamorousButtonWithIconLook;
+		aptitude: BrGlamorousButtonWithIconAptitude;
 				icon: BrGlamorousVectorIcons refresh;
 				label: 'Refresh';
 				action: [ self announcer announce: ERequirementStateChangedAnnouncement ]).
@@ -322,7 +322,7 @@ ERequirementContainer >> generateStoryWallView [
 		margin: (BlInsets top: 15 left: 15 bottom: 0 right: 0);
 		padding: (BlInsets all: 3);
 		geometry: (BlRectangle cornerRadius: 5);
-		look: (BrGlamorousLabelLook new glamorousRegularFontAndSize; fontSize: 20); 
+		aptitude: (BrGlamorousLabelAptitude new glamorousRegularFontAndSize; fontSize: 20); 
 		constraintsDo: [ :c | 
 			c linear vertical alignCenter.
 			c linear horizontal alignCenter ].
@@ -477,7 +477,7 @@ ERequirementContainer >> mindMapGenerateFor: view [
 	view nodes
 		shape: [ :anArtifact |
 			BlElement new
-				look: (self setUpTooltipLookFor: anArtifact);
+				aptitude: (self setUpTooltipAptitudeFor: anArtifact);
 				size: (self nodeSizeFor: anArtifact) asPoint;
 				border: (BlBorder 
 					paint: (anArtifact nodeHighlightColor alpha: 0.8)  
@@ -625,9 +625,9 @@ ERequirementContainer >> requirements: aCollectionOfRequirements [
 ]
 
 { #category : #ui }
-ERequirementContainer >> setUpTooltipLookFor: anArtifact [
+ERequirementContainer >> setUpTooltipAptitudeFor: anArtifact [
 	"I set up the custom tooltip object for the Mind Map view, depending on the supplied artifact"
-	^  BrGlamorousWithTooltipLook
+	^  BrGlamorousWithTooltipAptitude
 		handle: [ BlElement new
 			constraintsDo: [ :c | 
 				c vertical exact: 20.
@@ -637,7 +637,7 @@ ERequirementContainer >> setUpTooltipLookFor: anArtifact [
 			
 			
 			addSubElementButton := (BrButton new
-				look: BrGlamorousButtonWithIconLook;
+				aptitude: BrGlamorousButtonWithIconAptitude;
 				icon: BrGlamorousIcons add;
 				label: (self addSubElementLabelFor: anArtifact);
 				action: [ 
@@ -646,7 +646,7 @@ ERequirementContainer >> setUpTooltipLookFor: anArtifact [
 					 ]).
 	
 	editElementButton := (BrButton new
-				look: BrGlamorousButtonWithIconLook;
+				aptitude: BrGlamorousButtonWithIconAptitude;
 				icon: BrGlamorousIcons edit;
 				label: 'Edit';
 				action: [ 
@@ -655,7 +655,7 @@ ERequirementContainer >> setUpTooltipLookFor: anArtifact [
 					 ]).
 	
 	deleteElementButton := (BrButton new
-				look: BrGlamorousButtonWithIconLook;
+				aptitude: BrGlamorousButtonWithIconAptitude;
 				icon: BrGlamorousIcons remove;
 				label: 'Delete this artifact (WARNING: This will delete all sub-elements too!)';
 				action: [ 
@@ -667,7 +667,7 @@ ERequirementContainer >> setUpTooltipLookFor: anArtifact [
 			tooltipText := ('An ', anArtifact class name, ': ', anArtifact title) asRopedText.
 			
 			tooltipLabel := (BrLabel new 
-				look: BrGlamorousLabelLook new glamorousRegularFontAndSize; 
+				aptitude: BrGlamorousLabelAptitude new glamorousRegularFontAndSize; 
 				padding: (BlInsets all: 20); 
 				alignCenter; 
 				fitContent;

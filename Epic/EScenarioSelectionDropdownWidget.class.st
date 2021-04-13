@@ -8,7 +8,7 @@ Class {
 		'toggleButton',
 		'toggleButtonLabel',
 		'initialButtonElement',
-		'dropDownLook'
+		'dropDownAptitude'
 	],
 	#category : #'Epic-Model'
 }
@@ -46,12 +46,12 @@ EScenarioSelectionDropdownWidget >> initialize [
 	super initialize.
 	list := self simpleListElement.
 	initialButtonElement := self toggleButton
-		look:
-			BrGlamorousButtonWithLabelAndIconLook
+		aptitude:
+			BrGlamorousButtonWithLabelAndIconAptitude
 				+
-					(dropDownLook := BrGlamorousWithDropdownLook
+					(dropDownAptitude := BrGlamorousWithDropdownAptitude
 						handle: [ self toggleButton
-								look: BrGlamorousButtonWithLabelAndIconLook - BrGlamorousButtonExteriorLook;
+								aptitude: BrGlamorousButtonWithLabelAndIconAptitude - BrGlamorousButtonExteriorAptitude;
 								yourself ]
 						content: [ list ]);
 		margin: (BlInsets all: 8).
@@ -74,11 +74,11 @@ EScenarioSelectionDropdownWidget >> simpleListElement [
 				combination: BlKeyCombination builder return build;
 				action: [ 
 					initialButtonElement label: toggleButtonLabel.
-					dropDownLook hide ]);
+					dropDownAptitude hide ]);
 		stencil: [ :anExample :index | 
 			BrLabel new
 				text: anExample label asRopedText;
-				look: BrLabelLook;
+				aptitude: BrLabelAptitude;
 				constraintsDo: [ :c | c horizontal matchParent ];
 				padding: (BlInsets all: 6);
 				when: BlClickEvent

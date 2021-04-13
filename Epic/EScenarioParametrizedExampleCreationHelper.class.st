@@ -26,7 +26,7 @@ EScenarioParametrizedExampleCreationHelper >> blLabelFor: text [
 		margin: (BlInsets top: 15 left: 15 bottom: 0 right: 0);
 		padding: (BlInsets all: 3);
 		geometry: (BlRectangle cornerRadius: 5);
-		look: (BrGlamorousLabelLook new glamorousRegularFontAndSize; fontSize: 20); 
+		aptitude: (BrGlamorousLabelAptitude new glamorousRegularFontAndSize; fontSize: 20); 
 		constraintsDo: [ :c | 
 			c linear vertical alignCenter.
 			c linear horizontal alignLeft ].
@@ -45,7 +45,7 @@ EScenarioParametrizedExampleCreationHelper >> classSelectSpotterWidget: anObject
 { #category : #'as yet unclassified' }
 EScenarioParametrizedExampleCreationHelper >> createAddExampleButton [
 		^ BrButton new
-		look: BrGlamorousButtonWithLabelLook new;
+		aptitude: BrGlamorousButtonWithLabelAptitude new;
 		label: 'Generate parametrized example definition';
 		action: [ :button |
 			| coder saveAction block|
@@ -75,7 +75,7 @@ EScenarioParametrizedExampleCreationHelper >> createAddExampleButton [
 EScenarioParametrizedExampleCreationHelper >> createAddParameterButton [
 		| cont button |
 		^ BrButton new
-		look: BrGlamorousButtonWithLabelLook new;
+		aptitude: BrGlamorousButtonWithLabelAptitude new;
 		label: 'Add parameter';
 		action: [ self methodParametersElement addChild: self spawnEmptyParameterChoiceContainer ];
 		border: (BlBorder paint: (Color green) width: 3);
@@ -144,8 +144,8 @@ EScenarioParametrizedExampleCreationHelper >> getHelpButton [
 		border: (BlBorder paint: (Color green) width: 3);
 		margin: (BlInsets top: 15 left: 15 bottom: 0 right: 0);
 		padding: (BlInsets all: 3);
-		look:
-			BrGlamorousButtonWithIconLook)	
+		aptitude:
+			BrGlamorousButtonWithIconAptitude)	
 ]
 
 { #category : #'as yet unclassified' }
@@ -289,7 +289,7 @@ EScenarioParametrizedExampleCreationHelper >> initializeForLabel [
 
 { #category : #initialization }
 EScenarioParametrizedExampleCreationHelper >> initializeForMethodName [
-	|container label editorLook editor |
+	|container label editorAptitude editor |
 	container:= BlElement new 
 		layout: BlLinearLayout vertical;
 		constraintsDo: [ :c |
@@ -298,11 +298,11 @@ EScenarioParametrizedExampleCreationHelper >> initializeForMethodName [
 
 	label:= self blLabelFor: 'Method Name: '.
 	
-	editorLook := (BrGlamorousRegularEditorLook new fontSize: 22).
+	editorAptitude := (BrGlamorousRegularEditorAptitude new fontSize: 22).
 	editor := BrEditor new
 		inputFilter: BrTextEditorLetterInputFilter new;
 		text: ' ';
-		look:	editorLook;	
+		aptitude:	editorAptitude;	
 		border: (BlBorder paint: (Color fromHexString: 'eaeaea') width: 2);
 		margin: (BlInsets top: 15 left: 15 bottom: 0 right: 0);
 		padding: (BlInsets all: 3);
@@ -318,7 +318,7 @@ EScenarioParametrizedExampleCreationHelper >> initializeForMethodName [
 
 { #category : #initialization }
 EScenarioParametrizedExampleCreationHelper >> initializeForParameterAmount [
-	|container label editorLook editor aDocument textElement |
+	|container label editorAptitude editor aDocument textElement |
 	container:= BlElement new 
 		layout: BlLinearLayout horizontal;
 		constraintsDo: [ :c |
@@ -327,12 +327,12 @@ EScenarioParametrizedExampleCreationHelper >> initializeForParameterAmount [
 
 	label:= self blLabelFor: 'Parameter Amount: '.
 	
-	editorLook := (BrGlamorousRegularEditorLook new fontSize: 22).
+	editorAptitude := (BrGlamorousRegularEditorAptitude new fontSize: 22).
 	editor := BrEditor new
 		inputFilter: BrTextEditorDigitInputFilter new;
 		hExact: 22;
 		text: '1';
-		look:	editorLook;	
+		aptitude:	editorAptitude;	
 		border: (BlBorder paint: (Color fromHexString: 'eaeaea') width: 1);
 		margin: (BlInsets top: 15 left: 15 bottom: 0 right: 0);
 		padding: (BlInsets all: 3);

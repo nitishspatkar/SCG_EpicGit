@@ -14,7 +14,7 @@ Class {
 EEditAndSearchElement >> addMainSearchLabel [
 	| label |
 	label := BrLabel new
-		look: BrLabelLook;
+		aptitude: BrLabelAptitude;
 		text:
 			('Search Service' asRopedText
 				foreground: Color black;
@@ -34,13 +34,13 @@ EEditAndSearchElement >> addSearchField [
 			c vertical matchParent ].
 	edit := BrEditor new
 		text: '';
-		look: BrEditorLook;
+		aptitude: BrEditorAptitude;
 		border: (BlBorder paint: Color black);
 		hExact: 180;
 		vExact: 30.
 	self editor: edit.
 	label := BrLabel new
-		look: BrGlamorousLabelLook;
+		aptitude: BrGlamorousLabelAptitude;
 		text: 'Search:';
 		geometry: (BlRectangle cornerRadius: 4);
 		background: (Color fromHexString: #eaeaea).

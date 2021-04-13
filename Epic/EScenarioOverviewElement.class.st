@@ -12,7 +12,7 @@ Class {
 { #category : #adding }
 EScenarioOverviewElement >> addSaveButton [
 	^ BrButton new
-		look: BrGlamorousButtonWithLabelLook new;
+		aptitude: BrGlamorousButtonWithLabelAptitude new;
 		label: 'Save';
 		action: [ :button |
 			self scenario descriptionText: self descDocumenter editor text asString.
@@ -33,7 +33,7 @@ EScenarioOverviewElement >> blLabelFor: text [
 		margin: (BlInsets top: 15 left: 15 bottom: 0 right: 0);
 		padding: (BlInsets all: 3);
 		geometry: (BlRectangle cornerRadius: 5);
-		look: (BrGlamorousLabelLook new glamorousRegularFontAndSize; fontSize: 20); 
+		aptitude: (BrGlamorousLabelAptitude new glamorousRegularFontAndSize; fontSize: 20); 
 		constraintsDo: [ :c | 
 			c linear vertical alignCenter.
 			c linear horizontal alignLeft ].

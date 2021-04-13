@@ -29,7 +29,7 @@ EReqArtifactAdditionMenu >> blLabelFor: text [
 		margin: (BlInsets top: 15 left: 15 bottom: 0 right: 0);
 		padding: (BlInsets all: 3);
 		geometry: (BlRectangle cornerRadius: 5);
-		look: (BrGlamorousLabelLook new glamorousRegularFontAndSize; fontSize: 20); 
+		aptitude: (BrGlamorousLabelAptitude new glamorousRegularFontAndSize; fontSize: 20); 
 		constraintsDo: [ :c | 
 			c linear vertical alignCenter.
 			c linear horizontal alignLeft ].
@@ -65,7 +65,7 @@ EReqArtifactAdditionMenu >> createCancelButton [
 		background: (Color fromHexString: 'eaeaea');
 		margin: (BlInsets top: 15 left: 15 bottom: 0 right: 0);
 		padding: (BlInsets all: 3);
-		look: BrGlamorousButtonWithIconLook new;
+		aptitude: BrGlamorousButtonWithIconAptitude new;
 		icon: BrGlamorousIcons close;
 		action: [ 
 			self inform: 'Clicked cancel button.'.
@@ -81,7 +81,7 @@ EReqArtifactAdditionMenu >> createSaveButton [
 		background: (Color fromHexString: 'eaeaea');
 		margin: (BlInsets top: 15 left: 15 bottom: 0 right: 0);
 		padding: (BlInsets all: 3);
-		look: BrGlamorousButtonWithLabelLook new;
+		aptitude: BrGlamorousButtonWithLabelAptitude new;
 		label: 'Save';
 		action: [ 
 			self saveChanges.
@@ -141,7 +141,7 @@ EReqArtifactAdditionMenu >> titleFor: text [
 		text: text;
 		padding: (BlInsets all: 5);
 		geometry: (BlRectangle cornerRadius: 5);
-		look: (BrGlamorousLabelLook new glamorousRegularFontAndSize; fontSize: 22); 
+		aptitude: (BrGlamorousLabelAptitude new glamorousRegularFontAndSize; fontSize: 22); 
 		constraintsDo: [ :c | 
 			c linear vertical alignCenter.
 			c linear horizontal alignCenter ].

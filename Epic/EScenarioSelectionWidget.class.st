@@ -39,7 +39,7 @@ EScenarioSelectionWidget >> initialize [
 	exampleList
 		itemStencil: [
 			BrLabel new
-				look: BrGlamorousLabelLook new + (BrStyleCommonLook new
+				aptitude: BrGlamorousLabelAptitude new + (BrStyleCommonAptitude new
 					selected: [ :aStyle | aStyle background: Color veryVeryLightGray ]);
 				constraintsDo: [ :c | c horizontal matchParent ];
 				hMatchParent;
@@ -49,7 +49,7 @@ EScenarioSelectionWidget >> initialize [
 		"stencil: [ :anExample :index | 
 			BrLabel new
 				text: anExample label asRopedText;
-				look: BrLabelLook;
+				aptitude: BrLabelAptitude;
 				constraintsDo: [ :c | c horizontal matchParent ];
 				padding: (BlInsets all: 6);
 				when: BlClickEvent

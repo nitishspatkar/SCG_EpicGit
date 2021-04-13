@@ -23,7 +23,7 @@ EScenarioInputWidget class >> widgetType [
 EScenarioInputWidget >> initialize [
 	super initialize.
 	self
-		look: BrShadowLook;
+		aptitude: BrShadowAptitude;
 		padding:
 			(BlInsets
 				top: 5
@@ -38,8 +38,8 @@ EScenarioInputWidget >> initialize [
 	"border: (BlBorder paint: Color red)."
 	label := BrLabel new
 		padding: (BlInsets right: 0);
-		look:
-			(BrGlamorousLabelLook new
+		aptitude:
+			(BrGlamorousLabelAptitude new
 				glamorousRegularFontAndSize;
 				foreground: Color gray);
 		constraintsDo: [ :c | 

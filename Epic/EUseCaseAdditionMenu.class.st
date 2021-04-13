@@ -32,23 +32,23 @@ EUseCaseAdditionMenu >> initialize [
 { #category : #initialization }
 EUseCaseAdditionMenu >> initializeActorAdditionDropdown [
 	"I create and return a dropdown toggle button for adding artifacts in the Mind Map view"
-	| dropdownLook |
+	| dropdownAptitude |
 	^ self toggleButton
 		margin: (BlInsets top: 15 left: 15 bottom: 0 right: 0);
 		padding: (BlInsets all: 3);
-		look:
-			BrGlamorousButtonWithLabelAndIconLook
+		aptitude:
+			BrGlamorousButtonWithLabelAndIconAptitude
 				+
-					(dropdownLook := BrGlamorousWithDropdownLook
+					(dropdownAptitude := BrGlamorousWithDropdownAptitude
 						handle: [ self toggleButton
-								look:
-									BrGlamorousButtonWithLabelAndIconLook - BrGlamorousButtonExteriorLook;
+								aptitude:
+									BrGlamorousButtonWithLabelAndIconAptitude - BrGlamorousButtonExteriorAptitude;
 								yourself ]
 						content: [ self popupActorList 
 							addShortcut:
 								(BlShortcut new
 								combination: BlKeyCombination builder return build;
-								action: [ dropdownLook hide ]).
+								action: [ dropdownAptitude hide ]).
 								]);
 		label: 'Add Actor';
 		relocate: 200 @ 100;
@@ -124,7 +124,7 @@ EUseCaseAdditionMenu >> popupActorList [
 	| actorList |
 	actorList := BrSimpleList new.
 	actorList
-		lookDo: [ :aLook | aLook listElement constraintsDo: [ :c | c maxHeight: 200 ] ];
+		aptitudeDo: [ :aAptitude | aAptitude listElement constraintsDo: [ :c | c maxHeight: 200 ] ];
 		layout: BlLinearLayout vertical;
 		padding: (BlInsets all: 5);
 		vFitContent;
@@ -144,7 +144,7 @@ EUseCaseAdditionMenu >> popupActorList [
 			(BlShortcut new
 				combination: BlKeyCombination builder return build;
 				action: [  
-					self initializeActorAdditionDropdown look hide 
+					self initializeActorAdditionDropdown aptitude hide 
 					]);
 		fitContent;
 		items: self getActors.

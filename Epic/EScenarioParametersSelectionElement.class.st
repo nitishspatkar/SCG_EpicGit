@@ -17,7 +17,7 @@ EScenarioParametersSelectionElement >> createScenarioLabelForText: text [
 		margin: (BlInsets top: 15 left: 15 bottom: 0 right: 0);
 		padding: (BlInsets all: 3);
 		geometry: (BlRectangle cornerRadius: 5);
-		look: (BrGlamorousLabelLook new glamorousRegularFontAndSize; fontSize: 20); 
+		aptitude: (BrGlamorousLabelAptitude new glamorousRegularFontAndSize; fontSize: 20); 
 		constraintsDo: [ :c | 
 			c linear vertical alignCenter.
 			c linear horizontal alignLeft ].
@@ -158,8 +158,8 @@ EScenarioParametersSelectionElement >> wrapWidgetWithParameterName: widget [
 			c vertical fitContent ].
 	label := BrLabel new
 		margin: (BlInsets left: 100);
-		"look: (BrGlamorousLabelLook new bold glamorousRegularFont fontSize: 20);"
-			look: BrLabelLook new;
+		"aptitude: (BrGlamorousLabelAptitude new bold glamorousRegularFont fontSize: 20);"
+			aptitude: BrLabelAptitude new;
 		text: widget parameterName.
 	element addChild: label.
 	element addChild: widget.

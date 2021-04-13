@@ -54,7 +54,7 @@ EParametrizedExampleParameterWidget >> build [
 
 { #category : #'parameter widgets' }
 EParametrizedExampleParameterWidget >> choiceWidgetForParameter: param [
-	| exampleList initialButtonElement toggleButtonLabel dropDownLook childContainer label buttonInstance |
+	| exampleList initialButtonElement toggleButtonLabel dropDownAptitude childContainer label buttonInstance |
 	childContainer := self defaultHorizontalLayoutElementForChoice.
 	label := self labelWith: 'Widget: '.
 	toggleButtonLabel = ''.
@@ -63,7 +63,7 @@ EParametrizedExampleParameterWidget >> choiceWidgetForParameter: param [
 		stencil: [ :anExample :index | 
 			BrLabel new
 				text: anExample asRopedText;
-				look: (BrLabelLook new fontSize: 16);
+				aptitude: (BrLabelAptitude new fontSize: 16);
 				constraintsDo: [ :c | c horizontal matchParent ];
 				padding: (BlInsets all: 6);
 				when: BlClickEvent
@@ -85,12 +85,12 @@ EParametrizedExampleParameterWidget >> choiceWidgetForParameter: param [
 	exampleList items: self widgetsDict keys.
 	buttonInstance := self toggleButton: param.
 	initialButtonElement := buttonInstance
-		look:
-			BrGlamorousButtonWithLabelAndIconLook
+		aptitude:
+			BrGlamorousButtonWithLabelAndIconAptitude
 				+
-					(dropDownLook := BrGlamorousWithDropdownLook
+					(dropDownAptitude := BrGlamorousWithDropdownAptitude
 						handle: [ (self toggleButton: param)
-								look: BrGlamorousButtonWithLabelAndIconLook - BrGlamorousButtonExteriorLook;
+								aptitude: BrGlamorousButtonWithLabelAndIconAptitude - BrGlamorousButtonExteriorAptitude;
 								yourself ]
 						content: [ exampleList ]);
 		margin: (BlInsets all: 8).
@@ -99,7 +99,7 @@ EParametrizedExampleParameterWidget >> choiceWidgetForParameter: param [
 			(BlShortcut new
 				combination: BlKeyCombination builder return build;
 				action: [ initialButtonElement label: toggleButtonLabel.
-					dropDownLook hide ]).
+					dropDownAptitude hide ]).
 	widgetTypeWidget := initialButtonElement.
 	childContainer
 		addChildren:
@@ -214,7 +214,7 @@ EParametrizedExampleParameterWidget >> editorWithEmptyText [
 			c horizontal fitContent.
 			c linear weight: 0.3 ];
 	geometry: (BlRectangle cornerRadius: 6);	
-	look: (BrGlamorousRegularEditorLook new
+	aptitude: (BrGlamorousRegularEditorAptitude new
 			glamorousCodeFont;
 			fontSize: 16);	
 		hFitContent;
@@ -255,7 +255,7 @@ EParametrizedExampleParameterWidget >> labelWith: aText [
 ^ BrLabel new
 		padding: (BlInsets right: 0);
 		text: aText;
-		look: (BrGlamorousLabelLook new glamorousRegularFont fontSize: 14);
+		aptitude: (BrGlamorousLabelAptitude new glamorousRegularFont fontSize: 14);
 		constraintsDo: [ :c | 
 			c linear horizontal alignLeft.
 			c linear vertical alignCenter. ].
@@ -327,7 +327,7 @@ EParametrizedExampleParameterWidget >> toggleButton: param [
 			(param
 				ifNotNil: [ param ]
 				ifNil: [ 'Choose an element' ]);
-		look: (BrGlamorousRegularEditorLook new
+		aptitude: (BrGlamorousRegularEditorAptitude new
 			glamorousCodeFont;
 			fontSize: 20);	
 		icon:

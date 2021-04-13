@@ -17,7 +17,7 @@ Class {
 { #category : #adding }
 EParametrizedExample >> addGenerateButton [
 	^ BrButton new
-		look: BrGlamorousButtonWithLabelLook new;
+		aptitude: BrGlamorousButtonWithLabelAptitude new;
 		label: 'Generate';
 		action: [ :button |
 			| coder saveAction block|
@@ -47,7 +47,7 @@ EParametrizedExample >> addGenerateButton [
 { #category : #adding }
 EParametrizedExample >> addRunButtonFor: selectionElement [
 	^ BrButton new
-		look: BrGlamorousButtonWithLabelLook new;
+		aptitude: BrGlamorousButtonWithLabelAptitude new;
 		label: 'Run';
 		action: [ :aButton |
 			aButton phlow

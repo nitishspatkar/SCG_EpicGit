@@ -51,7 +51,7 @@ EParametrizedExampleDocumentView >> createLabelForExampleText: aParametrizedExam
 	label := BrLabel new
 		padding: (BlInsets right: 0);
 		text: 'Example: ';
-		look: (BrGlamorousLabelLook new bold glamorousRegularFont fontSize: 20);
+		aptitude: (BrGlamorousLabelAptitude new bold glamorousRegularFont fontSize: 20);
 		constraintsDo: [ :c | 
 			c linear horizontal alignLeft. ].
 	container addChild: label.
@@ -84,7 +84,7 @@ EParametrizedExampleDocumentView >> createLabelForPropertyTests: aParametrizedEx
 	label := BrLabel new
 		padding: (BlInsets right: 0);
 		text: 'Property Tests: ';
-		look: (BrGlamorousLabelLook new bold glamorousRegularFont fontSize: 20);
+		aptitude: (BrGlamorousLabelAptitude new bold glamorousRegularFont fontSize: 20);
 		constraintsDo: [ :c | 
 			c linear horizontal alignLeft. ].
 	container addChild: label.
@@ -133,7 +133,7 @@ EParametrizedExampleDocumentView >> createLabelForProviding: aParametrizedExampl
 	label := BrLabel new
 		padding: (BlInsets right: 0);
 		text: 'Providing: ';
-		look: (BrGlamorousLabelLook new bold glamorousRegularFont fontSize: 20);
+		aptitude: (BrGlamorousLabelAptitude new bold glamorousRegularFont fontSize: 20);
 		constraintsDo: [ :c | 
 			c linear horizontal alignLeft. ].
 	container addChild: label.
@@ -166,7 +166,7 @@ EParametrizedExampleDocumentView >> createLabelForReturn: aParametrizedExample [
 	label := BrLabel new
 		padding: (BlInsets right: 0);
 		text: 'Returns: ';
-		look: (BrGlamorousLabelLook new bold glamorousRegularFont fontSize: 20);
+		aptitude: (BrGlamorousLabelAptitude new bold glamorousRegularFont fontSize: 20);
 		constraintsDo: [ :c | 
 			c linear horizontal alignLeft. ].
 	container addChild: label.
@@ -202,7 +202,7 @@ EParametrizedExampleDocumentView >> createLabelForScenario: aParametrizedExample
 	label := BrLabel new
 		padding: (BlInsets right: 0);
 		text: 'Scenario: ';
-		look: (BrGlamorousLabelLook new bold glamorousRegularFont fontSize: 20);
+		aptitude: (BrGlamorousLabelAptitude new bold glamorousRegularFont fontSize: 20);
 		constraintsDo: [ :c | 
 			c linear horizontal alignLeft. ].
 	container addChild: label.
@@ -235,7 +235,7 @@ EParametrizedExampleDocumentView >> createLabelForWhen: aParametrizedExample [
 	label := BrLabel new
 		padding: (BlInsets right: 0);
 		text: 'When: ';
-		look: (BrGlamorousLabelLook new bold glamorousRegularFont fontSize: 20);
+		aptitude: (BrGlamorousLabelAptitude new bold glamorousRegularFont fontSize: 20);
 		constraintsDo: [ :c | 
 			c linear horizontal alignLeft. ].
 	container addChild: label.

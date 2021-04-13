@@ -47,8 +47,8 @@ EScenarioFileSelectionWidget >> createSearchButton [
 		background: (Color fromHexString: 'eaeaea');
 		icon: BrGlamorousIcons file asElement;
 		label: 'Open file')
-		look:
-			BrGlamorousButtonWithIconLook)
+		aptitude:
+			BrGlamorousButtonWithIconAptitude)
 ]
 
 { #category : #examples }
@@ -69,13 +69,13 @@ EScenarioFileSelectionWidget >> getSelectedFileReference [
 
 { #category : #initialization }
 EScenarioFileSelectionWidget >> initialize [
-	| editorLook interactiveLook searchButton|
+	| editorAptitude interactiveAptitude searchButton|
 	super initialize.
-	editorLook := BrGlamorousRegularEditorLook new fontSize: 15.
+	editorAptitude := BrGlamorousRegularEditorAptitude new fontSize: 15.
 	pathEditor := BrEditor new
 		text: '';
-		look:
-			editorLook;
+		aptitude:
+			editorAptitude;
 		border: (BlBorder paint: BrGlamorousColors editorBorderColor width: 1);
 		geometry: (BlRectangle cornerRadius: 10);
 			hMatchParent;

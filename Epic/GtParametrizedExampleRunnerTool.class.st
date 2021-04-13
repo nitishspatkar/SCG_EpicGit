@@ -47,6 +47,6 @@ GtParametrizedExampleRunnerTool >> object: anObject [
 ]
 
 { #category : #'private - accessing' }
-GtParametrizedExampleRunnerTool >> tabLook [
-	^ BrGlamorousTabSwitcherWithIconLook
+GtParametrizedExampleRunnerTool >> tabAptitude [
+	^ BrGlamorousTabSwitcherWithIconAptitude
 ]

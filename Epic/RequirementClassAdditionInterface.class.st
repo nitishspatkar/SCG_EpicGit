@@ -12,17 +12,17 @@ Class {
 
 { #category : #ui }
 RequirementClassAdditionInterface >> buildAddButton [
-	| look |
+	| aptitude |
 	^BrButton new
 		label: 'Add class';
-		look:
-			BrGlamorousButtonWithIconLook
+		aptitude:
+			BrGlamorousButtonWithIconAptitude
 				+
-					(look := BrGlamorousWithDropdownLook
+					(aptitude := BrGlamorousWithDropdownAptitude
 						handle: [ BrButton new
-								look:
-									BrGlamorousButtonWithIconLook - BrGlamorousWithLabelTooltipLook
-										- BrGlamorousButtonExteriorLook;
+								aptitude:
+									BrGlamorousButtonWithIconAptitude - BrGlamorousWithLabelTooltipAptitude
+										- BrGlamorousButtonExteriorAptitude;
 								icon: BrGlamorousVectorIcons add;
 								yourself ]
 						content: [ | element |
@@ -31,14 +31,14 @@ RequirementClassAdditionInterface >> buildAddButton [
 								constraintsDo: [ :c | 
 									c horizontal exact: 400.
 									c vertical exact: 300 ].
-							element addChild: (self buildAddInterface: look).
+							element addChild: (self buildAddInterface: aptitude).
 							element ]);
 		icon: BrGlamorousVectorIcons add;
 		yourself.
 ]
 
 { #category : #ui }
-RequirementClassAdditionInterface >> buildAddInterface: look [
+RequirementClassAdditionInterface >> buildAddInterface: aptitude [
 	| contentTabs tab |
 	contentTabs := BrTabGroup new.
 	contentTabs aptitude: BrGlamorousTabGroupAptitude new.
@@ -53,7 +53,7 @@ RequirementClassAdditionInterface >> buildAddInterface: look [
 			el := GtPharoCreateBehaviorElement new.
 			el
 				behaviorBlock: [ :cls | 
-					look hide.
+					aptitude hide.
 					navigationModel selectClass: cls ].
 			el forClassDefinitionWithName: futureClassName.
 			navigationModel

@@ -110,7 +110,7 @@ EUserStory >> cardViewGenerate [
 				geometry: (BlRectangle cornerRadius: 12);
 				layout: BlLinearLayout horizontal;
 				background: Color white;
-				look: BrShadowLook;
+				aptitude: BrShadowAptitude;
 				margin: (BlInsets all: 20);
 				constraintsDo: [ :c | 
 					c horizontal matchParent.
@@ -143,7 +143,7 @@ EUserStory >> cardViewGenerate [
 				layout: (BlLinearLayout horizontal) alignBottomCenter;
 				margin: (BlInsets top: 5);
 				background: (Color fromHexString: 'eaeaea');
-				look: BrGlamorousButtonWithLabelLook new;
+				aptitude: BrGlamorousButtonWithLabelAptitude new;
 				label: 'Change Status';
 				action: [ 
 					self inform: 'Clicked change state button.'. 
@@ -154,7 +154,7 @@ EUserStory >> cardViewGenerate [
 			detailsTextContainer := BrEditor new
 				geometry: (BlRectangle cornerRadius: 6);
 				border: (BlBorder paint: (Color fromHexString: 'd9d9d9') width: 1);
-				look: (BrGlamorousRegularEditorLook new fontSize: 16);
+				aptitude: (BrGlamorousRegularEditorAptitude new fontSize: 16);
 				text: details asRopedText;
 				constraintsDo: [ :c | 
 					c horizontal fitContent.
@@ -165,7 +165,7 @@ EUserStory >> cardViewGenerate [
 				margin: (BlInsets top: 5);
 				padding: (BlInsets top: 5; left: 5);
 				border: (BlBorder paint: (Color fromHexString: 'd9d9d9') width: 1);
-				look: (BrGlamorousRegularEditorLook new fontSize: 16);
+				aptitude: (BrGlamorousRegularEditorAptitude new fontSize: 16);
 				text: criteriaText asRopedText;
 				constraintsDo: [ :c | 
 					c horizontal matchParent.
@@ -245,7 +245,7 @@ EUserStory >> customEntityElementFor: aReference [
 			 ].
 	
 	label := BrLabel new
-		look: BrGlamorousListLabelLook;
+		aptitude: BrGlamorousListLabelAptitude;
 		text: aReference asRopedText.
 	
 	button := RequirementClassAdditionInterface new initializeWithFutureClassName: referencedEntity andElement: self.
@@ -354,7 +354,7 @@ EUserStory >> gtReferencesFor: aView [
 				constraintsDo: [ :c | 
 					c horizontal matchParent.
 					c vertical fitContent ].
-			label := BrLabel new look: BrGlamorousListLabelLook.
+			label := BrLabel new aptitude: BrGlamorousListLabelAptitude.
 			button := RequirementClassAdditionInterface new.
 			container addChild: label.
 			container addChild: separator.

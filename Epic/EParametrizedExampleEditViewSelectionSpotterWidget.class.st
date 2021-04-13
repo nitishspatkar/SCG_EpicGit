@@ -3,7 +3,7 @@ Class {
 	#superclass : #BlElement,
 	#instVars : [
 		'exampleContainer',
-		'spotterDropDownLook',
+		'spotterDropDownAptitude',
 		'examplesGroup',
 		'selectedClass',
 		'defaultValue'
@@ -17,7 +17,7 @@ EParametrizedExampleEditViewSelectionSpotterWidget >> actOnClassSelected: aClass
 	exampleContainer removeChildren.
 	exampleContainer
 	  addChild: (self createLabelForClass: aClass).
-	spotterDropDownLook hide.
+	spotterDropDownAptitude hide.
 ]
 
 { #category : #examples }
@@ -28,7 +28,7 @@ EParametrizedExampleEditViewSelectionSpotterWidget >> createLabelForClass: class
 		padding: (BlInsets all: 2);
 		geometry: (BlRectangle cornerRadius: 4);
 		background: (Color fromHexString: 'eaeaea');
-		look: BrGlamorousLabelLook new glamorousRegularFontAndSize;
+		aptitude: BrGlamorousLabelAptitude new glamorousRegularFontAndSize;
 		constraintsDo: [ :c | c linear vertical alignCenter ]
 ]
 
@@ -41,19 +41,19 @@ EParametrizedExampleEditViewSelectionSpotterWidget >> createSearchIcon [
 ]
 
 { #category : #examples }
-EParametrizedExampleEditViewSelectionSpotterWidget >> createSearchIconButtonWithNoExteriorLook [
+EParametrizedExampleEditViewSelectionSpotterWidget >> createSearchIconButtonWithNoExteriorAptitude [
 	^ BrButton new
-												look: BrGlamorousButtonWithIconLook - BrGlamorousButtonExteriorLook;
+												aptitude: BrGlamorousButtonWithIconAptitude - BrGlamorousButtonExteriorAptitude;
 												icon: BrGlamorousIcons search asElement
 ]
 
 { #category : #examples }
 EParametrizedExampleEditViewSelectionSpotterWidget >> createSpotterDropdown [
 	^ self createSearchIcon
-		look:
-			BrGlamorousButtonWithIconLook
+		aptitude:
+			BrGlamorousButtonWithIconAptitude
 				+
-					(spotterDropDownLook := BrGlamorousWithDropdownLook
+					(spotterDropDownAptitude := BrGlamorousWithDropdownAptitude
 						stencil: [ | model spotterElement |
 							model := GtSpotter new initializeWith: self spotterStartModel.
 							model announcer
@@ -63,14 +63,14 @@ EParametrizedExampleEditViewSelectionSpotterWidget >> createSpotterDropdown [
 									anEvent actedUpon: true ].
 							model announcer
 								when: GtSpotterExitAnnouncement
-								do: [ :e | spotterDropDownLook hide ].
+								do: [ :e | spotterDropDownAptitude hide ].
 							spotterElement := GtSpotterElement new
 								spotterModel: model;
 								size: 500 @ 500.
 							BlElement new
-								look:
-									(BrGlamorousDropdownLook new
-										handle: self createSearchIconButtonWithNoExteriorLook;
+								aptitude:
+									(BrGlamorousDropdownAptitude new
+										handle: self createSearchIconButtonWithNoExteriorAptitude;
 										content: spotterElement);
 								background: BrGlamorousColors secondaryHeaderBackgroundColor ])
 ]
